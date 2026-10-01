@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Sujet et modèles fournis par l'enseignant (copiés dans docs/)
+ressouces pour le projet/
