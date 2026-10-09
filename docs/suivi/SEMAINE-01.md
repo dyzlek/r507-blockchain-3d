@@ -13,7 +13,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | Groupe | Maxens, Dylan |
 | Semaine | 1 |
 | Dates couvertes | 01/10 – 09/10/2026 |
-| Membres présents | |
+| Membres présents | Maxens, Dylan |
 | Lien dépôt / GitHub Projects | https://github.com/dyzlek/r507-blockchain-3d · https://github.com/users/dyzlek/projects/3 |
 | Lien démo (si disponible) | https://dyzlek.github.io/r507-blockchain-3d/ |
 
