@@ -10,7 +10,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Champ | Contenu |
 |:---|:---|
-| Groupe | Maxens, Dylan, Nicolas |
+| Groupe | Maxens, Dylan |
 | Semaine | 3 |
 | Dates couvertes | 17/10 – 23/10/2026 |
 | Membres présents | |

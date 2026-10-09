@@ -4,15 +4,14 @@ Expérience web interactive en 3D (Three.js) pour faire comprendre une blockchai
 Projet du module R507, BUT MMI 3e année.
 
 - **Démo en ligne** : https://dyzlek.github.io/r507-blockchain-3d/
-- **Board GitHub Projects** : _lien à ajouter_
+- **Board GitHub Projects** : https://github.com/users/dyzlek/projects/3
 
 ## Équipe
 
 | Membre | GitHub | Rôle |
 |:---|:---|:---|
-| Maxens | [@MaxX-J](https://github.com/MaxX-J) | à définir |
-| Dylan | [@dyzlek](https://github.com/dyzlek) | à définir |
-| Nicolas | [@hextravagance](https://github.com/hextravagance) | à définir |
+| Maxens | [@MaxX-J](https://github.com/MaxX-J) | Design, UX et contenu pédagogique · documentation et tests utilisateurs |
+| Dylan | [@dyzlek](https://github.com/dyzlek) | Développement 3D et intégration Three.js · board GitHub Projects et déploiement |
 
 ## Lancer le projet en local
 
@@ -59,3 +58,4 @@ L'IA générative (Claude) est utilisée comme assistant. Tout code ou texte gé
 | Date | Usage | Vérification |
 |:---|:---|:---|
 | 01/10/2026 | Mise en place du dépôt (Vite, workflow Pages, structure docs, issues initiales) | Relu par le groupe, build et déploiement testés |
+| 09/10/2026 | Création du board GitHub Projects, assignation des issues, première rédaction du cadrage (public, métaphore, fil rouge) et de la fiche semaine 1 | Relu et validé par le groupe |

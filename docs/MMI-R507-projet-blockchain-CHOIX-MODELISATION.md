@@ -10,33 +10,46 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 
 | Champ | Contenu |
 |:---|:---|
-| Groupe | Maxens, Dylan, Nicolas |
-| Membres et rôles | Maxens (@MaxX-J), Dylan (@dyzlek), Nicolas (@hextravagance) — rôles à définir |
-| Public cible | |
+| Groupe | Maxens, Dylan |
+| Membres et rôles | Dylan (@dyzlek) : développement 3D et intégration, board et déploiement — Maxens (@MaxX-J) : design, UX et contenu pédagogique, documentation et tests |
+| Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
-| Lien vers GitHub Projects | |
-| Version et date de mise à jour | v0.1 — 01/10/2026 |
+| Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
+| Version et date de mise à jour | v0.2 — 09/10/2026 |
 
 ## 2. Univers visuel et métaphore principale
 
 ### 2.1 Public cible et objectif
-Décrivez le public visé et ce qu'un utilisateur non initié doit retenir à la fin de l'expérience.
+Le public visé est fait de lycéens et d'étudiants hors informatique (16–25 ans). Ils connaissent le mot « Bitcoin » mais pas le fonctionnement. À la fin, l'utilisateur doit retenir trois idées :
+1. un bloc est scellé par une empreinte, et toute modification casse ce sceau et ceux de tous les blocs suivants ;
+2. personne ne commande : chaque nœud garde une copie et vérifie lui-même ;
+3. ajouter un bloc demande un effort (PoW) ou une mise en jeu (PoS), ce qui rend la triche coûteuse.
 
 ### 2.2 Métaphore retenue
-Décrivez l'univers visuel et le fil rouge. Expliquez comment il porte les 7 notions obligatoires sans confondre métaphore et réalité technique.
+**Un registre de coffres de verre scellés, recopié dans un archipel.** Le fil rouge suit une transaction, « Alice envoie 5 jetons à Bob », de sa création jusqu'à sa confirmation, puis montre une tentative de double dépense.
+
+- **Bloc = coffre de verre** : le contenu est visible (données, nonce), ce qui rend la structure lisible (notion 1).
+- **Empreinte = sceau** à motif et couleur générés depuis le vrai hash (SHA-256 calculé dans le navigateur). Une modification minime donne un sceau totalement différent (notion 2).
+- **Chaînage** : le sceau du parent est gravé sur le coffre suivant. Une incohérence se voit comme un lien qui devient rouge (notion 3).
+- **Nœud = île** qui possède sa propre copie de la chaîne. Les transactions et les blocs voyagent sous forme de messages lumineux entre îles (notion 4).
+- **Minage** : on fait défiler les essais de nonce jusqu'à obtenir un sceau qui respecte la difficulté (« commence par 00 ») (notion 5).
+- **Consensus** : une course entre îles (PoW) est comparée à un tirage pondéré par la mise (PoS) (notion 6).
+- **Attaque** : une double dépense est tentée sur une île minoritaire, puis rejetée par la chaîne majoritaire (notion 7).
+
+Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un encart « En vrai… » qui donne le terme technique exact (hash, nœud, nonce…) et la limite de l'image.
 
 ### 2.3 Justification et limites
 | Question | Réponse |
 |:---|:---|
-| Quelles propriétés deviennent évidentes ? | |
-| Quelles propriétés sont difficiles à représenter ou risquent d'être déformées ? | |
-| Comment ces limites sont-elles compensées ? | |
+| Quelles propriétés deviennent évidentes ? | Le chaînage (sceau gravé sur le suivant), l'effet avalanche d'une modification, la distribution des copies (une île = une copie), l'absence de centre |
+| Quelles propriétés sont difficiles à représenter ou risquent d'être déformées ? | Un sceau suggère un objet physique qu'on pourrait recoller ou imiter, alors qu'un hash ne s'inverse pas. Le verre laisse penser que tout est lisible (vrai pour Bitcoin, pas pour toutes les blockchains). La difficulté réelle du minage, des milliards d'essais, est incomparable avec quelques secondes d'animation |
+| Comment ces limites sont-elles compensées ? | Un encart « En vrai… » à chaque notion, un compteur d'essais avec ordre de grandeur réel, le vrai hash hexadécimal affiché à côté du sceau, et des tests utilisateurs pour vérifier les idées fausses retenues |
 
 ### 2.4 Métaphores écartées
 | Métaphore | Points forts | Pourquoi écartée |
 |:---|:---|:---|
-| | | |
-| | | |
+| Livre de comptes partagé (pages reliées) | Très familier, colle au mot « registre » | Plat et peu spatial, il exploite mal la 3D. Il ne montre ni le réseau ni le minage, et une page se réécrit facilement, ce qui contredit l'immutabilité |
+| Tour de briques / Lego empilés | Très visuel, on voit bien l'empilement | Suggère qu'on peut retirer ou échanger une brique sans conséquence. Pas d'équivalent naturel au hash ni à la copie distribuée |
 
 ### 2.5 Charte visuelle
 | Élément | Choix | Justification pédagogique |
