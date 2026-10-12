@@ -7,13 +7,13 @@ export const COFFRE_SIZE = { w: 1.6, h: 1.1, d: 1.1 };
 const { w, h, d } = COFFRE_SIZE;
 
 const glassMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xe6f6ff,
+  color: 0xd8f0ea,
   roughness: 0.06,
   transmission: 0.94,
   thickness: 0.35,
   ior: 1.45,
 });
-const frameMaterial = new THREE.LineBasicMaterial({ color: 0x7cc4ff, transparent: true, opacity: 0.7 });
+const frameMaterial = new THREE.LineBasicMaterial({ color: 0xc79a4b, transparent: true, opacity: 0.85 });
 const scrollMaterial = new THREE.MeshStandardMaterial({ color: 0xf2e6c9, roughness: 0.8 });
 const coinSideMaterial = new THREE.MeshStandardMaterial({ color: 0xd9a93a, metalness: 0.8, roughness: 0.3 });
 
@@ -26,39 +26,62 @@ function hashBytes(hash) {
   return hash.match(/../g).map((byte) => parseInt(byte, 16));
 }
 
-// Sceau : motif et couleurs tirés des octets de l'empreinte. Une empreinte différente donne un sceau différent.
+// Sceau de cire : la teinte, le bord irrégulier et les rayons gravés sont tirés des octets de l'empreinte.
+// Une empreinte différente donne un sceau différent ; le bloc de genèse n'a pas de parent (cire grise).
 export function sealTexture(hash) {
   const size = 256;
-  const r = size / 2;
+  const c = size / 2;
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = size;
   const g = canvas.getContext('2d');
   const bytes = hashBytes(hash);
-  const saturation = hash === GENESIS_PARENT ? 0 : 70;
-  const sectors = 12;
+  // Les premiers octets valent toujours 00 (difficulté du minage) : la teinte vient du dernier.
+  const hue = (bytes[31] / 256) * 360;
+  const sat = hash === GENESIS_PARENT ? 0 : 58;
+  const wax = (l) => `hsl(${hue} ${sat}% ${l}%)`;
 
-  for (let i = 0; i < sectors; i++) {
-    g.beginPath();
-    g.moveTo(r, r);
-    g.arc(r, r, r - 8, (i / sectors) * Math.PI * 2, ((i + 1) / sectors) * Math.PI * 2);
-    g.closePath();
-    g.fillStyle = `hsl(${(bytes[i] / 256) * 360} ${saturation}% 55%)`;
-    g.fill();
+  // Bord coulé, irrégulier.
+  g.beginPath();
+  for (let i = 0; i <= 32; i++) {
+    const a = (i / 32) * Math.PI * 2;
+    const r = c - 14 + (bytes[i % 32] / 255) * 12;
+    g.lineTo(c + Math.cos(a) * r, c + Math.sin(a) * r);
   }
-  g.beginPath();
-  g.arc(r, r, r * 0.4, 0, Math.PI * 2);
-  g.fillStyle = `hsl(${(bytes[12] / 256) * 360} ${saturation}% 25%)`;
+  g.closePath();
+  g.fillStyle = wax(36);
   g.fill();
-  g.lineWidth = 8;
-  g.strokeStyle = '#ffffff';
+
+  // Empreinte pressée au centre.
+  const gradient = g.createRadialGradient(c - 20, c - 20, 10, c, c, 92);
+  gradient.addColorStop(0, wax(52));
+  gradient.addColorStop(1, wax(32));
   g.beginPath();
-  g.arc(r, r, r - 8, 0, Math.PI * 2);
+  g.arc(c, c, 88, 0, Math.PI * 2);
+  g.fillStyle = gradient;
+  g.fill();
+  g.lineWidth = 4;
+  g.strokeStyle = wax(24);
   g.stroke();
-  g.fillStyle = '#ffffff';
-  g.font = 'bold 40px system-ui, sans-serif';
+
+  // Rayons gravés : leur longueur suit les octets suivants.
+  g.strokeStyle = wax(22);
+  g.lineCap = 'round';
+  g.lineWidth = 5;
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    const inner = 46;
+    const outer = inner + 8 + (bytes[i + 2] / 255) * 30;
+    g.beginPath();
+    g.moveTo(c + Math.cos(a) * inner, c + Math.sin(a) * inner);
+    g.lineTo(c + Math.cos(a) * outer, c + Math.sin(a) * outer);
+    g.stroke();
+  }
+
+  g.fillStyle = wax(18);
+  g.font = '600 34px "JetBrains Mono", ui-monospace, monospace';
   g.textAlign = 'center';
   g.textBaseline = 'middle';
-  g.fillText(hash.slice(0, 4), r, r);
+  g.fillText(hash.slice(0, 4), c, c + 2);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -112,16 +135,16 @@ export function createCoffre(block) {
 
   // Sceau du coffre (sa propre empreinte), sur la face avant.
   const seal = new THREE.Mesh(
-    new THREE.CircleGeometry(0.3, 48),
-    new THREE.MeshStandardMaterial({ map: sealTexture(block.hash), roughness: 0.5 }),
+    new THREE.PlaneGeometry(0.62, 0.62),
+    new THREE.MeshStandardMaterial({ map: sealTexture(block.hash), roughness: 0.45, transparent: true }),
   );
   seal.position.set(0.25, 0.12, d / 2 + 0.005);
   group.add(seal);
 
   // Sceau du parent, gravé en petit dans le coin gauche (côté du coffre précédent).
   const parentSeal = new THREE.Mesh(
-    new THREE.CircleGeometry(0.16, 40),
-    new THREE.MeshStandardMaterial({ map: sealTexture(block.parentHash), roughness: 0.6 }),
+    new THREE.PlaneGeometry(0.34, 0.34),
+    new THREE.MeshStandardMaterial({ map: sealTexture(block.parentHash), roughness: 0.5, transparent: true }),
   );
   parentSeal.position.set(-w / 2 + 0.26, h / 2 - 0.24, d / 2 + 0.005);
   group.add(parentSeal);
@@ -142,7 +165,7 @@ export function createCoffre(block) {
     { key: 'Empreinte (sceau)', value: shortHash(block.hash), anchor: seal.position, at: [1.2, 0.8, 0.6] },
     { key: 'Empreinte du parent', value: shortHash(block.parentHash), anchor: parentSeal.position, at: [-1.3, 0.85, 0.6] },
   ];
-  const leaderMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
+  const leaderMaterial = new THREE.LineBasicMaterial({ color: 0xefe7d6, transparent: true, opacity: 0 });
   const labels = fields.map(({ key, value, anchor, at }) => {
     const label = makeLabel('field', `<span class="field-key">${key}</span><span class="field-value">${value}</span>`);
     label.position.set(...at);
@@ -173,7 +196,8 @@ export function createCoffre(block) {
       hint.visible = value;
     },
     setHover(value) {
-      frame.material.opacity = value ? 1 : 0.7;
+      frame.material.opacity = value ? 1 : 0.85;
+      frame.material.color.set(value ? 0xf0c879 : 0xc79a4b);
     },
     update(dt, elapsed, instant) {
       const target = inspected ? 1 : 0;

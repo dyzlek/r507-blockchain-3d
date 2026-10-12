@@ -5,7 +5,7 @@
 export const SEQUENCES = [
   {
     id: 'intro',
-    step: 'Introduction',
+    step: 'Avant de commencer',
     title: 'Une chaîne de coffres de verre',
     text: [
       'Une blockchain est un registre que tout le monde peut lire, mais que personne ne peut modifier en douce.',
@@ -20,7 +20,7 @@ export const SEQUENCES = [
   {
     id: 'coffre',
     notion: 1,
-    step: 'Notion 1 · Structure d’un bloc',
+    step: 'Notion 1 — Structure d’un bloc',
     title: 'Le coffre',
     text: [
       'Ce coffre est un <strong>bloc</strong>. Il contient la transaction d’Alice.',

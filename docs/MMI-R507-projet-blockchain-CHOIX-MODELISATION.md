@@ -54,11 +54,15 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 ### 2.5 Charte visuelle
 | Élément | Choix | Justification pédagogique |
 |:---|:---|:---|
-| Palette et signification des couleurs | | |
-| Formes, style et niveau d'abstraction | | |
-| Éclairage et ambiance | | |
-| Typographie et lisibilité | | |
-| Échelle et rapport de taille | | |
+| Palette et signification des couleurs | Mer de nuit (bleu-vert très sombre), papier de registre (crème), cire (rouge brique) pour les repères et les titres, laiton pour les cadres des coffres et les liens. La couleur d'un sceau vient de l'empreinte du bloc | Chaque couleur a un rôle fixe : le laiton relie et protège, la cire désigne ce qui est scellé ou important. La couleur des sceaux n'est jamais décorative, elle encode le hash, donc deux blocs ont deux sceaux différents |
+| Formes, style et niveau d'abstraction | Objets semi-réalistes et simples : coffre de verre à arêtes laiton, rouleau, pièce, sceau de cire au bord irrégulier, île en facettes | Assez concret pour que la métaphore se lise sans explication, assez simple pour ne pas distraire. Le sceau de cire remplace un premier essai en « camembert » multicolore, jugé trop gadget |
+| Éclairage et ambiance | Nuit claire : lumière froide d'ambiance et lumière chaude principale qui fait briller le laiton ; brouillard au loin | L'archipel de nuit isole la chaîne au centre de l'attention ; la lumière chaude attire l'œil sur les coffres |
+| Typographie et lisibilité | Fraunces (titres, italiques des étiquettes), Geist (texte), JetBrains Mono (empreintes et valeurs) | Le serif rappelle le registre écrit à la main ; la mono distingue les vraies données techniques (hash, nonce) du texte d'explication |
+| Échelle et rapport de taille | Coffres identiques ; le sceau du parent est environ deux fois plus petit que celui du bloc | Même structure pour tous les blocs ; la taille distingue « mon sceau » et « celui de mon parent » |
+
+> Brouillon v0.3 (12/10/2026) proposé par Dylan avec l'aide de l'IA, à valider par Maxens (#16).
+>
+> Le panneau de texte est une **page du registre** : papier, marge rouge, champs écrits comme des lignes. Il existe en version claire et sombre (préférence du système). Les étiquettes posées sur les objets 3D sont des étiquettes de colis attachées au coffre.
 
 ## 3. Caméra, espace et navigation
 
@@ -92,7 +96,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 |:---|:---|:---|
 | Forme / géométrie | Coffre en verre (pavé) avec un rouleau (données) et une pièce gravée (nonce) à l'intérieur ; un grand sceau et un petit sceau sur la face avant | Le coffre évoque un contenant qu'on ferme ; chaque champ a un objet distinct, donc on peut les compter (4) |
 | Taille et échelle | Tous les coffres ont la même taille ; le sceau du parent est plus petit que le sien | Les blocs ont la même structure ; la taille distingue « mon empreinte » de « celle de mon parent » |
-| Couleur / matériau / texture | Verre transparent ; sceau à 12 secteurs dont les couleurs sont tirées des octets du vrai hash | Le verre montre le contenu sans l'ouvrir ; le motif rend le hash comparable d'un coup d'œil (le petit sceau du bloc 2 est identique au grand sceau du bloc 1) |
+| Couleur / matériau / texture | Verre transparent à arêtes laiton ; sceau de cire dont la teinte, le bord et les rayons gravés sont tirés des octets du vrai hash | Le verre montre le contenu sans l'ouvrir ; le sceau rend le hash comparable d'un coup d'œil (le petit sceau violet du bloc 2 est identique au grand sceau du bloc 1) |
 | Position | Le coffre d'Alice (bloc n°2) est au centre de la vue, ses voisins restent visibles de chaque côté | On voit que le bloc fait partie d'une chaîne, ce qui prépare la notion 2 |
 | Mouvement / animation | À l'inspection, le contenu se soulève légèrement et s'éclaire ; les étiquettes apparaissent en fondu | Le changement d'état est visible, pas seulement textuel |
 | Interaction et retour visuel | Clic sur le coffre (ou bouton « Inspecter le coffre ») ; contour éclairé au survol | Interaction directe sur l'objet 3D, avec une alternative au clavier |
@@ -112,6 +116,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 | Alternative | Raison du rejet |
 |:---|:---|
 | Coffre qui s'ouvre avec un couvercle (première idée de l'issue #7) | Ouvrir le coffre voudrait dire briser le sceau : l'utilisateur pourrait croire que lire un bloc le modifie. Le verre permet de lire sans ouvrir |
+| Sceau en « camembert » de 12 couleurs | Lisible mais gadget, sans lien avec l'idée de cachet. Remplacé par un sceau de cire. Premier essai : la teinte venait du 1er octet du hash, toujours `00` à cause de la difficulté, donc tous les sceaux étaient rouges. Elle vient maintenant du dernier octet |
 | Sceau du parent gravé sur la face latérale gauche | Testé : depuis la caméra, il était caché par le coffre voisin. Déplacé dans le coin avant gauche, côté du lien |
 
 #### f) Tests utilisateurs

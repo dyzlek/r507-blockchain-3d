@@ -1,11 +1,33 @@
+/* Direction : un registre de bord dans un archipel de nuit.
+   La scène est la mer ; le panneau est une page du registre ; les sceaux sont de la cire. */
 :root {
-  --bg: #0d1117;
-  --panel: rgb(13 17 23 / 88%);
-  --border: rgb(124 196 255 / 25%);
-  --text: #e6edf3;
-  --muted: #9da7b3;
-  --accent: #7cc4ff;
-  --warm: #f2c46d;
+  --sea: #0b1619;
+  --paper: #efe7d6;
+  --paper-line: #d9cdb4;
+  --ink: #1f1b16;
+  --ink-soft: #5c5346;
+  --wax: #a8402c;
+  --brass: #c79a4b;
+  --glass: #9fd6cc;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-text: 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+  --radius: 3px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Thème sombre : la page du registre passe en papier sombre, même hiérarchie. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #1c1915;
+    --paper-line: #3a342b;
+    --ink: #ece3cf;
+    --ink-soft: #b3a78f;
+    --wax: #e0775f;
+    --brass: #d9ae63;
+  }
 }
 
 * {
@@ -13,14 +35,19 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   height: 100%;
   overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, sans-serif;
-  line-height: 1.45;
+  background: var(--sea);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 #scene {
@@ -38,92 +65,131 @@ body {
 }
 
 .plate {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgb(13 17 23 / 70%);
-  color: var(--muted);
-  font-size: 0.75rem;
+  color: #d7ccb5;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-style: italic;
+  text-shadow: 0 1px 2px #000;
+}
+
+/* Étiquettes de colis attachées aux objets du coffre. */
+.hint,
+.field {
+  position: relative;
+  padding: 5px 10px 6px 16px;
+  border-radius: var(--radius);
+  background: #efe7d6;
+  color: #1f1b16;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 25%);
+}
+
+.hint::before,
+.field::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 50%;
+  background: #0b1619;
 }
 
 .hint {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--warm);
-  color: #2b1d02;
   font-size: 0.8rem;
-  font-weight: 600;
-  animation: pulse 1.6s ease-in-out infinite;
+  font-weight: 500;
+  animation: nudge 2s var(--ease) infinite;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  max-width: 190px;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--panel);
-  font-size: 0.8rem;
+  max-width: 200px;
+  font-size: 0.78rem;
   opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.4s, transform 0.4s;
+  translate: 0 4px;
+  transition: opacity 250ms var(--ease), translate 250ms var(--ease);
 }
 
 .field.is-visible {
   opacity: 1;
-  transform: none;
+  translate: 0 0;
 }
 
 .field-key {
-  color: var(--accent);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: #a8402c;
 }
 
 .field-value {
-  font-family: ui-monospace, Consolas, monospace;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
 }
 
-@keyframes pulse {
+/* `translate` et non `transform` : CSS2DRenderer place les étiquettes avec `transform`. */
+@keyframes nudge {
   50% {
-    transform: translateY(-4px);
+    translate: 0 -3px;
   }
 }
 
-/* Panneau du parcours */
+/* Panneau : une page du registre. */
 #panel {
   position: fixed;
   z-index: 2;
-  top: 16px;
-  left: 16px;
-  bottom: 16px;
-  width: 380px;
+  top: 20px;
+  left: 20px;
+  bottom: 20px;
+  width: 390px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
+  gap: 16px;
+  padding: 28px 28px 20px 40px;
   overflow-y: auto;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--panel);
+  border-radius: var(--radius);
+  background: var(--paper);
+  /* Marge rouge du registre. */
+  background-image: linear-gradient(to right, transparent 26px, var(--wax) 26px, var(--wax) 27px, transparent 27px);
 }
 
 .step {
-  color: var(--accent);
-  font-size: 0.8rem;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.step-number {
+  color: var(--wax);
+  font-style: normal;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 1.6rem;
+  line-height: 1;
 }
 
 #panel h1 {
-  font-size: 1.5rem;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-variation-settings: 'SOFT' 50;
 }
 
 #text {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  max-width: 34em;
+}
+
+strong {
+  font-weight: 600;
 }
 
 button {
@@ -134,52 +200,87 @@ button {
 
 button:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: 2px solid var(--wax);
+  outline-offset: 3px;
 }
 
 .action {
   align-self: flex-start;
-  padding: 8px 14px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--warm);
-  color: #2b1d02;
-  font-weight: 600;
+  padding: 9px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 500;
+  transition: background 180ms var(--ease), color 180ms var(--ease);
 }
 
+.action:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+.action[aria-pressed='true'] {
+  background: transparent;
+  color: var(--ink);
+}
+
+.action:active {
+  transform: translateY(1px);
+}
+
+/* Champs du bloc, écrits comme les lignes d'un registre. */
 #fields {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   font-size: 0.9rem;
 }
 
+#fields > div {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+#fields > div:first-child {
+  border-top: 1px solid var(--paper-line);
+}
+
 #fields dt {
-  color: var(--accent);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--wax);
 }
 
 #fields code {
-  font-family: ui-monospace, Consolas, monospace;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
 }
 
+/* « En vrai… » : une note dans la marge. */
 #en-vrai {
-  padding: 10px 12px;
-  border-left: 3px solid var(--warm);
-  border-radius: 4px;
-  background: rgb(242 196 109 / 8%);
   font-size: 0.9rem;
 }
 
 #en-vrai summary {
-  color: var(--warm);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--wax);
   cursor: pointer;
+  list-style: none;
+}
+
+#en-vrai summary::before {
+  content: '+ ';
+}
+
+#en-vrai[open] summary::before {
+  content: '− ';
 }
 
 #en-vrai p {
-  margin-top: 8px;
+  margin-top: 6px;
+  color: var(--ink-soft);
 }
 
 #nav {
@@ -188,43 +289,55 @@ summary:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  border-top: 1px solid var(--paper-line);
 }
 
 #nav > button {
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: transparent;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 180ms var(--ease);
+}
+
+#nav > button:hover:not(:disabled) {
+  text-decoration-color: currentColor;
 }
 
 #nav > button:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: default;
 }
 
 #dots {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   padding: 0;
   list-style: none;
 }
 
 #dots button {
-  width: 12px;
-  height: 12px;
-  padding: 0;
-  border: 1px solid var(--accent);
-  border-radius: 50%;
-  background: transparent;
+  min-width: 28px;
+  padding: 2px 4px;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
 }
 
 #dots .is-current button {
-  background: var(--accent);
+  color: var(--wax);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-/* Téléphone : le panneau passe en bas de l'écran. */
+/* Téléphone : la page du registre passe en bas de l'écran. */
 @media (max-width: 760px) {
   #panel {
     top: auto;
@@ -232,13 +345,14 @@ summary:focus-visible {
     right: 0;
     bottom: 0;
     width: auto;
-    max-height: 48vh;
-    padding: 16px;
-    border-radius: 12px 12px 0 0;
+    max-height: 50vh;
+    gap: 12px;
+    padding: 18px 18px 14px 34px;
+    background-image: linear-gradient(to right, transparent 20px, var(--wax) 20px, var(--wax) 21px, transparent 21px);
   }
 
   #panel h1 {
-    font-size: 1.25rem;
+    font-size: 1.6rem;
   }
 
   .field {
@@ -252,7 +366,9 @@ summary:focus-visible {
     animation: none;
   }
 
-  .field {
+  .field,
+  .action,
+  #nav > button {
     transition: none;
   }
 }

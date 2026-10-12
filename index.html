@@ -4,13 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blockchain 3D — R507</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,50;1,9..144,400..700,50&family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <canvas id="scene" aria-label="Scène 3D : une chaîne de coffres de verre"></canvas>
+    <canvas id="scene" aria-label="Scène 3D : une chaîne de coffres de verre posée sur une île"></canvas>
 
     <section id="panel" aria-live="polite">
-      <p id="step" class="step">Chargement…</p>
+      <p class="step"><span id="step-number" class="step-number">—</span><span id="step">Chargement…</span></p>
       <h1 id="title">Blockchain 3D</h1>
       <div id="text"></div>
       <button id="inspect" class="action" type="button" hidden>Inspecter le coffre</button>

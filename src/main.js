@@ -21,8 +21,9 @@ labelRenderer.domElement.className = 'labels';
 document.body.appendChild(labelRenderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0d1117);
-scene.fog = new THREE.Fog(0x0d1117, 14, 30);
+const SEA = 0x0b1619;
+scene.background = new THREE.Color(SEA);
+scene.fog = new THREE.Fog(SEA, 12, 34);
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.6;
 
@@ -37,23 +38,33 @@ controls.minDistance = 2.5;
 controls.maxDistance = 18;
 controls.maxPolarAngle = Math.PI * 0.55;
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-const light = new THREE.DirectionalLight(0xffffff, 1.6);
+// Nuit claire : lumière froide de la lune, reflet chaud du laiton.
+scene.add(new THREE.HemisphereLight(0x9fc4d6, 0x1a1408, 0.6));
+const light = new THREE.DirectionalLight(0xfff1dc, 1.8);
 light.position.set(5, 8, 6);
 scene.add(light);
 
-const ground = new THREE.Mesh(
-  new THREE.CircleGeometry(16, 64),
-  new THREE.MeshStandardMaterial({ color: 0x0b1219, roughness: 1 }),
+// La mer, et la première île de l'archipel sur laquelle repose la chaîne.
+const sea = new THREE.Mesh(
+  new THREE.CircleGeometry(40, 64),
+  new THREE.MeshStandardMaterial({ color: 0x0c1d21, roughness: 0.85 }),
 );
-ground.rotation.x = -Math.PI / 2;
-ground.position.y = -COFFRE_SIZE.h / 2 - 0.02;
-scene.add(ground);
+sea.rotation.x = -Math.PI / 2;
+sea.position.y = -COFFRE_SIZE.h / 2 - 0.35;
+scene.add(sea);
+
+const island = new THREE.Mesh(
+  new THREE.CylinderGeometry(7.2, 7.8, 0.5, 9),
+  new THREE.MeshStandardMaterial({ color: 0x262b26, roughness: 1, flatShading: true }),
+);
+island.scale.z = 0.38;
+island.position.y = -COFFRE_SIZE.h / 2 - 0.27;
+scene.add(island);
 
 // --- Chaîne de coffres ---
 const SPACING = 2.8;
 const coffres = [];
-const linkMaterial = new THREE.MeshStandardMaterial({ color: 0x7cc4ff, emissive: 0x1d4f7a, roughness: 0.4 });
+const linkMaterial = new THREE.MeshStandardMaterial({ color: 0xc79a4b, metalness: 0.7, roughness: 0.35 });
 
 async function buildScene() {
   const chain = await buildChain();
@@ -85,7 +96,7 @@ function cameraGoal(sequence) {
   const target = origin.clone().add(new THREE.Vector3(...sequence.camera.target));
   const offset = new THREE.Vector3(...sequence.camera.position).sub(new THREE.Vector3(...sequence.camera.target));
   // Écran étroit (téléphone) : on recule pour garder les étiquettes dans le cadre.
-  offset.multiplyScalar(Math.max(1, (window.innerWidth > 760 ? 1.35 : 2) / visibleAspect));
+  offset.multiplyScalar(Math.max(1, (window.innerWidth > 760 ? 1.35 : 2) / (visibleAspect || 1)));
   return { position: target.clone().add(offset), target };
 }
 
@@ -120,6 +131,7 @@ function updateTween(dt) {
 // --- Panneau et navigation ---
 const ui = {
   step: document.querySelector('#step'),
+  stepNumber: document.querySelector('#step-number'),
   title: document.querySelector('#title'),
   text: document.querySelector('#text'),
   inspect: document.querySelector('#inspect'),
@@ -165,6 +177,7 @@ function goTo(index) {
   const sequence = SEQUENCES[current];
   coffres.forEach((c) => c.setInspected(false));
 
+  ui.stepNumber.textContent = String(current + 1);
   ui.step.textContent = sequence.step;
   ui.title.textContent = sequence.title;
   ui.enVraiText.innerHTML = sequence.enVrai;
@@ -186,7 +199,7 @@ function toggleInspect() {
   renderText();
 }
 
-ui.dots.innerHTML = SEQUENCES.map((s, i) => `<li><button type="button" aria-label="Étape ${i + 1} : ${s.title}"></button></li>`).join('');
+ui.dots.innerHTML = SEQUENCES.map((s, i) => `<li><button type="button" aria-label="Étape ${i + 1} : ${s.title}">${i + 1}</button></li>`).join('');
 [...ui.dots.querySelectorAll('button')].forEach((button, i) => button.addEventListener('click', () => goTo(i)));
 ui.prev.addEventListener('click', () => goTo(current - 1));
 ui.next.addEventListener('click', () => goTo(current + 1));
@@ -229,6 +242,7 @@ canvas.addEventListener('pointermove', (event) => {
 // (à droite du panneau sur ordinateur, au-dessus sur téléphone).
 function fitView() {
   const { innerWidth: w, innerHeight: h } = window;
+  if (!w || !h) return; // fenêtre cachée : on attendra le prochain redimensionnement
   const panel = document.querySelector('#panel').getBoundingClientRect();
   camera.aspect = w / h;
   if (w > 760) {
@@ -243,20 +257,27 @@ function fitView() {
   labelRenderer.setSize(w, h);
 }
 
-window.addEventListener('resize', fitView);
+// Après un redimensionnement (ou si la page a été chargée dans une fenêtre cachée), on recadre.
+window.addEventListener('resize', () => {
+  fitView();
+  if (coffres.length) moveCamera(SEQUENCES[current]);
+});
 fitView();
 
 // --- Boucle ---
-const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+timer.connect(document);
 
+await document.fonts.ready; // les sceaux sont dessinés avec la police mono
 await buildScene();
 // ?etape=2 ouvre directement la 2e séquence (tests utilisateurs, soutenance).
 goTo(Number(new URLSearchParams(location.search).get('etape') ?? 1) - 1 || 0);
 
-renderer.setAnimationLoop(() => {
-  const dt = Math.min(clock.getDelta(), 0.1);
+renderer.setAnimationLoop((time) => {
+  timer.update(time);
+  const dt = Math.min(timer.getDelta(), 0.1);
   updateTween(dt);
-  coffres.forEach((c) => c.update(dt, clock.elapsedTime, reducedMotion));
+  coffres.forEach((c) => c.update(dt, timer.getElapsed(), reducedMotion));
   controls.update();
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
