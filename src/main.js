@@ -13,22 +13,31 @@ const canvas = document.querySelector('#scene');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
 labelRenderer.domElement.className = 'labels';
 document.body.appendChild(labelRenderer.domElement);
 
+// Neumorphisme : la scène a la même couleur que l'interface (variable CSS --bg),
+// le sol est invisible et ne garde que les ombres douces des coffres.
 const scene = new THREE.Scene();
-const SEA = 0x0b1619;
-scene.background = new THREE.Color(SEA);
-scene.fog = new THREE.Fog(SEA, 12, 34);
+scene.background = new THREE.Color();
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
-scene.environmentIntensity = 0.6;
+scene.environmentIntensity = 0.7;
+
+const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
+function syncTheme() {
+  scene.background.setStyle(getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
+}
+syncTheme();
+colorScheme.addEventListener('change', syncTheme);
 
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0.5, 3.2, 11);
+camera.position.set(0.5, 3.4, 11);
 
 // Caméra mixte : chaque séquence impose un point de vue, l'utilisateur peut ensuite tourner autour.
 const controls = new OrbitControls(camera, canvas);
@@ -38,33 +47,27 @@ controls.minDistance = 2.5;
 controls.maxDistance = 18;
 controls.maxPolarAngle = Math.PI * 0.55;
 
-// Nuit claire : lumière froide de la lune, reflet chaud du laiton.
-scene.add(new THREE.HemisphereLight(0x9fc4d6, 0x1a1408, 0.6));
-const light = new THREE.DirectionalLight(0xfff1dc, 1.8);
-light.position.set(5, 8, 6);
+// Lumière venant d'en haut à gauche, comme les ombres de l'interface.
+scene.add(new THREE.HemisphereLight(0xffffff, 0xb8c2cf, 1.4));
+const light = new THREE.DirectionalLight(0xffffff, 1.6);
+light.position.set(-5, 9, 6);
+light.castShadow = true;
+light.shadow.mapSize.set(2048, 2048);
+light.shadow.radius = 8;
+light.shadow.bias = -0.0005;
+Object.assign(light.shadow.camera, { left: -8, right: 8, top: 5, bottom: -5, near: 1, far: 30 });
 scene.add(light);
 
-// La mer, et la première île de l'archipel sur laquelle repose la chaîne.
-const sea = new THREE.Mesh(
-  new THREE.CircleGeometry(40, 64),
-  new THREE.MeshStandardMaterial({ color: 0x0c1d21, roughness: 0.85 }),
-);
-sea.rotation.x = -Math.PI / 2;
-sea.position.y = -COFFRE_SIZE.h / 2 - 0.35;
-scene.add(sea);
-
-const island = new THREE.Mesh(
-  new THREE.CylinderGeometry(7.2, 7.8, 0.5, 9),
-  new THREE.MeshStandardMaterial({ color: 0x262b26, roughness: 1, flatShading: true }),
-);
-island.scale.z = 0.38;
-island.position.y = -COFFRE_SIZE.h / 2 - 0.27;
-scene.add(island);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.16 }));
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -COFFRE_SIZE.h / 2;
+ground.receiveShadow = true;
+scene.add(ground);
 
 // --- Chaîne de coffres ---
 const SPACING = 2.8;
 const coffres = [];
-const linkMaterial = new THREE.MeshStandardMaterial({ color: 0xc79a4b, metalness: 0.7, roughness: 0.35 });
+const linkMaterial = new THREE.MeshStandardMaterial({ color: 0xe0684b, roughness: 0.5 });
 
 async function buildScene() {
   const chain = await buildChain();
@@ -153,17 +156,17 @@ function renderText() {
   ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
 
   ui.inspect.hidden = !coffre;
-  ui.inspect.textContent = coffre?.inspected ? 'Refermer l’inspection' : 'Inspecter le coffre';
+  ui.inspect.textContent = coffre?.inspected ? 'C’est bon, j’ai vu' : 'Regarder dans le coffre';
   ui.inspect.setAttribute('aria-pressed', String(Boolean(coffre?.inspected)));
 
   ui.fields.hidden = !coffre?.inspected;
   if (coffre?.inspected) {
     const { block } = coffre;
     ui.fields.innerHTML = [
-      ['Données', block.data, 'ce que le bloc enregistre : ici, la transaction.'],
-      ['Nonce', block.nonce, 'un nombre que l’on fait varier pour obtenir un sceau valide (notion 5).'],
+      ['Données', block.data, 'ce que le bloc garde en mémoire, ici la transaction.'],
+      ['Nonce', block.nonce, 'un nombre qu’on change jusqu’à tomber sur un sceau valide (notion 5).'],
       ['Empreinte (sceau)', shortHash(block.hash), 'calculée à partir de tout le contenu du coffre.'],
-      ['Empreinte du parent', shortHash(block.parentHash), 'le sceau du coffre précédent, gravé en petit dans le coin gauche.'],
+      ['Empreinte du parent', shortHash(block.parentHash), 'le sceau du coffre d’avant, recopié en petit dans le coin gauche.'],
     ]
       .map(([key, value, help]) => `<div><dt>${key}</dt><dd><code>${value}</code> — ${help}</dd></div>`)
       .join('');

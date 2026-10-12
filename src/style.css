@@ -1,32 +1,36 @@
-/* Direction : un registre de bord dans un archipel de nuit.
-   La scène est la mer ; le panneau est une page du registre ; les sceaux sont de la cire. */
+/* Direction : neumorphisme. Une seule surface mate, dont la scène 3D fait partie ;
+   les éléments en sortent (relief) ou s'y enfoncent (creux). Police humaniste. */
 :root {
-  --sea: #0b1619;
-  --paper: #efe7d6;
-  --paper-line: #d9cdb4;
-  --ink: #1f1b16;
-  --ink-soft: #5c5346;
-  --wax: #a8402c;
-  --brass: #c79a4b;
-  --glass: #9fd6cc;
+  --bg: #e3e8ee;
+  --shadow-dark: rgb(163 177 198 / 60%);
+  --shadow-light: rgb(255 255 255 / 85%);
+  --text: #2b3340;
+  --muted: #586274;
+  --accent: #c2543a;
+  --accent-soft: #e0684b;
 
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-text: 'Geist', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --font-text: 'Alegreya Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'Fira Mono', ui-monospace, Consolas, monospace;
 
-  --radius: 3px;
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --raised: 10px 10px 22px var(--shadow-dark), -10px -10px 22px var(--shadow-light);
+  --raised-sm: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+  --inset: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+  --inset-sm: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+
+  --radius-lg: 28px;
+  --radius: 16px;
+  --ease: cubic-bezier(0.25, 0.7, 0.25, 1);
 }
 
-/* Thème sombre : la page du registre passe en papier sombre, même hiérarchie. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #1c1915;
-    --paper-line: #3a342b;
-    --ink: #ece3cf;
-    --ink-soft: #b3a78f;
-    --wax: #e0775f;
-    --brass: #d9ae63;
+    --bg: #272c34;
+    --shadow-dark: rgb(15 18 23 / 75%);
+    --shadow-light: rgb(58 65 77 / 55%);
+    --text: #e7eaef;
+    --muted: #aab2bf;
+    --accent: #f2937a;
+    --accent-soft: #f08a6c;
   }
 }
 
@@ -43,11 +47,13 @@ html,
 body {
   height: 100%;
   overflow: hidden;
-  background: var(--sea);
-  color: var(--ink);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-text);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.5;
+  /* Alegreya Sans a des chiffres elzéviriens par défaut : on les aligne sur les capitales. */
+  font-variant-numeric: lining-nums;
 }
 
 #scene {
@@ -65,48 +71,47 @@ body {
 }
 
 .plate {
-  color: #d7ccb5;
-  font-family: var(--font-display);
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
+  color: var(--muted);
   font-size: 0.8rem;
-  font-style: italic;
-  text-shadow: 0 1px 2px #000;
+  font-weight: 500;
 }
 
-/* Étiquettes de colis attachées aux objets du coffre. */
 .hint,
 .field {
-  position: relative;
-  padding: 5px 10px 6px 16px;
   border-radius: var(--radius);
-  background: #efe7d6;
-  color: #1f1b16;
-  box-shadow: 0 2px 0 rgb(0 0 0 / 25%);
-}
-
-.hint::before,
-.field::before {
-  content: '';
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  width: 5px;
-  height: 5px;
-  margin-top: -2.5px;
-  border-radius: 50%;
-  background: #0b1619;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
+  color: var(--text);
 }
 
 .hint {
-  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
   font-weight: 500;
   animation: nudge 2s var(--ease) infinite;
+}
+
+.hint::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-soft);
 }
 
 .field {
   display: flex;
   flex-direction: column;
   max-width: 200px;
-  font-size: 0.78rem;
+  padding: 7px 14px 8px;
+  font-size: 0.82rem;
   opacity: 0;
   translate: 0 4px;
   transition: opacity 250ms var(--ease), translate 250ms var(--ease);
@@ -118,14 +123,13 @@ body {
 }
 
 .field-key {
-  font-family: var(--font-display);
-  font-style: italic;
-  color: #a8402c;
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .field-value {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.76rem;
 }
 
 /* `translate` et non `transform` : CSS2DRenderer place les étiquettes avec `transform`. */
@@ -135,61 +139,62 @@ body {
   }
 }
 
-/* Panneau : une page du registre. */
+/* Panneau : en relief sur la même surface que la scène. */
 #panel {
   position: fixed;
   z-index: 2;
-  top: 20px;
-  left: 20px;
-  bottom: 20px;
-  width: 390px;
+  top: 24px;
+  left: 24px;
+  bottom: 24px;
+  width: 380px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 28px 28px 20px 40px;
+  gap: 18px;
+  padding: 28px;
   overflow-y: auto;
-  border-radius: var(--radius);
-  background: var(--paper);
-  /* Marge rouge du registre. */
-  background-image: linear-gradient(to right, transparent 26px, var(--wax) 26px, var(--wax) 27px, transparent 27px);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  box-shadow: var(--raised);
+  scrollbar-width: thin;
+  scrollbar-color: var(--shadow-dark) transparent;
 }
 
 .step {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  color: var(--ink-soft);
-  font-family: var(--font-display);
-  font-style: italic;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
   font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .step-number {
-  color: var(--wax);
-  font-style: normal;
-  font-weight: 600;
-  font-size: 1.6rem;
-  line-height: 1;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  box-shadow: var(--inset-sm);
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 1.05rem;
 }
 
 #panel h1 {
-  font-family: var(--font-display);
-  font-size: 2.2rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   line-height: 1.05;
-  font-variation-settings: 'SOFT' 50;
 }
 
 #text {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-width: 34em;
 }
 
 strong {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 button {
@@ -200,72 +205,79 @@ button {
 
 button:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--wax);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
+}
+
+/* Bouton : en relief, s'enfonce quand on appuie ou quand il est actif. */
+.action,
+#nav > button {
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
+  font-weight: 700;
+  transition: box-shadow 180ms var(--ease), color 180ms var(--ease);
 }
 
 .action {
   align-self: flex-start;
-  padding: 9px 16px;
-  border: 1.5px solid var(--ink);
-  border-radius: var(--radius);
-  background: var(--ink);
-  color: var(--paper);
-  font-weight: 500;
-  transition: background 180ms var(--ease), color 180ms var(--ease);
+  padding: 11px 22px;
+  color: var(--accent);
 }
 
-.action:hover {
-  background: transparent;
-  color: var(--ink);
+.action:hover,
+#nav > button:hover:not(:disabled) {
+  box-shadow: var(--raised);
 }
 
-.action[aria-pressed='true'] {
-  background: transparent;
-  color: var(--ink);
+.action:active,
+.action[aria-pressed='true'],
+#nav > button:active:not(:disabled) {
+  box-shadow: var(--inset-sm);
 }
 
-.action:active {
-  transform: translateY(1px);
-}
-
-/* Champs du bloc, écrits comme les lignes d'un registre. */
+/* Champs du bloc : un creux dans la surface. */
 #fields {
   display: flex;
   flex-direction: column;
-  font-size: 0.9rem;
-}
-
-#fields > div {
-  padding: 8px 0;
-  border-bottom: 1px solid var(--paper-line);
-}
-
-#fields > div:first-child {
-  border-top: 1px solid var(--paper-line);
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--inset);
+  font-size: 0.95rem;
 }
 
 #fields dt {
-  font-family: var(--font-display);
-  font-style: italic;
-  color: var(--wax);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+#fields dd {
+  color: var(--muted);
 }
 
 #fields code {
+  color: var(--text);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
-/* « En vrai… » : une note dans la marge. */
+/* « En vrai… » : une pastille qui se creuse une fois ouverte. */
 #en-vrai {
-  font-size: 0.9rem;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--raised-sm);
+  transition: box-shadow 180ms var(--ease);
+}
+
+#en-vrai[open] {
+  box-shadow: var(--inset);
 }
 
 #en-vrai summary {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 1.05rem;
-  color: var(--wax);
+  color: var(--accent);
+  font-weight: 700;
   cursor: pointer;
   list-style: none;
 }
@@ -279,8 +291,9 @@ summary:focus-visible {
 }
 
 #en-vrai p {
-  margin-top: 6px;
-  color: var(--ink-soft);
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
 #nav {
@@ -289,66 +302,59 @@ summary:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-top: 14px;
-  border-top: 1px solid var(--paper-line);
+  padding-top: 8px;
 }
 
 #nav > button {
-  padding: 6px 2px;
-  border: 0;
-  background: none;
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 4px;
-  transition: text-decoration-color 180ms var(--ease);
-}
-
-#nav > button:hover:not(:disabled) {
-  text-decoration-color: currentColor;
+  padding: 9px 16px;
+  font-size: 0.95rem;
 }
 
 #nav > button:disabled {
-  opacity: 0.3;
+  box-shadow: none;
+  color: var(--muted);
+  opacity: 0.5;
   cursor: default;
 }
 
 #dots {
   display: flex;
   gap: 4px;
-  padding: 0;
+  padding: 4px;
+  border-radius: 999px;
+  box-shadow: var(--inset-sm);
   list-style: none;
 }
 
 #dots button {
-  min-width: 28px;
-  padding: 2px 4px;
+  min-width: 30px;
+  height: 30px;
   border: 0;
-  background: none;
-  color: var(--ink-soft);
-  font-family: var(--font-display);
-  font-size: 0.95rem;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 
 #dots .is-current button {
-  color: var(--wax);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
+  color: var(--accent);
 }
 
-/* Téléphone : la page du registre passe en bas de l'écran. */
+/* Téléphone : le panneau passe en bas de l'écran. */
 @media (max-width: 760px) {
   #panel {
     top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
     width: auto;
-    max-height: 50vh;
-    gap: 12px;
-    padding: 18px 18px 14px 34px;
-    background-image: linear-gradient(to right, transparent 20px, var(--wax) 20px, var(--wax) 21px, transparent 21px);
+    max-height: 52vh;
+    gap: 14px;
+    padding: 20px;
+    border-radius: 24px;
   }
 
   #panel h1 {
@@ -357,7 +363,7 @@ summary:focus-visible {
 
   .field {
     max-width: 140px;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
   }
 }
 
@@ -368,7 +374,8 @@ summary:focus-visible {
 
   .field,
   .action,
-  #nav > button {
+  #nav > button,
+  #en-vrai {
     transition: none;
   }
 }

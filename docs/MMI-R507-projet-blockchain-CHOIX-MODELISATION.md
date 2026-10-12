@@ -15,7 +15,7 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
 | Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
-| Version et date de mise à jour | v0.3 — 12/10/2026 |
+| Version et date de mise à jour | v0.4 — 12/10/2026 |
 
 ## 2. Univers visuel et métaphore principale
 
@@ -54,15 +54,17 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 ### 2.5 Charte visuelle
 | Élément | Choix | Justification pédagogique |
 |:---|:---|:---|
-| Palette et signification des couleurs | Mer de nuit (bleu-vert très sombre), papier de registre (crème), cire (rouge brique) pour les repères et les titres, laiton pour les cadres des coffres et les liens. La couleur d'un sceau vient de l'empreinte du bloc | Chaque couleur a un rôle fixe : le laiton relie et protège, la cire désigne ce qui est scellé ou important. La couleur des sceaux n'est jamais décorative, elle encode le hash, donc deux blocs ont deux sceaux différents |
-| Formes, style et niveau d'abstraction | Objets semi-réalistes et simples : coffre de verre à arêtes laiton, rouleau, pièce, sceau de cire au bord irrégulier, île en facettes | Assez concret pour que la métaphore se lise sans explication, assez simple pour ne pas distraire. Le sceau de cire remplace un premier essai en « camembert » multicolore, jugé trop gadget |
-| Éclairage et ambiance | Nuit claire : lumière froide d'ambiance et lumière chaude principale qui fait briller le laiton ; brouillard au loin | L'archipel de nuit isole la chaîne au centre de l'attention ; la lumière chaude attire l'œil sur les coffres |
-| Typographie et lisibilité | Fraunces (titres, italiques des étiquettes), Geist (texte), JetBrains Mono (empreintes et valeurs) | Le serif rappelle le registre écrit à la main ; la mono distingue les vraies données techniques (hash, nonce) du texte d'explication |
+| Palette et signification des couleurs | Une seule surface gris-bleu doux (sombre en thème sombre), partagée par l'interface et la scène 3D. Un seul accent, corail, pour ce qui demande l'attention (titres de champs, liens entre coffres, bouton d'action). La couleur d'un sceau vient de l'empreinte du bloc | Peu de couleurs, donc les seules couleurs vives à l'écran sont les sceaux : l'œil va naturellement vers l'empreinte, l'élément clé de la blockchain. Le corail relie : les liens de la chaîne et les libellés des champs ont la même couleur |
+| Formes, style et niveau d'abstraction | **Neumorphisme** : les éléments sortent de la surface (relief) ou s'y enfoncent (creux), coins très arrondis. En 3D : coffres de verre aux arêtes gris ardoise, rouleau, pièce, sceau de cire au bord irrégulier | Le relief donne un état lisible sans texte : un bouton enfoncé est actif, la liste des champs est un creux qui « contient » les données comme le coffre. Le sceau de cire remplace un premier essai en « camembert » multicolore, jugé gadget |
+| Éclairage et ambiance | Lumière douce venant d'en haut à gauche, dans la scène comme dans les ombres CSS ; le sol est invisible et ne garde que les ombres des coffres | Une seule source de lumière cohérente entre la 3D et l'interface, ce qui fait de l'ensemble un seul objet calme, sans distraction |
+| Typographie et lisibilité | Alegreya Sans (humaniste) pour le titre et le texte, Fira Mono pour les empreintes et les valeurs. Chiffres alignés sur les capitales | Une humaniste a un tracé proche de l'écriture manuscrite, plus chaleureux et moins « techno » qu'une grotesque : le ton reste accessible à un public non initié. La mono distingue les vraies données techniques (hash, nonce) du texte d'explication |
 | Échelle et rapport de taille | Coffres identiques ; le sceau du parent est environ deux fois plus petit que celui du bloc | Même structure pour tous les blocs ; la taille distingue « mon sceau » et « celui de mon parent » |
 
-> Brouillon v0.3 (12/10/2026) proposé par Dylan avec l'aide de l'IA, à valider par Maxens (#16).
+> Brouillon v0.4 (12/10/2026), direction demandée par Dylan et réalisée avec l'aide de l'IA, à valider par Maxens (#16). Une direction « registre de bord » (papier, cire, laiton) a été essayée puis abandonnée au profit du neumorphisme.
 >
-> Le panneau de texte est une **page du registre** : papier, marge rouge, champs écrits comme des lignes. Il existe en version claire et sombre (préférence du système). Les étiquettes posées sur les objets 3D sont des étiquettes de colis attachées au coffre.
+> **Limite connue du neumorphisme : le contraste.** Les reliefs seuls ne suffisent pas à repérer un bouton. Pour compenser, le texte reste foncé sur fond clair (contraste AA), les boutons ont un libellé en gras de couleur accent, le focus clavier est entouré, et un bouton désactivé perd son relief. À vérifier pendant les tests utilisateurs.
+>
+> Les textes sont écrits en tutoiement, avec des phrases courtes et parlées, pour un public de 16 à 25 ans.
 
 ## 3. Caméra, espace et navigation
 
@@ -80,7 +82,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 
 ### 4.1 — Structure d'un bloc
 
-> Brouillon v0.3 (12/10/2026), rédigé avec l'aide de l'IA et à relire par Maxens. Les tests utilisateurs restent à faire.
+> Brouillon v0.4 (12/10/2026), rédigé avec l'aide de l'IA et à relire par Maxens. Les tests utilisateurs restent à faire.
 
 **Issues liées :** #7 (et #15 pour la navigation)  
 **Séquence(s) concernée(s) :** séquence 2 « Le coffre » (`?etape=2`)
@@ -96,7 +98,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 |:---|:---|:---|
 | Forme / géométrie | Coffre en verre (pavé) avec un rouleau (données) et une pièce gravée (nonce) à l'intérieur ; un grand sceau et un petit sceau sur la face avant | Le coffre évoque un contenant qu'on ferme ; chaque champ a un objet distinct, donc on peut les compter (4) |
 | Taille et échelle | Tous les coffres ont la même taille ; le sceau du parent est plus petit que le sien | Les blocs ont la même structure ; la taille distingue « mon empreinte » de « celle de mon parent » |
-| Couleur / matériau / texture | Verre transparent à arêtes laiton ; sceau de cire dont la teinte, le bord et les rayons gravés sont tirés des octets du vrai hash | Le verre montre le contenu sans l'ouvrir ; le sceau rend le hash comparable d'un coup d'œil (le petit sceau violet du bloc 2 est identique au grand sceau du bloc 1) |
+| Couleur / matériau / texture | Verre transparent à arêtes gris ardoise ; sceau de cire dont la teinte, le bord et les rayons gravés sont tirés des octets du vrai hash | Le verre montre le contenu sans l'ouvrir ; le sceau rend le hash comparable d'un coup d'œil (le petit sceau violet du bloc 2 est identique au grand sceau du bloc 1) |
 | Position | Le coffre d'Alice (bloc n°2) est au centre de la vue, ses voisins restent visibles de chaque côté | On voit que le bloc fait partie d'une chaîne, ce qui prépare la notion 2 |
 | Mouvement / animation | À l'inspection, le contenu se soulève légèrement et s'éclaire ; les étiquettes apparaissent en fondu | Le changement d'état est visible, pas seulement textuel |
 | Interaction et retour visuel | Clic sur le coffre (ou bouton « Inspecter le coffre ») ; contour éclairé au survol | Interaction directe sur l'objet 3D, avec une alternative au clavier |

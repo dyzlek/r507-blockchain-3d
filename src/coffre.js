@@ -13,7 +13,7 @@ const glassMaterial = new THREE.MeshPhysicalMaterial({
   thickness: 0.35,
   ior: 1.45,
 });
-const frameMaterial = new THREE.LineBasicMaterial({ color: 0xc79a4b, transparent: true, opacity: 0.85 });
+const frameMaterial = new THREE.LineBasicMaterial({ color: 0x7d8899, transparent: true, opacity: 0.9 });
 const scrollMaterial = new THREE.MeshStandardMaterial({ color: 0xf2e6c9, roughness: 0.8 });
 const coinSideMaterial = new THREE.MeshStandardMaterial({ color: 0xd9a93a, metalness: 0.8, roughness: 0.3 });
 
@@ -78,7 +78,7 @@ export function sealTexture(hash) {
   }
 
   g.fillStyle = wax(18);
-  g.font = '600 34px "JetBrains Mono", ui-monospace, monospace';
+  g.font = '500 34px "Fira Mono", ui-monospace, monospace';
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.fillText(hash.slice(0, 4), c, c + 2);
@@ -116,6 +116,7 @@ export function createCoffre(block) {
   const group = new THREE.Group();
 
   const body = new THREE.Mesh(bodyGeometry, glassMaterial);
+  body.castShadow = true;
   group.add(body);
   const frame = new THREE.LineSegments(frameGeometry, frameMaterial.clone());
   group.add(frame);
@@ -153,7 +154,7 @@ export function createCoffre(block) {
   plate.position.set(0, h / 2 + 0.3, 0);
   group.add(plate);
 
-  const hint = makeLabel('hint', 'Cliquez sur le coffre');
+  const hint = makeLabel('hint', 'Clique sur le coffre');
   hint.position.set(0, -h / 2 - 0.35, 0);
   hint.visible = false;
   group.add(hint);
@@ -165,7 +166,7 @@ export function createCoffre(block) {
     { key: 'Empreinte (sceau)', value: shortHash(block.hash), anchor: seal.position, at: [1.2, 0.8, 0.6] },
     { key: 'Empreinte du parent', value: shortHash(block.parentHash), anchor: parentSeal.position, at: [-1.3, 0.85, 0.6] },
   ];
-  const leaderMaterial = new THREE.LineBasicMaterial({ color: 0xefe7d6, transparent: true, opacity: 0 });
+  const leaderMaterial = new THREE.LineBasicMaterial({ color: 0x7d8899, transparent: true, opacity: 0 });
   const labels = fields.map(({ key, value, anchor, at }) => {
     const label = makeLabel('field', `<span class="field-key">${key}</span><span class="field-value">${value}</span>`);
     label.position.set(...at);
@@ -196,8 +197,8 @@ export function createCoffre(block) {
       hint.visible = value;
     },
     setHover(value) {
-      frame.material.opacity = value ? 1 : 0.85;
-      frame.material.color.set(value ? 0xf0c879 : 0xc79a4b);
+      frame.material.opacity = value ? 1 : 0.9;
+      frame.material.color.set(value ? 0xe0684b : 0x7d8899);
     },
     update(dt, elapsed, instant) {
       const target = inspected ? 1 : 0;
