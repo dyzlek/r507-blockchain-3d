@@ -79,7 +79,7 @@ Trois métaphores ont été comparées (registre de coffres en archipel, livre d
 | M2 — Livraison | 15/11/2026, 23h59 | Application en ligne, GitHub, board à jour, docs complètes |
 | M3 — Soutenance | 19/11/2026 | Répétition 9h30, soutenance 20 min entre 11h et 12h30 |
 
-⚠️ Le sujet mentionne aussi un rendu final le 18/11 à 17h : date à confirmer avec l'enseignant.
+Date confirmée par l'enseignant le 09/10/2026 : le rendu final est bien le 15/11/2026 à 23h59 (le 18/11 du sujet est une erreur).
 
 ## 9. Risques identifiés
 
