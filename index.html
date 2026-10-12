@@ -4,14 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blockchain 3D — R507</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700;800&family=Fira+Mono:wght@400;500&display=swap"
+    />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <canvas id="scene"></canvas>
-    <div id="hud">
-      <h1>Blockchain 3D</h1>
-      <p>Prototype — scène de démarrage. Cliquez-glissez pour tourner autour de la chaîne.</p>
-    </div>
+    <canvas id="scene" aria-label="Scène 3D : une chaîne de coffres en verre"></canvas>
+
+    <section id="panel" aria-live="polite">
+      <p class="step"><span id="step-number" class="step-number">—</span><span id="step">Chargement…</span></p>
+      <h1 id="title">Blockchain 3D</h1>
+      <div id="text"></div>
+      <button id="inspect" class="action" type="button" hidden>Regarder dans le coffre</button>
+      <dl id="fields" hidden></dl>
+      <details id="en-vrai">
+        <summary>En vrai…</summary>
+        <p id="en-vrai-text"></p>
+      </details>
+      <nav id="nav" aria-label="Étapes du parcours">
+        <button id="prev" type="button">← Précédent</button>
+        <ol id="dots"></ol>
+        <button id="next" type="button">Suivant →</button>
+      </nav>
+    </section>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
