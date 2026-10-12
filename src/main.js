@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { buildChain, shortHash } from './chain.js';
-import { createCoffre, COFFRE_SIZE } from './coffre.js';
+import { createCoffre, COFFRE_SIZE, setLeaderResolution } from './coffre.js';
 import { SEQUENCES } from './sequences.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -258,6 +258,7 @@ function fitView() {
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
   labelRenderer.setSize(w, h);
+  setLeaderResolution(w, h);
 }
 
 // Après un redimensionnement (ou si la page a été chargée dans une fenêtre cachée), on recadre.
@@ -273,6 +274,7 @@ timer.connect(document);
 
 await document.fonts.ready; // les sceaux sont dessinés avec la police mono
 await buildScene();
+setLeaderResolution(window.innerWidth, window.innerHeight);
 // ?etape=2 ouvre directement la 2e séquence (tests utilisateurs, soutenance).
 goTo(Number(new URLSearchParams(location.search).get('etape') ?? 1) - 1 || 0);
 

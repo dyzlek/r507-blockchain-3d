@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { GENESIS_PARENT, shortHash } from './chain.js';
 
 // Un bloc = un coffre de verre : on voit son contenu sans l'ouvrir (l'ouvrir briserait le sceau).
@@ -21,6 +24,12 @@ const bodyGeometry = new THREE.BoxGeometry(w, h, d);
 const frameGeometry = new THREE.EdgesGeometry(bodyGeometry);
 const scrollGeometry = new THREE.CylinderGeometry(0.12, 0.12, 0.9, 24);
 const coinGeometry = new THREE.CylinderGeometry(0.17, 0.17, 0.05, 40);
+
+// Traits épais (Line2) : leur épaisseur est en pixels, il faut leur donner la taille de l'écran.
+const leaderMaterials = [];
+export function setLeaderResolution(width, height) {
+  leaderMaterials.forEach((material) => material.resolution.set(width, height));
+}
 
 function hashBytes(hash) {
   return hash.match(/../g).map((byte) => parseInt(byte, 16));
@@ -131,7 +140,7 @@ export function createCoffre(block) {
   const coinFace = new THREE.MeshStandardMaterial({ map: coinTexture(block.nonce), metalness: 0.6, roughness: 0.35 });
   const coin = new THREE.Mesh(coinGeometry, [coinSideMaterial, coinFace, coinFace]);
   coin.rotation.x = Math.PI / 2;
-  coin.position.set(0.5, -0.3, 0.15);
+  coin.position.set(0.58, -0.3, 0.15);
   contents.add(coin);
 
   // Sceau du coffre (sa propre empreinte), sur la face avant.
@@ -139,7 +148,7 @@ export function createCoffre(block) {
     new THREE.PlaneGeometry(0.62, 0.62),
     new THREE.MeshStandardMaterial({ map: sealTexture(block.hash), roughness: 0.45, transparent: true }),
   );
-  seal.position.set(0.25, 0.12, d / 2 + 0.005);
+  seal.position.set(0.18, 0.16, d / 2 + 0.005);
   group.add(seal);
 
   // Sceau du parent, gravé en petit dans le coin gauche (côté du coffre précédent).
@@ -159,25 +168,39 @@ export function createCoffre(block) {
   hint.visible = false;
   group.add(hint);
 
-  // Étiquettes des champs, reliées à leur objet par un trait.
+  // Étiquettes des champs : un trait épais relie chaque étiquette à une pastille posée sur l'objet.
+  // `offset` place la pastille sur la face visible de l'objet.
   const fields = [
-    { key: 'Données', value: block.data, anchor: scroll.position, at: [-1.2, -0.8, 0.5] },
-    { key: 'Nonce', value: block.nonce, anchor: coin.position, at: [1.25, -0.6, 0.4] },
-    { key: 'Empreinte (sceau)', value: shortHash(block.hash), anchor: seal.position, at: [1.2, 0.8, 0.6] },
-    { key: 'Empreinte du parent', value: shortHash(block.parentHash), anchor: parentSeal.position, at: [-1.3, 0.85, 0.6] },
+    { key: 'Données', value: block.data, target: scroll, offset: [0.1, 0, 0.13], at: [-1.2, -0.85, 0.5] },
+    { key: 'Nonce', value: block.nonce, target: coin, offset: [0, 0, 0.03], at: [1.3, -0.7, 0.4] },
+    { key: 'Empreinte (sceau)', value: shortHash(block.hash), target: seal, offset: [0, 0, 0.01], at: [1.25, 0.85, 0.6] },
+    { key: 'Empreinte du parent', value: shortHash(block.parentHash), target: parentSeal, offset: [0, 0, 0.01], at: [-1.35, 0.9, 0.6] },
   ];
-  const leaderMaterial = new THREE.LineBasicMaterial({ color: 0x7d8899, transparent: true, opacity: 0 });
-  const labels = fields.map(({ key, value, anchor, at }) => {
+  const leaderMaterial = new LineMaterial({ color: 0xe0684b, linewidth: 3, transparent: true, opacity: 0, depthTest: false });
+  leaderMaterials.push(leaderMaterial);
+  const leaders = fields.map(({ key, value, target, offset, at }) => {
     const label = makeLabel('field', `<span class="field-key">${key}</span><span class="field-value">${value}</span>`);
     label.position.set(...at);
     group.add(label);
-    const leader = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([anchor.clone(), new THREE.Vector3(...at)]),
-      leaderMaterial,
-    );
-    group.add(leader);
-    return label;
+    const dot = makeLabel('anchor', '');
+    group.add(dot);
+    const line = new Line2(new LineGeometry(), leaderMaterial);
+    line.renderOrder = 10; // dessiné par-dessus le verre
+    group.add(line);
+    return { label, dot, line, target, offset: new THREE.Vector3(...offset), end: new THREE.Vector3(...at) };
   });
+  const anchor = new THREE.Vector3();
+
+  // Recalcule la position des pastilles et des traits (le contenu bouge pendant l'inspection).
+  function updateLeaders() {
+    for (const leader of leaders) {
+      anchor.copy(leader.target.position).add(leader.offset);
+      if (leader.target.parent === contents) anchor.add(contents.position);
+      leader.dot.position.copy(anchor);
+      leader.line.geometry.setPositions([anchor.x, anchor.y, anchor.z, leader.end.x, leader.end.y, leader.end.z]);
+    }
+  }
+  updateLeaders();
 
   let inspected = false;
   let reveal = 0; // 0 = fermé, 1 = champs affichés
@@ -191,7 +214,10 @@ export function createCoffre(block) {
     },
     setInspected(value) {
       inspected = value;
-      labels.forEach((label) => label.element.classList.toggle('is-visible', value));
+      leaders.forEach(({ label, dot }) => {
+        label.element.classList.toggle('is-visible', value);
+        dot.element.classList.toggle('is-visible', value);
+      });
     },
     setHint(value) {
       hint.visible = value;
@@ -204,9 +230,10 @@ export function createCoffre(block) {
       const target = inspected ? 1 : 0;
       reveal = instant ? target : THREE.MathUtils.damp(reveal, target, 6, dt);
       // Le contenu se soulève légèrement et s'éclaire pendant l'inspection.
-      contents.position.y = reveal * (0.18 + Math.sin(elapsed * 2) * 0.03);
+      contents.position.y = reveal * (0.1 + Math.sin(elapsed * 2) * 0.02);
       scroll.material.emissive.setRGB(0.25 * reveal, 0.2 * reveal, 0.1 * reveal);
-      leaderMaterial.opacity = reveal * 0.6;
+      leaderMaterial.opacity = reveal;
+      if (reveal > 0.001) updateLeaders();
     },
   };
 }
