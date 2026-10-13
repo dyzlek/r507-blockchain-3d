@@ -185,10 +185,10 @@ export function createCoffre(block) {
   // Étiquettes des champs : un trait épais relie chaque étiquette à une pastille posée sur l'objet.
   // `offset` place la pastille sur la face visible de l'objet.
   const fields = [
-    { key: 'Données', value: block.data, target: scroll, offset: [0.1, 0, 0.13], at: [-1.2, -0.85, 0.5] },
+    { key: 'Transaction', value: block.data, target: scroll, offset: [0.1, 0, 0.13], at: [-1.2, -0.85, 0.5] },
     { key: 'Nonce', value: block.nonce, target: coin, offset: [0, 0, 0.03], at: [1.3, -0.7, 0.4] },
-    { key: 'Empreinte (sceau)', value: shortHash(block.hash), target: seal, offset: [0, 0, 0.01], at: [1.25, 0.85, 0.6] },
-    { key: 'Empreinte du parent', value: shortHash(block.parentHash), target: parentSeal, offset: [0, 0, 0.01], at: [-1.35, 0.9, 0.6] },
+    { key: 'Sceau', value: shortHash(block.hash), target: seal, offset: [0, 0, 0.01], at: [1.25, 0.85, 0.6] },
+    { key: 'Sceau du coffre d’avant', value: shortHash(block.parentHash), target: parentSeal, offset: [0, 0, 0.01], at: [-1.35, 0.9, 0.6] },
   ];
   const leaderMaterial = new LineMaterial({ color: 0xe0684b, linewidth: 3, transparent: true, opacity: 0, depthTest: false });
   leaderMaterials.push(leaderMaterial);

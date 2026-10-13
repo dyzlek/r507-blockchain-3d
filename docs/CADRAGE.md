@@ -29,7 +29,7 @@ Durée visée du parcours : 10 à 15 minutes.
 
 ## 4. Fil rouge narratif
 
-**Fil rouge : suivre une transaction, « Alice envoie 5 jetons à Bob », de sa création jusqu'à sa confirmation, puis voir un tricheur tenter de la défaire.**
+**Fil rouge : suivre une transaction, « Dylan envoie 5 jetons à Maxens », de sa création jusqu'à sa confirmation, puis voir un tricheur tenter de la défaire.**
 
 **Métaphore principale : un registre de coffres de verre scellés, recopié dans un archipel.** Chaque bloc est un coffre transparent (on voit ses données) fermé par un sceau coloré : son empreinte. Le sceau du bloc précédent est gravé sur le suivant, ce qui forme la chaîne. Chaque île de l'archipel est un nœud qui garde sa propre copie de la chaîne. Il n'y a pas d'île centrale.
 
@@ -38,7 +38,7 @@ Durée visée du parcours : 10 à 15 minutes.
 | 1. Le coffre | 1 — Structure d'un bloc | Ouvre un bloc et en découvre le contenu : données, empreinte, empreinte du parent, nonce |
 | 2. Les sceaux | 2 — Chaînage | Modifie une lettre : le sceau change complètement de couleur et de motif |
 | 3. Le tricheur maladroit | 3 — Immutabilité | Modifie un ancien bloc : les liens suivants deviennent rouges, les autres îles le signalent |
-| 4. L'archipel | 4 — Réseau | La transaction d'Alice part en messages lumineux d'île en île |
+| 4. L'archipel | 4 — Réseau | La transaction de Dylan part en messages lumineux d'île en île |
 | 5. La course au sceau | 5 — Minage | Lance la recherche du nonce et voit les essais défiler jusqu'à un sceau valide |
 | 6. Qui scelle ? | 6 — Consensus | Compare la course PoW (puissance de calcul) et le tirage PoS (mise en jeu) |
 | 7. La double dépense | 7 — Cycle de vie et attaque | Suit les confirmations, puis voit une tentative de double dépense rejetée par la majorité |

@@ -26,7 +26,7 @@ Le public visé est fait de lycéens et d'étudiants hors informatique (16–25 
 3. ajouter un bloc demande un effort (PoW) ou une mise en jeu (PoS), ce qui rend la triche coûteuse.
 
 ### 2.2 Métaphore retenue
-**Un registre de coffres de verre scellés, recopié dans un archipel.** Le fil rouge suit une transaction, « Alice envoie 5 jetons à Bob », de sa création jusqu'à sa confirmation, puis montre une tentative de double dépense.
+**Un registre de coffres de verre scellés, recopié dans un archipel.** Le fil rouge suit une transaction, « Dylan envoie 5 jetons à Maxens », de sa création jusqu'à sa confirmation, puis montre une tentative de double dépense.
 
 - **Bloc = coffre de verre** : le contenu est visible (données, nonce), ce qui rend la structure lisible (notion 1).
 - **Empreinte = sceau** à motif et couleur générés depuis le vrai hash (SHA-256 calculé dans le navigateur). Une modification minime donne un sceau totalement différent (notion 2).
@@ -88,7 +88,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 **Séquence(s) concernée(s) :** séquence 2 « Le coffre » (`?etape=2`)
 
 #### a) Objectif pédagogique
-> L'utilisateur doit comprendre qu'un bloc contient des données (ici la transaction d'Alice), un nonce, sa propre empreinte et l'empreinte du bloc précédent, et que l'empreinte est calculée à partir de tout ce contenu.
+> L'utilisateur doit comprendre qu'un bloc contient des données (ici une transaction entre deux autres personnes : Thomas → Julien), un nonce, sa propre empreinte et l'empreinte du bloc précédent, et que l'empreinte est calculée à partir de tout ce contenu.
 
 #### b) Risque de mauvaise compréhension
 > L'utilisateur ne doit pas comprendre que le bloc est un objet physique qu'on ouvre, que le sceau est une décoration choisie librement, ni qu'un bloc ne contient qu'une seule transaction.
@@ -99,7 +99,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 | Forme / géométrie | Coffre en verre (pavé) avec un rouleau (données) et une pièce gravée (nonce) à l'intérieur ; un grand sceau et un petit sceau sur la face avant | Le coffre évoque un contenant qu'on ferme ; chaque champ a un objet distinct, donc on peut les compter (4) |
 | Taille et échelle | Tous les coffres ont la même taille ; le sceau du parent est plus petit que le sien | Les blocs ont la même structure ; la taille distingue « mon empreinte » de « celle de mon parent » |
 | Couleur / matériau / texture | Verre transparent à arêtes gris ardoise ; sceau de cire dont la teinte, le bord et les rayons gravés sont tirés des octets du vrai hash | Le verre montre le contenu sans l'ouvrir ; le sceau rend le hash comparable d'un coup d'œil (le petit sceau violet du bloc 2 est identique au grand sceau du bloc 1) |
-| Position | Le coffre d'Alice (bloc n°2) est au centre de la vue, ses voisins restent visibles de chaque côté | On voit que le bloc fait partie d'une chaîne, ce qui prépare la notion 2 |
+| Position | Le coffre « Thomas → Julien » (bloc n°2) est au centre de la vue, ses voisins restent visibles de chaque côté | On voit que le bloc fait partie d'une chaîne, ce qui prépare la notion 2 |
 | Mouvement / animation | À l'inspection, le contenu se soulève légèrement et s'éclaire ; les étiquettes apparaissent en fondu | Le changement d'état est visible, pas seulement textuel |
 | Interaction et retour visuel | Clic sur le coffre (ou bouton « Inspecter le coffre ») ; contour éclairé au survol | Interaction directe sur l'objet 3D, avec une alternative au clavier |
 | Son, si utilisé | Aucun pour l'instant | — |
@@ -108,7 +108,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 #### d) Correspondance avec la réalité technique
 | Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
 |:---|:---|:---|
-| Rouleau « Alice → Bob : 5 jetons » | Liste des transactions du bloc | Simplifiée (une seule transaction au lieu de milliers) |
+| Rouleau « Thomas → Julien : 3 jetons » | Liste des transactions du bloc | Simplifiée (une seule transaction au lieu de milliers) |
 | Pièce gravée d'un nombre | Nonce | Exacte (le nonce a été réellement trouvé pour que le hash commence par `00`) |
 | Grand sceau + valeur affichée | Hash SHA-256 du bloc, calculé dans le navigateur | Exacte pour la valeur, approximative pour le motif (représentation visuelle du hash) |
 | Petit sceau dans le coin | Hash du bloc précédent stocké dans l'en-tête | Exacte |
@@ -197,7 +197,7 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 | Couleur / matériau / texture | Le grand sceau du bloc 1 est redessiné depuis le nouveau hash (nouvelle teinte, nouveaux rayons). Le rouge (seule apparition de cette couleur) marque le lien cassé : anneaux des blocs 1 et 2, tube 1→2, plaque « Bloc n°1 · falsifié » | Le changement du sceau montre l'effet avalanche ; le rouge est réservé à la fraude, donc il attire l'œil sans ambiguïté |
 | Position | Même cadrage qu'à la notion 2 (bloc 2 au centre) | L'utilisateur compare l'avant et l'après au même endroit |
 | Mouvement / animation | Le sceau change au moment du clic, les anneaux rouges pulsent sur la paire qui ne correspond plus | La cause (modification) et la conséquence (lien rouge) sont simultanées |
-| Interaction et retour visuel | Bouton « Falsifier le bloc 1 » (ou clic sur un coffre) : « Carla → David : 2 jetons » devient « 200 jetons ». Le panneau affiche les données avant/après, le nouveau sceau et l'ancien, si la difficulté est encore respectée et « copie dans le bloc 2 ≠ nouveau sceau ». « Remettre comme avant » annule | L'utilisateur provoque lui-même la triche et peut recommencer ; tout est réversible |
+| Interaction et retour visuel | Bouton « Falsifier le bloc 1 » (ou clic sur un coffre) : « Nicolas → Pierre : 2 jetons » devient « 200 jetons ». Le panneau affiche les données avant/après, le nouveau sceau et l'ancien, si la difficulté est encore respectée et « copie dans le bloc 2 ≠ nouveau sceau ». « Remettre comme avant » annule | L'utilisateur provoque lui-même la triche et peut recommencer ; tout est réversible |
 | Son, si utilisé | Aucun | — |
 | Texte d'accompagnement | Avant : le scénario du tricheur. Après : pourquoi ça se voit, et pourquoi la cacher coûterait trop cher. Encart « En vrai… » : re-minage, attaque des 51 % (annonce de la notion 7) | Le texte transforme l'observation en règle générale |
 
@@ -235,7 +235,7 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 > L'utilisateur doit comprendre qu'il n'y a pas de chef : chaque nœud garde sa propre copie de la chaîne, une transaction se propage de voisin en voisin, chaque nœud la vérifie avant de la faire suivre, et le réseau continue de fonctionner si un nœud s'éteint.
 
 #### b) Risque de mauvaise compréhension
-> L'utilisateur ne doit pas comprendre qu'un serveur central (ou l'île d'Alice) distribue les données à tout le monde, que tous les nœuds sont reliés directement entre eux, ni que la transaction est déjà « gravée » dans la chaîne dès qu'elle est reçue.
+> L'utilisateur ne doit pas comprendre qu'un serveur central (ou l'île de Dylan) distribue les données à tout le monde, que tous les nœuds sont reliés directement entre eux, ni que la transaction est déjà « gravée » dans la chaîne dès qu'elle est reçue.
 
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
@@ -243,9 +243,9 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 | Forme / géométrie | 7 îles (disques de roche) reliées par des routes en pointillés. Sur chaque île, une copie miniature des 4 coffres de la chaîne. La transaction circule sous la forme d'une bille lumineuse, puis flotte en rouleau au-dessus de l'île qui l'a reçue | Une île est un lieu séparé et autonome, qui a « ses » coffres : une île = un nœud = une copie. Le rouleau reprend l'objet « données » de la notion 1 |
 | Taille et échelle | Toutes les îles ont la même taille ; aucune n'est plus grosse ni plus haute | Tous les nœuds ont le même rôle : aucun ne domine |
 | Couleur / matériau / texture | Roche gris-bleu neutre. Les sceaux miniatures reprennent les vraies couleurs de la chaîne. Corail (l'accent) pour ce qui a reçu la transaction : anneau de l'île, étiquette, routes empruntées. Une île éteinte devient gris foncé et s'enfonce | Les mêmes sceaux sur toutes les îles montrent que les copies sont identiques. Le corail garde son sens de « lien actif » (notions 2 et 3) et dessine le chemin réellement pris |
-| Position | Îles dispersées irrégulièrement, Alice à gauche et Bob à droite, sans île au centre. Chaque île n'est reliée qu'à 2 à 4 voisines. L'archipel est placé à l'écart de la grande chaîne | La disposition sans centre rend visible l'absence de chef. Gauche → droite reprend le sens de lecture de la chaîne. Le message doit passer par des intermédiaires pour atteindre Bob |
-| Mouvement / animation | La bille part de l'île d'Alice ; chaque île qui la reçoit s'allume, attend un court instant (elle vérifie), puis l'envoie à toutes ses voisines sauf celle qui la lui a transmise. Une île qui l'a déjà reçue ignore le doublon | La propagation de proche en proche (gossip) se voit au lieu d'être racontée. Le délai matérialise la vérification. Les doublons montrent la redondance du réseau |
-| Interaction et retour visuel | Bouton « Envoyer la transaction d'Alice » (ou clic sur l'île d'Alice). Clic sur une autre île pour l'éteindre ou la rallumer, puis « Renvoyer la transaction ». Le panneau compte les îles jointes, dit si Bob a reçu et liste les îles éteintes ou injoignables | En éteignant une île, l'utilisateur découvre lui-même que le message passe ailleurs : aucune île n'est indispensable. S'il en éteint trop, il voit aussi la limite (une île coupée de tout ne reçoit rien) |
+| Position | Îles dispersées irrégulièrement, Dylan à gauche et Maxens à droite, sans île au centre. Chaque île n'est reliée qu'à 2 à 4 voisines. L'archipel est placé à l'écart de la grande chaîne | La disposition sans centre rend visible l'absence de chef. Gauche → droite reprend le sens de lecture de la chaîne. Le message doit passer par des intermédiaires pour atteindre Maxens |
+| Mouvement / animation | La bille part de l'île de Dylan ; chaque île qui la reçoit s'allume, attend un court instant (elle vérifie), puis l'envoie à toutes ses voisines sauf celle qui la lui a transmise. Une île qui l'a déjà reçue ignore le doublon | La propagation de proche en proche (gossip) se voit au lieu d'être racontée. Le délai matérialise la vérification. Les doublons montrent la redondance du réseau |
+| Interaction et retour visuel | Bouton « Envoyer la transaction de Dylan » (ou clic sur l'île de Dylan). Clic sur une autre île pour l'éteindre ou la rallumer, puis « Renvoyer la transaction ». Le panneau compte les îles jointes, dit si Maxens a reçu et liste les îles éteintes ou injoignables | En éteignant une île, l'utilisateur découvre lui-même que le message passe ailleurs : aucune île n'est indispensable. S'il en éteint trop, il voit aussi la limite (une île coupée de tout ne reçoit rien) |
 | Son, si utilisé | Aucun | — |
 | Texte d'accompagnement | Trois phrases avant l'envoi, trois après (propagation, invitation à éteindre une île, transaction pas encore dans un bloc). Encart « En vrai… » : nœud, gossip, nombre de connexions, mempool | Le texte nomme ce que l'animation montre et prépare la notion 5 |
 
@@ -323,7 +323,7 @@ Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend envi
 | À faire (session 1) : vérifier que le testeur comprend qu'on ne peut pas choisir le sceau, et que vérifier est facile | | #17 |
 
 #### g) Limites assumées
-Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un seul mineur est montré : la course entre mineurs et la récompense ne sont que dans l'encart « En vrai… », la compétition étant le sujet de la notion 6. Le bloc ne contient qu'une transaction. **Incohérence connue du fil rouge, à trancher par le groupe :** la transaction « Alice → Bob : 5 jetons » est déjà dans le bloc n°2 depuis la notion 1, alors que la notion 4 la montre « pas encore dans un bloc » et que la notion 5 la range dans le bloc n°4. Il faudra soit mettre une autre transaction dans le bloc n°2, soit présenter les notions 1 à 3 comme la chaîne « déjà finie ».
+Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un seul mineur est montré : la course entre mineurs et la récompense ne sont que dans l'encart « En vrai… », la compétition étant le sujet de la notion 6. Le bloc ne contient qu'une transaction. Le fil rouge est cohérent : le bloc n°2 contient une autre transaction (Thomas → Julien), et celle de Dylan n'entre dans la chaîne qu'ici, dans le bloc n°4. Les blocs déjà présents sont scellés en `00` ; la difficulté `000` est présentée comme un durcissement pour les blocs à venir (comme le réajustement de Bitcoin), sans remettre en cause les anciens.
 
 ### 4.X — [intitulé exact de la notion]
 

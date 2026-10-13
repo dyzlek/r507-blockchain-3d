@@ -77,8 +77,8 @@ const BROKEN_COLOR = 0xb3261e;
 const ARCHIPEL_POSITION = new THREE.Vector3(0, 0, -22);
 let archipel = null;
 
-// Le coffre à miner (notion 5) : la transaction d'Alice, accrochée au bout de la chaîne, mais pas encore scellée.
-const NEW_BLOCK_DATA = 'Alice → Bob : 5 jetons';
+// Le coffre à miner (notion 5) : la transaction de Dylan, accrochée au bout de la chaîne, mais pas encore scellée.
+const NEW_BLOCK_DATA = 'Dylan → Maxens : 5 jetons';
 let newCoffre = null;
 let miner = null;
 
@@ -105,13 +105,11 @@ async function buildScene() {
   const pending = { index: chain.length, parentHash: chain.at(-1).hash, data: NEW_BLOCK_DATA };
   newCoffre = createCoffre({ ...pending, nonce: 0, hash: await sha256(blockContent({ ...pending, nonce: 0 })) });
   newCoffre.group.position.x = startX + chain.length * SPACING;
-  newCoffre.group.visible = false;
   scene.add(newCoffre.group);
   coffres.push(newCoffre);
   const link = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, SPACING - COFFRE_SIZE.w, 12), new THREE.MeshStandardMaterial({ color: LINK_COLOR, roughness: 0.5 }));
   link.rotation.z = Math.PI / 2;
   link.position.set(newCoffre.group.position.x - SPACING / 2, 0.1, 0);
-  link.visible = false;
   links[chain.length] = link;
   scene.add(link);
   miner = createMiner(pending);
@@ -119,11 +117,32 @@ async function buildScene() {
 
   archipel = createArchipel(chain);
   archipel.group.position.copy(ARCHIPEL_POSITION);
-  archipel.group.visible = false;
   archipel.onChange = () => {
     if (SEQUENCES[current].network) renderText();
   };
   scene.add(archipel.group);
+  addPop('archipel', [archipel.group]);
+  addPop('newCoffre', [newCoffre.group, link]);
+}
+
+// Apparition douce : l'archipel et le coffre à miner grandissent (ou rétrécissent) au lieu de surgir.
+const showing = { archipel: false, newCoffre: false };
+const pops = [];
+function addPop(key, objects) {
+  const pop = { key, objects, value: 0 };
+  pops.push(pop);
+  objects.forEach((object) => (object.visible = false));
+}
+function updatePops(dt) {
+  for (const pop of pops) {
+    const target = showing[pop.key] ? 1 : 0;
+    pop.value = reducedMotion ? target : THREE.MathUtils.damp(pop.value, target, 4, dt);
+    if (Math.abs(pop.value - target) < 0.005) pop.value = target;
+    pop.objects.forEach((object) => {
+      object.visible = pop.value > 0;
+      object.scale.setScalar(Math.max(pop.value, 0.001));
+    });
+  }
 }
 
 // --- Transitions de caméra ---
@@ -139,7 +158,7 @@ function cameraGoal(sequence) {
   const offset = new THREE.Vector3(...sequence.camera.position).sub(new THREE.Vector3(...sequence.camera.target));
   // Écran étroit (téléphone) : on recule pour garder les étiquettes dans le cadre.
   offset.multiplyScalar(Math.max(1, (window.innerWidth > 760 ? 1.35 : 2) / (visibleAspect || 1)));
-  // L'archipel est plus large que la chaîne : en écran étroit, on recule encore pour voir Alice et Bob.
+  // L'archipel est plus large que la chaîne : en écran étroit, on recule encore pour voir Dylan et Maxens.
   if (sequence.network && window.innerWidth <= 760) offset.multiplyScalar(1.4);
   return { position: target.clone().add(offset), target };
 }
@@ -188,6 +207,7 @@ const ui = {
   prev: document.querySelector('#prev'),
   next: document.querySelector('#next'),
   dots: document.querySelector('#dots'),
+  nav: document.querySelector('#nav'),
 };
 
 let current = 0;
@@ -218,7 +238,7 @@ function renderMiningFields() {
     rows.push(
       ['Nonce trouvé', `<code>${last.nonce}</code>, après ${tries} essai${tries > 1 ? 's' : ''}`],
       ['Sceau', `<code>${shortHash(last.hash)}</code> : commence bien par <code>${difficulty}</code>`],
-      ['Vérifier', 'un seul calcul suffit : chaque île refait le sceau avec ce nonce et l’accepte'],
+      ['Vérification', 'un seul calcul suffit : chaque île refait le sceau avec ce nonce, puis accepte le bloc'],
     );
   } else if (last) {
     rows.push(
@@ -270,7 +290,7 @@ function renderText() {
     const { running, total, received, offline, unreached, bobReceived } = archipel.summary();
     const rows = [
       ['Ont reçu la transaction', `${received.length} île${received.length > 1 ? 's' : ''} sur ${total}${running ? ', et ça continue…' : ''}`],
-      ['Bob', bobReceived ? 'a reçu la transaction' : running ? 'attend encore' : 'pas joint'],
+      ['Maxens', bobReceived ? 'a reçu la transaction' : running ? 'attend encore' : 'pas joint'],
       ['Îles éteintes', offline.length ? offline.join(', ') : 'aucune'],
     ];
     if (!running && unreached.length) rows.push(['Pas jointes', `${unreached.join(', ')} : plus aucun chemin allumé ne mène jusqu’à elles`]);
@@ -287,10 +307,10 @@ function renderText() {
   } else if (coffre?.inspected) {
     const { block } = coffre;
     ui.fields.innerHTML = [
-      ['Données', block.data, 'ce que le bloc garde en mémoire, ici la transaction.'],
-      ['Nonce', block.nonce, 'un nombre qu’on change jusqu’à tomber sur un sceau valide (notion 5).'],
-      ['Empreinte (sceau)', shortHash(block.hash), 'calculée à partir de tout le contenu du coffre.'],
-      ['Empreinte du parent', shortHash(block.parentHash), 'le sceau du coffre d’avant, recopié en petit dans le coin gauche.'],
+      ['Transaction', block.data, 'ce que le coffre garde en mémoire.'],
+      ['Nonce', block.nonce, 'un nombre qu’on change pour obtenir un sceau valide (notion 5).'],
+      ['Sceau', shortHash(block.hash), 'code unique calculé à partir de tout le contenu du coffre.'],
+      ['Sceau du coffre d’avant', shortHash(block.parentHash), 'recopié en petit dans le coin gauche.'],
     ]
       .map(([key, value, help]) => `<div><dt>${key}</dt><dd><code>${value}</code> — ${help}</dd></div>`)
       .join('');
@@ -319,14 +339,15 @@ function goTo(index) {
   tampered = null;
   archipel.reset();
   archipel.setHint(null);
-  archipel.group.visible = Boolean(sequence.network);
-  newCoffre.group.visible = links[newCoffre.block.index].visible = Boolean(sequence.mining);
+  showing.archipel = Boolean(sequence.network);
+  showing.newCoffre = Boolean(sequence.mining);
   ui.inspect.disabled = false;
   ui.panel.removeAttribute('aria-busy');
   miningState = 'idle';
   miner.reset();
 
-  ui.stepNumber.textContent = String(current + 1);
+  ui.stepNumber.textContent = String(sequence.notion ?? 0);
+  ui.nav.style.setProperty('--progress', String(current / (SEQUENCES.length - 1)));
   ui.step.textContent = sequence.step;
   ui.title.textContent = sequence.title;
   ui.enVraiText.innerHTML = sequence.enVrai;
@@ -335,6 +356,7 @@ function goTo(index) {
   ui.next.disabled = current === SEQUENCES.length - 1;
   [...ui.dots.children].forEach((dot, i) => {
     dot.classList.toggle('is-current', i === current);
+    dot.classList.toggle('is-done', i < current);
     dot.toggleAttribute('aria-current', i === current);
   });
   renderText();
@@ -398,7 +420,10 @@ async function toggleInspect() {
   renderText();
 }
 
-ui.dots.innerHTML = SEQUENCES.map((s, i) => `<li><button type="button" aria-label="Étape ${i + 1} : ${s.title}">${i + 1}</button></li>`).join('');
+// Barre de progression : un point par séquence, numéroté comme la notion (0 = introduction).
+ui.dots.innerHTML = SEQUENCES.map(
+  (s, i) => `<li><button type="button" title="${s.step}" aria-label="${s.step} : ${s.title}">${s.notion ?? 0}</button></li>`,
+).join('');
 [...ui.dots.querySelectorAll('button')].forEach((button, i) => button.addEventListener('click', () => goTo(i)));
 ui.prev.addEventListener('click', () => goTo(current - 1));
 ui.next.addEventListener('click', () => goTo(current + 1));
@@ -429,7 +454,7 @@ function pickFocused(event) {
   return candidates.find((c) => c && raycaster.intersectObject(c.hitMesh).length) ?? null;
 }
 
-// Sur l'archipel : l'île d'Alice envoie la transaction, les autres s'allument ou s'éteignent.
+// Sur l'archipel : l'île de Dylan envoie la transaction, les autres s'allument ou s'éteignent.
 function pickIsland(event) {
   if (!SEQUENCES[current].network) return -1;
   aim(event);
@@ -499,6 +524,7 @@ renderer.setAnimationLoop((time) => {
   timer.update(time);
   const dt = Math.min(timer.getDelta(), 0.1);
   updateTween(dt);
+  updatePops(dt);
   coffres.forEach((c) => c.update(dt, timer.getElapsed(), reducedMotion));
   archipel.update(dt, timer.getElapsed(), reducedMotion);
   miner.update(dt);
