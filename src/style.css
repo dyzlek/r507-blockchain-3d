@@ -85,6 +85,17 @@ body {
   font-weight: 700;
 }
 
+/* Îles de l'archipel : celles qui ont reçu la transaction passent en accent, les éteintes s'effacent. */
+.plate.is-received {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.plate.is-off {
+  box-shadow: var(--inset-sm);
+  opacity: 0.7;
+}
+
 .hint,
 .field {
   border-radius: var(--radius);
@@ -342,18 +353,21 @@ summary:focus-visible {
   font-size: 0.95rem;
 }
 
+/* Les points d'étape ont leur propre ligne : avec 8 étapes, ils ne tiennent plus entre les deux boutons. */
 #nav {
   margin-top: auto;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 14px 8px;
   padding-top: 8px;
 }
 
 #nav > button {
   padding: 9px 16px;
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 #nav > button:disabled {
@@ -364,7 +378,10 @@ summary:focus-visible {
 }
 
 #dots {
+  order: -1;
+  width: 100%;
   display: flex;
+  justify-content: space-between;
   gap: 4px;
   padding: 4px;
   border-radius: 999px;
