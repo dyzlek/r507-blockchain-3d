@@ -15,7 +15,7 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
 | Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
-| Version et date de mise à jour | v0.6 — 13/10/2026 |
+| Version et date de mise à jour | v0.7 — 13/10/2026 |
 
 ## 2. Univers visuel et métaphore principale
 
@@ -194,9 +194,9 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 |:---|:---|:---|
 | Forme / géométrie | Les mêmes coffres que les notions 1 et 2 ; seul le contenu du bloc 1 change | Rien d'autre ne bouge : l'effet observé vient uniquement de la modification |
 | Taille et échelle | Inchangées | — |
-| Couleur / matériau / texture | Le grand sceau du bloc 1 est redessiné depuis le nouveau hash (nouvelle teinte, nouveaux rayons). Le rouge (seule apparition de cette couleur) marque le lien cassé : anneaux des blocs 1 et 2, tube 1→2, plaque « Bloc n°1 · falsifié » | Le changement du sceau montre l'effet avalanche ; le rouge est réservé à la fraude, donc il attire l'œil sans ambiguïté |
+| Couleur / matériau / texture | Le grand sceau du bloc 1 est redessiné depuis le nouveau hash (nouvelle teinte, nouveaux rayons). Le rouge (seule apparition de cette couleur) marque le lien cassé : un anneau autour du nouveau sceau du bloc 1 et un autour de sa copie dans le bloc 2 (et seulement ceux-là), tube 1→2, plaque « Bloc n°1 · falsifié » | Le changement du sceau montre l'effet avalanche ; le rouge est réservé à la fraude, donc il attire l'œil sans ambiguïté |
 | Position | Même cadrage qu'à la notion 2 (bloc 2 au centre) | L'utilisateur compare l'avant et l'après au même endroit |
-| Mouvement / animation | Le sceau change au moment du clic, les anneaux rouges pulsent sur la paire qui ne correspond plus | La cause (modification) et la conséquence (lien rouge) sont simultanées |
+| Mouvement / animation | Le sceau change au moment du clic, les anneaux rouges pulsent sur la paire qui ne correspond plus | La cause (modification) et la conséquence (lien rouge) sont simultanées. Un premier essai allumait les deux sceaux des blocs 1 et 2 : on croyait que le lien 0→1 était cassé lui aussi, d’où la correction |
 | Interaction et retour visuel | Bouton « Falsifier le bloc 1 » (ou clic sur un coffre) : « Nicolas → Pierre : 2 jetons » devient « 200 jetons ». Le panneau affiche les données avant/après, le nouveau sceau et l'ancien, si la difficulté est encore respectée et « copie dans le bloc 2 ≠ nouveau sceau ». « Remettre comme avant » annule | L'utilisateur provoque lui-même la triche et peut recommencer ; tout est réversible |
 | Son, si utilisé | Aucun | — |
 | Texte d'accompagnement | Avant : le scénario du tricheur. Après : pourquoi ça se voit, et pourquoi la cacher coûterait trop cher. Encart « En vrai… » : re-minage, attaque des 51 % (annonce de la notion 7) | Le texte transforme l'observation en règle générale |
@@ -324,6 +324,106 @@ Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend envi
 
 #### g) Limites assumées
 Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un seul mineur est montré : la course entre mineurs et la récompense ne sont que dans l'encart « En vrai… », la compétition étant le sujet de la notion 6. Le bloc ne contient qu'une transaction. Le fil rouge est cohérent : le bloc n°2 contient une autre transaction (Thomas → Julien), et celle de Dylan n'entre dans la chaîne qu'ici, dans le bloc n°4. Les blocs déjà présents sont scellés en `00` ; la difficulté `000` est présentée comme un durcissement pour les blocs à venir (comme le réajustement de Bitcoin), sans remettre en cause les anciens.
+
+### 4.6 — Comparaison d'au moins deux mécanismes de consensus
+
+> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 7. À relire par Maxens et Dylan. Les tests utilisateurs restent à faire.
+
+**Issues liées :** #12
+**Séquence(s) concernée(s) :** séquence 7 « Qui scelle le bloc ? » (`?etape=7`)
+
+#### a) Objectif pédagogique
+> L'utilisateur doit comprendre que, sans chef, les nœuds ont besoin d'une règle commune pour désigner celui qui scelle le prochain bloc, et que deux règles existent : la preuve de travail (une course où compte la puissance de calcul, et où le travail des perdants est perdu) et la preuve d'enjeu (un tirage au sort où comptent les jetons mis en jeu, avec la mise comme garantie). Il doit retenir l'échange entre les deux : sécurité par la dépense d'énergie contre sobriété, et le risque de concentration propre à chacune.
+
+#### b) Risque de mauvaise compréhension
+> L'utilisateur ne doit pas comprendre que l'île la plus puissante (ou la plus riche) gagne à chaque fois, que la preuve d'enjeu revient à « acheter » le droit de tricher, ni que le consensus est un vote où chaque île donne son avis.
+
+#### c) Représentation choisie
+| Dimension | Choix | Pourquoi ce choix sert la compréhension |
+|:---|:---|:---|
+| Forme / géométrie | Le même archipel qu'à la notion 4. En preuve de travail, chaque île a une rangée de machines (de 1 à 4) derrière sa copie de la chaîne. En preuve d'enjeu, une pile de jetons dorés (de 1 à 4) au même endroit | On reste dans le réseau sans centre : ce sont les mêmes îles qui doivent se mettre d'accord. Le nombre d'objets se compte d'un coup d'œil |
+| Taille et échelle | La rangée de machines ou la hauteur de la pile est proportionnelle au poids de l'île. Les poids ne sont pas les mêmes dans les deux méthodes (Thomas a 4 machines mais 1 jeton, Dylan 1 machine mais 4 jetons) | On voit que « ce qui compte » change d'une méthode à l'autre |
+| Couleur / matériau / texture | Machines gris ardoise avec un voyant vert qui clignote pendant la course ; jetons dorés, comme la pièce du nonce. Un anneau corail désigne l'île gagnante | Le voyant montre que toutes les machines travaillent en même temps. Le corail garde son sens de « ce qui est retenu » |
+| Position | Vue d'ensemble de l'archipel, comme à la notion 4 | Toutes les îles sont visibles : on voit qu'une seule gagne |
+| Mouvement / animation | Preuve de travail : les compteurs d'essais de toutes les îles défilent, plus vite là où il y a plus de machines, puis une île trouve le sceau. Preuve d'enjeu : un anneau passe d'île en île de plus en plus lentement (une roue) et s'arrête sur l'île tirée | La course rend visible le travail perdu par les perdantes ; la roue rend visible le tirage, sans calcul |
+| Interaction et retour visuel | Choix de la méthode (« Travail (PoW) » / « Enjeu (PoS) »), bouton « Lancer la course » ou « Faire le tirage », relance possible. Le panneau donne la gagnante et sa probabilité, le nombre total d'essais (PoW), la sanction en cas de triche, le décompte des victoires sur plusieurs tours, puis un bilan une fois les deux méthodes essayées | En relançant, l'utilisateur constate lui-même que les victoires suivent les poids sans être certaines (une île à 1 machine peut gagner) |
+| Son, si utilisé | Aucun | — |
+| Texte d'accompagnement | Trois phrases avant (le problème, puis une phrase par méthode), deux après chaque méthode. Encart « En vrai… » : Bitcoin, Ethereum et le passage à la preuve d'enjeu en 2022, la mise de 32 ethers, la limite des deux méthodes | Le texte pose la question « qui scelle ? » avant de montrer les réponses |
+
+#### d) Correspondance avec la réalité technique
+| Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
+|:---|:---|:---|
+| Machines d'une île | Puissance de calcul d'un mineur (hashrate) | Simplifiée (1 à 4 machines, au lieu de fermes de milliers de machines spécialisées) |
+| Course aux essais | Recherche du nonce par tous les mineurs en parallèle (notion 5) | Exacte dans le principe, ralentie |
+| Probabilité de gagner ∝ machines | Probabilité de miner le bloc ∝ part du hashrate | Exacte |
+| Pile de jetons | Mise (stake) bloquée par un validateur | Simplifiée |
+| Roue du tirage | Sélection pseudo-aléatoire du validateur, pondérée par la mise | Simplifiée (le vrai tirage utilise un aléa partagé et des comités de validateurs) |
+| « Perd sa mise » | Slashing : destruction d'une partie de la mise d'un validateur malhonnête | Simplifiée (en vrai, seule une partie est retirée, selon la faute) |
+
+#### e) Alternative écartée
+| Alternative | Raison du rejet |
+|:---|:---|
+| Montrer les deux méthodes côte à côte sur deux archipels | Deux fois plus d'objets à l'écran et deux réseaux différents : l'utilisateur aurait pu croire qu'il existe deux réseaux. Un seul archipel et un sélecteur de méthode gardent la comparaison sur les mêmes îles |
+| Faire gagner à coup sûr l'île la plus puissante ou la plus riche | Plus simple à lire, mais faux : c'est une probabilité. Le décompte des victoires sur plusieurs tours montre la proportion sans la transformer en certitude |
+| Un vote à main levée entre les îles | Ce n'est pas ainsi que fonctionnent Bitcoin ou Ethereum, et cela aurait créé la fausse idée que le consensus est un vote d'opinion |
+
+#### f) Tests utilisateurs
+| Observation | Modification | Issue |
+|:---|:---|:---|
+| À faire (session 1) : vérifier que le testeur sait dire ce qui compte dans chaque méthode et pourquoi la preuve de travail consomme plus | | #17 |
+
+#### g) Limites assumées
+La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montrée, ni la vérification du bloc par les autres îles après la victoire (vue à la notion 5). Les poids sont fixes et les îles toutes honnêtes. La preuve d'enjeu est réduite à un tirage pondéré, sans comités ni attestations. Ces simplifications sont signalées dans l'encart « En vrai… ».
+
+### 4.7 — Cycle de vie d'une transaction et scénario d'attaque illustré
+
+> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 8. À relire par Maxens et Dylan. Les tests utilisateurs restent à faire.
+
+**Issues liées :** #13
+**Séquence(s) concernée(s) :** séquence 8 « La double dépense » (`?etape=8`)
+
+#### a) Objectif pédagogique
+> L'utilisateur doit pouvoir retracer la vie de la transaction de Dylan (signée, diffusée, en attente, rangée dans un bloc, confirmée) et comprendre qu'une double dépense consiste à faire adopter une autre version de l'histoire. Les nœuds gardant la chaîne la plus longue, l'attaque échoue tant que le tricheur a moins de la moitié de la puissance, et chaque confirmation rend le retour en arrière plus difficile.
+
+#### b) Risque de mauvaise compréhension
+> L'utilisateur ne doit pas comprendre qu'une transaction est définitive dès qu'elle est envoyée, qu'on peut annuler une transaction en la « supprimant » d'un bloc, ni que l'attaque des 51 % permet de voler les jetons de n'importe qui (elle ne permet que de réécrire ses propres transactions récentes).
+
+#### c) Représentation choisie
+| Dimension | Choix | Pourquoi ce choix sert la compréhension |
+|:---|:---|:---|
+| Forme / géométrie | La chaîne de coffres de la notion 5, avec le bloc 4 de Dylan désormais scellé. La branche secrète de Dylan est faite des mêmes coffres, accrochés au bloc 3 par un lien rouge | La fourche se lit comme deux suites possibles de la même histoire. Les coffres de Dylan sont de vrais blocs, avec de vrais sceaux : la triche n'est pas visible au premier coup d'œil |
+| Taille et échelle | Mêmes coffres partout | Aucune branche n'est « plus officielle » que l'autre par son apparence ; seule la longueur compte |
+| Couleur / matériau / texture | Plaques et liens rouges pour la branche de Dylan (« secret », puis « rejeté » ou « adopté »), comme le bloc falsifié de la notion 3. Les plaques de la branche perdante passent en rouge avec « abandonné » | Le rouge garde le même sens partout : la fraude |
+| Position | Chaîne honnête en arrière, branche de Dylan devant, alignée bloc à bloc | On compare la longueur des deux branches d'un coup d'œil, comme deux colonnes |
+| Mouvement / animation | Les blocs apparaissent au rythme de chaque camp (plus vite pour celui qui a le plus de puissance) ; à la fin, la branche perdante s'enfonce dans le sol | La course rend visible le rapport de puissance ; l'enfoncement montre ce que les îles abandonnent |
+| Interaction et retour visuel | Choix de la puissance de Dylan (30 % ou 60 %), bouton « Lancer la course ». Le panneau affiche le cycle de vie coché étape par étape, le nombre de confirmations, la longueur de chaque branche et la règle des îles. Si Dylan gagne, les deux dernières étapes passent en rouge (« Annulée ») | En essayant les deux puissances, l'utilisateur découvre lui-même le seuil de la moitié : c'est l'attaque des 51 % |
+| Son, si utilisé | Aucun | — |
+| Texte d'accompagnement | Avant : le chemin parcouru par la transaction, puis le plan de Dylan et la règle de la chaîne la plus longue. Pendant : ce qu'est une confirmation. Après : un texte selon le résultat. Encart « En vrai… » : 6 confirmations, vitesse moyenne et hasard, attaques réelles sur Ethereum Classic | Le cycle de vie relie les notions 4 et 5 ; le texte d'issue explique pourquoi on a gagné ou perdu |
+
+#### d) Correspondance avec la réalité technique
+| Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
+|:---|:---|:---|
+| Cycle de vie coché | Signature, diffusion, mempool, inclusion dans un bloc, confirmations | Exacte dans les étapes (la signature n'est pas montrée en détail) |
+| Branche secrète accrochée au bloc 3 | Fork : chaîne concurrente minée en privé | Exacte dans le principe |
+| « Dylan → Dylan : 5 jetons » | Transaction concurrente qui dépense les mêmes jetons | Exacte dans le principe |
+| Règle de la chaîne la plus longue | Les nœuds suivent la chaîne qui a demandé le plus de travail | Simplifiée (« la plus longue » au lieu de « le plus de travail cumulé ») |
+| Course à vitesse fixe | Minage : tirage au sort dont la vitesse moyenne dépend de la puissance | Approximative (pas de hasard ici) |
+| 3 blocs pour finir la course | Nombre de confirmations attendu par le destinataire (6 chez Bitcoin) | Simplifiée |
+
+#### e) Alternative écartée
+| Alternative | Raison du rejet |
+|:---|:---|
+| Course au hasard (comme le vrai minage) | Avec quelques blocs seulement, un tricheur à 30 % gagnait parfois et un tricheur à 60 % perdait souvent : le message principal (le seuil de la moitié) devenait illisible. La course montre la vitesse moyenne, et le hasard est expliqué dans l'encart « En vrai… » |
+| Jouer l'attaque sur l'archipel (îles qui changent de chaîne) | Plus proche du réseau, mais la comparaison des deux branches demandait de dessiner une fourche sur chacune des 7 îles : illisible. La fourche est montrée une seule fois sur la grande chaîne, et le texte dit que toutes les îles l'adoptent |
+| Un voleur extérieur qui prend les jetons de Maxens | Faux : l'attaque des 51 % ne permet pas de dépenser les jetons des autres, seulement de réécrire ses propres transactions. Le tricheur est donc l'émetteur, Dylan |
+
+#### f) Tests utilisateurs
+| Observation | Modification | Issue |
+|:---|:---|:---|
+| À faire (session 1) : vérifier que le testeur sait citer les étapes de la vie d'une transaction et expliquer pourquoi Dylan perd à 30 % | | #17 |
+
+#### g) Limites assumées
+La signature de la transaction n'est pas montrée (pas de clés publiques ni privées). La course n'a pas de hasard et s'arrête à 3 blocs au lieu de 6 confirmations. L'adoption de la branche gagnante par les îles est dite dans le texte, mais n'est pas animée sur l'archipel. Ces simplifications sont signalées dans l'encart « En vrai… ».
 
 ### 4.X — [intitulé exact de la notion]
 
