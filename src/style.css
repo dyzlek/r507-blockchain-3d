@@ -125,6 +125,48 @@ body {
   font-weight: 700;
 }
 
+/* Notion 6 : ce que pèse chaque île (machines ou jetons misés), puis ses essais pendant la course. */
+.stat {
+  padding: 1px 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+.stat.is-winner {
+  color: var(--accent);
+  font-family: var(--font-text);
+  font-weight: 700;
+}
+
+/* Notion 7 : les étapes de la vie de la transaction, cochées au fur et à mesure. */
+.lifecycle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+  padding: 0;
+  list-style: none;
+}
+
+.lifecycle li::before {
+  content: '✓ ';
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.lifecycle li.is-lost {
+  color: #b3261e;
+}
+
+.lifecycle li.is-lost::before {
+  content: '✗ ';
+  color: #b3261e;
+}
+
 .plate.is-off {
   box-shadow: var(--inset-sm);
   opacity: 0.7;
