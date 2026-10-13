@@ -2,7 +2,8 @@
 // et le coffre mis en avant (focus = index du bloc, ou null).
 // `chain` : blocs dont on compare les sceaux (le bouton allume les liens), `cameraOn` : coffre au centre du cadre,
 // `tamper` : le bouton falsifie les données de ce bloc et on recalcule le vrai sceau.
-// Les notions 4 à 7 viendront s'ajouter ici.
+// `network` : la caméra part sur l'archipel, le bouton envoie la transaction d'Alice d'île en île.
+// Les notions 5 à 7 viendront s'ajouter ici.
 
 export const SEQUENCES = [
   {
@@ -78,5 +79,27 @@ export const SEQUENCES = [
     cameraOn: 2,
     chain: [1, 2, 3],
     tamper: { index: 1, data: 'Carla → David : 200 jetons' },
+  },
+  {
+    id: 'reseau',
+    notion: 4,
+    step: 'Notion 4 · Réseau et décentralisation',
+    title: 'L’archipel',
+    text: [
+      'Cette chaîne, qui la garde ? Personne en particulier : <strong>tout le monde</strong>.',
+      'Chaque île de cet archipel est un ordinateur du réseau. Elle a sa propre copie de la chaîne : regarde, ce sont les mêmes sceaux sur toutes les îles.',
+      'Alice est sur son île. Envoie sa transaction et regarde comment elle voyage jusqu’à Bob.',
+    ],
+    textInspected: [
+      'Pas de chef ni de serveur central : Alice prévient ses voisines, qui vérifient la transaction puis la font suivre aux leurs, et ainsi de suite. Une île qui l’a déjà reçue ignore les doublons.',
+      'Maintenant, <strong>clique sur une île pour l’éteindre</strong>, puis renvoie la transaction : elle passe par un autre chemin. Aucune île n’est indispensable.',
+      'Pour l’instant, la transaction attend au-dessus de chaque île : elle n’est pas encore dans un bloc. C’est le minage qui va l’y ranger (notion 5).',
+    ],
+    button: ['Envoyer la transaction d’Alice', 'Renvoyer la transaction'],
+    enVrai:
+      'Une île, c’est un <strong>nœud</strong> : un ordinateur qui fait tourner le logiciel de la blockchain et garde une copie complète de la chaîne. Bitcoin en compte des dizaines de milliers dans le monde. Chaque nœud n’est relié qu’à quelques autres (8 au départ, par défaut), et les messages passent de proche en proche : c’est le <strong>bouche-à-oreille</strong> (<em>gossip</em>). Ici, 7 îles et une seconde par saut ; en vrai, une transaction fait le tour du réseau en quelques secondes. En attendant d’être mise dans un bloc, elle patiente dans une salle d’attente que chaque nœud garde, la <strong>mempool</strong>.',
+    camera: { position: [0, 7.5, 8.5], target: [0, -0.3, 0.4] },
+    focus: null,
+    network: true,
   },
 ];
