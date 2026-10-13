@@ -3,27 +3,41 @@ import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { GENESIS_PARENT, shortHash } from './chain.js';
+import { shortHash } from './chain.js';
+import { COLORS, cardboard, cardboardDark, coinTexture, paperMaterial, stampTexture } from './papier.js';
 
-// Un bloc = un coffre de verre : on voit son contenu sans l'ouvrir (l'ouvrir briserait le sceau).
+// Un bloc = un coffre en carton avec une fenêtre en papier calque : on devine son contenu sans l'ouvrir
+// (l'ouvrir briserait le sceau). Inspecter le coffre, c'est allumer sa lampe : le calque devient lisible.
 export const COFFRE_SIZE = { w: 1.6, h: 1.1, d: 1.1 };
 const { w, h, d } = COFFRE_SIZE;
+const T = 0.035; // épaisseur du carton
+const MARGIN = 0.15; // largeur du cadre autour de la fenêtre
 
-const glassMaterial = new THREE.MeshPhysicalMaterial({
-  color: 0xd8f0ea,
-  roughness: 0.06,
-  transmission: 0.94,
-  thickness: 0.35,
-  ior: 1.45,
-});
-const frameMaterial = new THREE.LineBasicMaterial({ color: 0x7d8899, transparent: true, opacity: 0.9 });
-const scrollMaterial = new THREE.MeshStandardMaterial({ color: 0xf2e6c9, roughness: 0.8 });
-const coinSideMaterial = new THREE.MeshStandardMaterial({ color: 0xd9a93a, metalness: 0.8, roughness: 0.3 });
-
-const bodyGeometry = new THREE.BoxGeometry(w, h, d);
-const frameGeometry = new THREE.EdgesGeometry(bodyGeometry);
+const hitGeometry = new THREE.BoxGeometry(w, h, d);
+const hitMaterial = new THREE.MeshBasicMaterial({ visible: false });
 const scrollGeometry = new THREE.CylinderGeometry(0.12, 0.12, 0.9, 24);
 const coinGeometry = new THREE.CylinderGeometry(0.17, 0.17, 0.05, 40);
+const sealGeometry = new THREE.PlaneGeometry(0.62, 0.62);
+const parentSealGeometry = new THREE.PlaneGeometry(0.34, 0.34);
+
+// Cadre de la face avant : un carton découpé, avec un trou pour la fenêtre.
+const frameGeometry = (() => {
+  const shape = new THREE.Shape();
+  shape.moveTo(-w / 2, -h / 2).lineTo(w / 2, -h / 2).lineTo(w / 2, h / 2).lineTo(-w / 2, h / 2).lineTo(-w / 2, -h / 2);
+  const hole = new THREE.Path();
+  hole
+    .moveTo(-w / 2 + MARGIN, -h / 2 + MARGIN)
+    .lineTo(-w / 2 + MARGIN, h / 2 - MARGIN)
+    .lineTo(w / 2 - MARGIN, h / 2 - MARGIN)
+    .lineTo(w / 2 - MARGIN, -h / 2 + MARGIN)
+    .lineTo(-w / 2 + MARGIN, -h / 2 + MARGIN);
+  shape.holes.push(hole);
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: T, bevelEnabled: false });
+  const uv = geometry.attributes.uv.array;
+  for (let i = 0; i < uv.length; i++) uv[i] *= 0.55; // le grain du carton à la bonne échelle
+  return geometry;
+})();
+const vellumGeometry = new THREE.PlaneGeometry(w - MARGIN * 2, h - MARGIN * 2);
 
 // Traits épais (Line2) : leur épaisseur est en pixels, il faut leur donner la taille de l'écran.
 const leaderMaterials = [];
@@ -31,88 +45,11 @@ export function setLeaderResolution(width, height) {
   leaderMaterials.forEach((material) => material.resolution.set(width, height));
 }
 
-function hashBytes(hash) {
-  return hash.match(/../g).map((byte) => parseInt(byte, 16));
-}
+// Le sceau est un coup de tampon encreur, tiré du vrai hash (voir papier.js).
+export const sealTexture = stampTexture;
 
-// Sceau de cire : la teinte, le bord irrégulier et les rayons gravés sont tirés des octets de l'empreinte.
-// Une empreinte différente donne un sceau différent ; le bloc de genèse n'a pas de parent (cire grise).
-export function sealTexture(hash) {
-  const size = 256;
-  const c = size / 2;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size;
-  const g = canvas.getContext('2d');
-  const bytes = hashBytes(hash);
-  // Les premiers octets valent toujours 00 (difficulté du minage) : la teinte vient du dernier.
-  const hue = (bytes[31] / 256) * 360;
-  const sat = hash === GENESIS_PARENT ? 0 : 58;
-  const wax = (l) => `hsl(${hue} ${sat}% ${l}%)`;
-
-  // Bord coulé, irrégulier.
-  g.beginPath();
-  for (let i = 0; i <= 32; i++) {
-    const a = (i / 32) * Math.PI * 2;
-    const r = c - 14 + (bytes[i % 32] / 255) * 12;
-    g.lineTo(c + Math.cos(a) * r, c + Math.sin(a) * r);
-  }
-  g.closePath();
-  g.fillStyle = wax(36);
-  g.fill();
-
-  // Empreinte pressée au centre.
-  const gradient = g.createRadialGradient(c - 20, c - 20, 10, c, c, 92);
-  gradient.addColorStop(0, wax(52));
-  gradient.addColorStop(1, wax(32));
-  g.beginPath();
-  g.arc(c, c, 88, 0, Math.PI * 2);
-  g.fillStyle = gradient;
-  g.fill();
-  g.lineWidth = 4;
-  g.strokeStyle = wax(24);
-  g.stroke();
-
-  // Rayons gravés : leur longueur suit les octets suivants.
-  g.strokeStyle = wax(22);
-  g.lineCap = 'round';
-  g.lineWidth = 5;
-  for (let i = 0; i < 16; i++) {
-    const a = (i / 16) * Math.PI * 2;
-    const inner = 46;
-    const outer = inner + 8 + (bytes[i + 2] / 255) * 30;
-    g.beginPath();
-    g.moveTo(c + Math.cos(a) * inner, c + Math.sin(a) * inner);
-    g.lineTo(c + Math.cos(a) * outer, c + Math.sin(a) * outer);
-    g.stroke();
-  }
-
-  g.fillStyle = wax(18);
-  g.font = '500 34px "Fira Mono", ui-monospace, monospace';
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.fillText(hash.slice(0, 4), c, c + 2);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  return texture;
-}
-
-function coinTexture(nonce) {
-  const size = 128;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size;
-  const g = canvas.getContext('2d');
-  g.fillStyle = '#d9a93a';
-  g.fillRect(0, 0, size, size);
-  g.fillStyle = '#4a3305';
-  g.font = `bold ${nonce > 999 ? 30 : 40}px system-ui, sans-serif`;
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.fillText(String(nonce), size / 2, size / 2);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  return texture;
-}
+const stampMaterial = (hash) =>
+  new THREE.MeshStandardMaterial({ map: stampTexture(hash), transparent: true, roughness: 0.95, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
 
 function makeLabel(className, html) {
   const el = document.createElement('div');
@@ -124,42 +61,76 @@ function makeLabel(className, html) {
 export function createCoffre(block) {
   const group = new THREE.Group();
 
-  const body = new THREE.Mesh(bodyGeometry, glassMaterial);
-  body.castShadow = true;
+  // Boîte en carton : dos, côtés, fond, couvercle un peu plus large ; face avant = cadre + calque.
+  const shadowed = (mesh) => {
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    return mesh;
+  };
+  // La boîte est dans son propre groupe : elle peut s'écraser au coup de tampon sans toucher à l'échelle
+  // du coffre entier (utilisée par les apparitions des notions 5 et 7).
+  const shell = new THREE.Group();
+  group.add(shell);
+  const walls = cardboard().clone(); // propre à ce coffre : il s'éclaire au survol
+  const panel = (width, height, depth, x, y, z, material = walls) => {
+    const mesh = shadowed(new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material));
+    mesh.position.set(x, y, z);
+    shell.add(mesh);
+    return mesh;
+  };
+  panel(w, h, T, 0, 0, -d / 2 + T / 2);
+  panel(T, h, d, -w / 2 + T / 2, 0, 0);
+  panel(T, h, d, w / 2 - T / 2, 0, 0);
+  panel(w, T, d, 0, -h / 2 + T / 2, 0);
+  panel(w + 0.08, T * 1.6, d + 0.08, 0, h / 2 + T * 0.8, 0, cardboardDark());
+  const frame = shadowed(new THREE.Mesh(frameGeometry, walls));
+  frame.position.z = d / 2 - T;
+  shell.add(frame);
+  const vellum = new THREE.Mesh(
+    vellumGeometry,
+    new THREE.MeshStandardMaterial({
+      map: paperMaterial(COLORS.vellum, { fibers: 220, grain: 0.05 }).map,
+      transparent: true,
+      opacity: 0.74,
+      roughness: 0.85,
+      emissive: new THREE.Color(0xffc98a),
+      emissiveIntensity: 0,
+      depthWrite: false,
+    }),
+  );
+  vellum.position.z = d / 2 - T / 2;
+  shell.add(vellum);
+  const body = new THREE.Mesh(hitGeometry, hitMaterial); // invisible : sert seulement au clic
   group.add(body);
-  const frame = new THREE.LineSegments(frameGeometry, frameMaterial.clone());
-  group.add(frame);
 
-  // Contenu visible à travers le verre.
+  // Contenu deviné à travers le calque : le rouleau de la transaction et la pièce du nonce.
   const contents = new THREE.Group();
   group.add(contents);
-  const scroll = new THREE.Mesh(scrollGeometry, scrollMaterial.clone());
+  const scroll = shadowed(new THREE.Mesh(scrollGeometry, paperMaterial(COLORS.scroll).clone()));
   scroll.rotation.z = Math.PI / 2;
   scroll.position.set(-0.2, -0.36, 0);
   contents.add(scroll);
-  const coinFace = new THREE.MeshStandardMaterial({ map: coinTexture(block.nonce), metalness: 0.6, roughness: 0.35 });
-  const coin = new THREE.Mesh(coinGeometry, [coinSideMaterial, coinFace, coinFace]);
+  const coinFace = new THREE.MeshStandardMaterial({ map: coinTexture(block.nonce), roughness: 0.6 });
+  const coinSide = new THREE.MeshStandardMaterial({ color: COLORS.gold, roughness: 0.6 });
+  const coin = shadowed(new THREE.Mesh(coinGeometry, [coinSide, coinFace, coinFace]));
   coin.rotation.x = Math.PI / 2;
   coin.position.set(0.58, -0.3, 0.15);
   contents.add(coin);
 
   // Sceau du coffre (sa propre empreinte), sur la face avant.
-  const seal = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.62, 0.62),
-    new THREE.MeshStandardMaterial({ map: sealTexture(block.hash), roughness: 0.45, transparent: true }),
-  );
-  seal.position.set(0.18, 0.16, d / 2 + 0.005);
+  // Tamponné sur le calque, un peu de travers comme un vrai coup de tampon.
+  const seal = new THREE.Mesh(sealGeometry, stampMaterial(block.hash));
+  seal.position.set(0.18, 0.16, d / 2 + 0.003);
+  seal.rotation.z = -0.08 + ((block.index * 37) % 10) / 60;
   group.add(seal);
 
-  // Sceau du parent, gravé en petit dans le coin gauche (côté du coffre précédent).
-  const parentSeal = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.34, 0.34),
-    new THREE.MeshStandardMaterial({ map: sealTexture(block.parentHash), roughness: 0.5, transparent: true }),
-  );
-  parentSeal.position.set(-w / 2 + 0.26, h / 2 - 0.24, d / 2 + 0.005);
+  // Sceau du parent, recopié en petit dans le coin gauche (côté du coffre précédent).
+  const parentSeal = new THREE.Mesh(parentSealGeometry, stampMaterial(block.parentHash));
+  parentSeal.position.set(-w / 2 + 0.26, h / 2 - 0.24, d / 2 + 0.003);
+  parentSeal.rotation.z = 0.1;
   group.add(parentSeal);
 
-  // Anneaux corail autour des sceaux, allumés quand on compare un sceau à sa copie chez le suivant.
+  // Cercles de surligneur corail autour des sceaux, allumés quand on compare un sceau à sa copie chez le suivant.
   const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xe0684b, transparent: true, opacity: 0, depthTest: false });
   const makeRing = (inner, outer, at) => {
     const ring = new THREE.Mesh(new THREE.RingGeometry(inner, outer, 48), ringMaterial);
@@ -173,6 +144,7 @@ export function createCoffre(block) {
   const parentRing = makeRing(0.19, 0.23, parentSeal.position);
   let glow = 0;
   let glowTarget = 0;
+  let stampPop = 1; // repart de 0 à chaque coup de tampon (petit écrasement du coffre)
 
   const plate = makeLabel('plate', `Bloc n°${block.index}`);
   plate.position.set(0, h / 2 + 0.3, 0);
@@ -200,7 +172,7 @@ export function createCoffre(block) {
     const dot = makeLabel('anchor', '');
     group.add(dot);
     const line = new Line2(new LineGeometry(), leaderMaterial);
-    line.renderOrder = 10; // dessiné par-dessus le verre
+    line.renderOrder = 10; // dessiné par-dessus le calque
     group.add(line);
     return { label, dot, line, target, offset: new THREE.Vector3(...offset), end: new THREE.Vector3(...at) };
   });
@@ -251,8 +223,9 @@ export function createCoffre(block) {
       text(0, data);
       text(2, shortHash(hash));
       seal.material.map.dispose();
-      seal.material.map = sealTexture(hash);
+      seal.material.map = stampTexture(hash);
       seal.material.needsUpdate = true;
+      stampPop = 0; // nouveau coup de tampon
       plate.element.classList.toggle('is-broken', Boolean(shown));
       plate.element.textContent = shown ? `Bloc n°${block.index} · falsifié` : `Bloc n°${block.index}`;
     },
@@ -267,9 +240,11 @@ export function createCoffre(block) {
       text(1, trial.nonce);
       text(2, shortHash(trial.hash));
       seal.material.map.dispose();
-      seal.material.map = sealTexture(trial.hash);
-      seal.material.opacity = valid ? 1 : 0.45;
+      seal.material.map = stampTexture(trial.hash);
+      // Un essai raté laisse un tampon pâle (pas assez d'encre) ; le bon nonce, un vrai coup de tampon.
+      seal.material.opacity = valid ? 1 : 0.35;
       seal.material.needsUpdate = true;
+      if (valid) stampPop = 0;
       coinFace.map.dispose();
       coinFace.map = coinTexture(trial.nonce);
       coinFace.needsUpdate = true;
@@ -280,15 +255,22 @@ export function createCoffre(block) {
       plate.element.classList.toggle('is-broken', broken);
     },
     setHover(value) {
-      frame.material.opacity = value ? 1 : 0.9;
-      frame.material.color.set(value ? 0xe0684b : 0x7d8899);
+      walls.emissive.setHex(value ? 0x40160a : 0);
     },
     update(dt, elapsed, instant) {
       const target = inspected ? 1 : 0;
       reveal = instant ? target : THREE.MathUtils.damp(reveal, target, 6, dt);
-      // Le contenu se soulève légèrement et s'éclaire pendant l'inspection.
+      // Inspection = lampe allumée : le calque s'éclaire par derrière et devient plus transparent,
+      // et le contenu se soulève légèrement.
       contents.position.y = reveal * (0.1 + Math.sin(elapsed * 2) * 0.02);
       scroll.material.emissive.setRGB(0.25 * reveal, 0.2 * reveal, 0.1 * reveal);
+      vellum.material.emissiveIntensity = reveal * 0.35;
+      vellum.material.opacity = 0.74 - reveal * 0.44;
+      // Coup de tampon : le coffre s'écrase un instant puis reprend sa forme, l'encre s'étale.
+      stampPop = instant ? 1 : Math.min(1, stampPop + dt * 3.5);
+      const squash = 1 - 0.12 * Math.sin(stampPop * Math.PI) * (1 - stampPop);
+      shell.scale.set(1 + (1 - squash) * 0.4, squash, 1 + (1 - squash) * 0.4);
+      seal.scale.setScalar(1 + 0.25 * (1 - stampPop) ** 2);
       leaderMaterial.opacity = reveal;
       glow = instant ? glowTarget : THREE.MathUtils.damp(glow, glowTarget, 6, dt);
       ringMaterial.opacity = glow * (0.75 + Math.sin(elapsed * 4) * 0.2);

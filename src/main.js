@@ -9,12 +9,14 @@ import { createArchipel, setRouteResolution, SENDER } from './archipel.js';
 import { createMiner, DIFFICULTIES } from './minage.js';
 import { createConsensus, METHODS } from './consensus.js';
 import { createRace, ATTACKS } from './race.js';
+import { createTape } from './papier.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // --- Rendu ---
 const canvas = document.querySelector('#scene');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+// Fond transparent : le bureau en papier est dessiné en CSS derrière la scène (grain, lumière de lampe).
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.NeutralToneMapping;
@@ -26,19 +28,11 @@ labelRenderer.setSize(window.innerWidth, window.innerHeight);
 labelRenderer.domElement.className = 'labels';
 document.body.appendChild(labelRenderer.domElement);
 
-// Neumorphisme : la scène a la même couleur que l'interface (variable CSS --bg),
-// le sol est invisible et ne garde que les ombres douces des coffres.
+// Maquette en papier sur un bureau : la scène est posée sur le papier de la page (variable CSS --bg),
+// le sol est invisible et ne garde que les ombres douces des objets.
 const scene = new THREE.Scene();
-scene.background = new THREE.Color();
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
-scene.environmentIntensity = 0.7;
-
-const colorScheme = window.matchMedia('(prefers-color-scheme: dark)');
-function syncTheme() {
-  scene.background.setStyle(getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
-}
-syncTheme();
-colorScheme.addEventListener('change', syncTheme);
+scene.environmentIntensity = 0.5;
 
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(0.5, 3.4, 11);
@@ -52,8 +46,9 @@ controls.maxDistance = 18;
 controls.maxPolarAngle = Math.PI * 0.55;
 
 // Lumière venant d'en haut à gauche, comme les ombres de l'interface.
-scene.add(new THREE.HemisphereLight(0xffffff, 0xb8c2cf, 1.4));
-const light = new THREE.DirectionalLight(0xffffff, 1.6);
+// Lumière chaude de lampe de bureau, en haut à gauche.
+scene.add(new THREE.HemisphereLight(0xfff4e2, 0xc9b89f, 1.6));
+const light = new THREE.DirectionalLight(0xffe2b8, 2);
 light.position.set(-5, 9, 6);
 light.castShadow = true;
 light.shadow.mapSize.set(2048, 2048);
@@ -63,7 +58,7 @@ light.shadow.bias = -0.0005;
 Object.assign(light.shadow.camera, { left: -8, right: 16, top: 6, bottom: -5, near: 1, far: 34 });
 scene.add(light);
 
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.16 }));
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.22, color: 0x5a3e22 }));
 ground.rotation.x = -Math.PI / 2;
 ground.position.y = -COFFRE_SIZE.h / 2;
 ground.receiveShadow = true;
@@ -99,13 +94,11 @@ async function buildScene() {
     scene.add(coffre.group);
     coffres.push(coffre);
 
-    // Lien entre le coffre précédent et celui-ci (le sceau du parent est gravé sur ce côté).
+    // Lien entre le coffre précédent et celui-ci : un ruban adhésif collé d'une boîte à l'autre
+    // (côté du sceau du parent). C'est un repère : la preuve du lien reste le sceau recopié.
     if (i > 0) {
-      const length = SPACING - COFFRE_SIZE.w;
-      const link = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, length, 12), new THREE.MeshStandardMaterial({ color: LINK_COLOR, roughness: 0.5 }));
+      const link = createTape(coffres[i - 1].group.position, coffre.group.position, LINK_COLOR, { width: SPACING - COFFRE_SIZE.w + 0.06 });
       links[i] = link;
-      link.rotation.z = Math.PI / 2;
-      link.position.set(coffre.group.position.x - SPACING / 2, 0.1, 0);
       scene.add(link);
     }
   });
@@ -115,9 +108,7 @@ async function buildScene() {
   newCoffre.group.position.x = startX + chain.length * SPACING;
   scene.add(newCoffre.group);
   coffres.push(newCoffre);
-  const link = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, SPACING - COFFRE_SIZE.w, 12), new THREE.MeshStandardMaterial({ color: LINK_COLOR, roughness: 0.5 }));
-  link.rotation.z = Math.PI / 2;
-  link.position.set(newCoffre.group.position.x - SPACING / 2, 0.1, 0);
+  const link = createTape(coffres[chain.length - 1].group.position, newCoffre.group.position, LINK_COLOR, { width: SPACING - COFFRE_SIZE.w + 0.06 });
   links[chain.length] = link;
   scene.add(link);
   miner = createMiner(pending);
@@ -310,7 +301,7 @@ function renderText() {
   ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
 
   ui.inspect.hidden = !coffre && !sequence.chain && !sequence.network;
-  const [labelOff, labelOn] = sequence.button ?? ['Regarder dans le coffre', 'C’est bon, j’ai vu'];
+  const [labelOff, labelOn] = sequence.button ?? ['Allumer la lampe du coffre', 'Éteindre la lampe'];
   ui.inspect.textContent = open ? labelOn : labelOff;
   // Sur l'archipel, le bouton (r)envoie la transaction : ce n'est pas un interrupteur.
   if (sequence.network) ui.inspect.removeAttribute('aria-pressed');
@@ -388,6 +379,8 @@ function goTo(index) {
   showing.archipel = onArchipel(sequence);
   showing.newCoffre = Boolean(sequence.mining || sequence.race);
   showing.race = Boolean(sequence.race);
+  // Machines et jetons de la notion 6 : seulement sur l'archipel de cette notion, pas à la notion 4.
+  consensus.group.visible = Boolean(sequence.consensus);
   ui.inspect.disabled = false;
   ui.panel.removeAttribute('aria-busy');
   miningState = 'idle';

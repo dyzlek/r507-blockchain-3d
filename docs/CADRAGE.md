@@ -31,7 +31,7 @@ Durée visée du parcours : 10 à 15 minutes.
 
 **Fil rouge : suivre une transaction, « Dylan envoie 5 jetons à Maxens », de sa création jusqu'à sa confirmation, puis voir un tricheur tenter de la défaire.**
 
-**Métaphore principale : un registre de coffres de verre scellés, recopié dans un archipel.** Chaque bloc est un coffre transparent (on voit ses données) fermé par un sceau coloré : son empreinte. Le sceau du bloc précédent est gravé sur le suivant, ce qui forme la chaîne. Chaque île de l'archipel est un nœud qui garde sa propre copie de la chaîne. Il n'y a pas d'île centrale.
+**Métaphore principale : un registre de coffres scellés, recopié dans un archipel.** Depuis la branche `styleV2`, tout est en papier découpé : chaque bloc est un coffre en carton à fenêtre de calque (on devine ses données) fermé par un sceau coloré : son empreinte. Le sceau du bloc précédent est gravé sur le suivant, ce qui forme la chaîne. Chaque île de l'archipel est un nœud qui garde sa propre copie de la chaîne. Il n'y a pas d'île centrale.
 
 | Étape du parcours | Notion | Ce que fait l'utilisateur |
 |:---|:---|:---|
