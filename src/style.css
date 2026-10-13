@@ -85,6 +85,40 @@ body {
   font-weight: 700;
 }
 
+/* Coffre miné (notion 5) : son sceau respecte la difficulté. */
+.plate.is-sealed {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Choix de la difficulté du minage. */
+.choices {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.choices button {
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.choices button[aria-pressed='true'] {
+  box-shadow: var(--inset-sm);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.choices button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
 /* Îles de l'archipel : celles qui ont reçu la transaction passent en accent, les éteintes s'effacent. */
 .plate.is-received {
   color: var(--accent);
@@ -379,31 +413,80 @@ summary:focus-visible {
 
 #dots {
   order: -1;
+  position: relative;
   width: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 4px;
-  padding: 4px;
+  align-items: center;
+  padding: 8px 10px;
   border-radius: 999px;
   box-shadow: var(--inset-sm);
   list-style: none;
 }
 
+/* Rail et remplissage : la progression dans le parcours. */
+#dots::before,
+#dots::after {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+}
+
+#dots::before {
+  right: 24px;
+  background: var(--muted);
+  opacity: 0.25;
+}
+
+#dots::after {
+  width: calc((100% - 48px) * var(--progress, 0));
+  background: var(--accent-soft);
+  transition: width 0.5s ease;
+}
+
+#dots li {
+  position: relative;
+  z-index: 1;
+}
+
 #dots button {
-  min-width: 30px;
-  height: 30px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   border: 0;
-  border-radius: 999px;
-  background: transparent;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
   color: var(--muted);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.25s ease, color 0.25s ease, background 0.25s ease;
+}
+
+#dots button:hover {
+  color: var(--accent);
+}
+
+/* Étapes déjà vues : pastille corail. */
+#dots .is-done button {
+  background: var(--accent-soft);
+  color: #fff;
 }
 
 #dots .is-current button {
+  transform: scale(1.25);
   background: var(--bg);
-  box-shadow: var(--raised-sm);
+  box-shadow: var(--inset-sm);
   color: var(--accent);
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
 }
 
 /* Téléphone : le panneau passe en bas de l'écran. */
@@ -431,6 +514,11 @@ summary:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  #dots::after,
+  #dots button {
+    transition: none;
+  }
+
   .hint,
   .anchor::after {
     animation: none;

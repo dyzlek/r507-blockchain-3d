@@ -7,26 +7,26 @@ import { COFFRE_SIZE, sealTexture } from './coffre.js';
 
 // Le réseau = un archipel. Chaque île est un nœud qui garde sa propre copie de la chaîne.
 // Aucune île n'est au centre : chacune n'est reliée qu'à quelques voisines, et la transaction
-// d'Alice se propage de proche en proche (gossip).
+// de Dylan se propage de proche en proche (gossip).
 const ISLANDS = [
-  { name: 'Alice', at: [-4.8, 0.5] },
-  { name: 'Carla', at: [-2.5, -2.1] },
-  { name: 'David', at: [-2.3, 2.3] },
-  { name: 'Emma', at: [0.1, -0.1] },
-  { name: 'Farid', at: [2.4, -2.3] },
-  { name: 'Gaëlle', at: [2.5, 2.2] },
-  { name: 'Bob', at: [4.8, -0.1] },
+  { name: 'Dylan', at: [-4.8, 0.5] },
+  { name: 'Nicolas', at: [-2.5, -2.1] },
+  { name: 'Pierre', at: [-2.3, 2.3] },
+  { name: 'Thomas', at: [0.1, -0.1] },
+  { name: 'Julien', at: [2.4, -2.3] },
+  { name: 'Lucas', at: [2.5, 2.2] },
+  { name: 'Maxens', at: [4.8, -0.1] },
 ];
 
-// Liaisons entre îles (indices dans ISLANDS). Si on éteint n'importe quelle île (sauf Alice),
+// Liaisons entre îles (indices dans ISLANDS). Si on éteint n'importe quelle île (sauf Dylan),
 // les autres restent reliées : le message trouve toujours un autre chemin.
 const ROUTES = [
   [0, 1], [0, 2], [1, 3], [2, 3], [1, 4],
   [3, 4], [3, 5], [2, 5], [4, 6], [5, 6],
 ];
 
-export const SENDER = 0; // l'île d'Alice
-const RECEIVER = 6; // l'île de Bob
+export const SENDER = 0; // l'île de Dylan
+const RECEIVER = 6; // l'île de Maxens
 const HINT_OFF = 3; // l'île du milieu, la plus tentante à éteindre
 
 const R = 0.95; // rayon d'une île
@@ -61,7 +61,7 @@ export function setRouteResolution(width, height) {
   routeMaterials.forEach((material) => material.resolution.set(width, height));
 }
 
-// « l'île d'Alice », « l'île de Bob »
+// « l'île de Dylan », « l'île de Maxens »
 const of = (name) => (/^[AEIOUÉ]/.test(name) ? `d’${name}` : `de ${name}`);
 
 function makeLabel(className, html) {
@@ -219,7 +219,7 @@ export function createArchipel(chain) {
   }
 
   Object.assign(api, {
-    // Envoie la transaction d'Alice (ou la renvoie, en gardant les îles éteintes).
+    // Envoie la transaction de Dylan (ou la renvoie, en gardant les îles éteintes).
     send(instant) {
       clearMessages();
       islands.forEach((island) => (island.received = false));
@@ -264,7 +264,7 @@ export function createArchipel(chain) {
       updateLabels();
       api.onChange();
     },
-    // 'send' : bulle sur l'île d'Alice ; 'off' : bulle sur l'île du milieu ; null : aucune.
+    // 'send' : bulle sur l'île de Dylan ; 'off' : bulle sur l'île du milieu ; null : aucune.
     setHint(mode) {
       if (mode === hintMode) return;
       hintMode = mode;

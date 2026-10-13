@@ -10,9 +10,9 @@ export const FIL_ROUGE_INDEX = 2;
 
 const BLOCK_DATA = [
   'Bloc de départ (genèse)',
-  'Carla → David : 2 jetons',
-  'Alice → Bob : 5 jetons',
-  'Bob → Emma : 1 jeton',
+  'Nicolas → Pierre : 2 jetons',
+  'Thomas → Julien : 3 jetons',
+  'Lucas → Nicolas : 1 jeton',
 ];
 
 export async function sha256(text) {
