@@ -5,6 +5,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { buildChain, shortHash, sha256, blockContent, DIFFICULTY } from './chain.js';
 import { createCoffre, COFFRE_SIZE, setLeaderResolution } from './coffre.js';
 import { SEQUENCES } from './sequences.js';
+import { createArchipel, setRouteResolution, SENDER } from './archipel.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -71,6 +72,10 @@ const links = []; // un matériau par lien, pour pouvoir le rougir quand la cha�
 const LINK_COLOR = 0xe0684b;
 const BROKEN_COLOR = 0xb3261e;
 
+// L'archipel (notion 4) est construit à l'écart de la chaîne : la caméra s'y rend.
+const ARCHIPEL_POSITION = new THREE.Vector3(0, 0, -22);
+let archipel = null;
+
 async function buildScene() {
   const chain = await buildChain();
   const startX = -((chain.length - 1) * SPACING) / 2;
@@ -90,6 +95,14 @@ async function buildScene() {
       scene.add(link);
     }
   });
+
+  archipel = createArchipel(chain);
+  archipel.group.position.copy(ARCHIPEL_POSITION);
+  archipel.group.visible = false;
+  archipel.onChange = () => {
+    if (SEQUENCES[current].network) renderText();
+  };
+  scene.add(archipel.group);
 }
 
 // --- Transitions de caméra ---
@@ -99,15 +112,20 @@ const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
 function cameraGoal(sequence) {
   const anchorIndex = sequence.cameraOn ?? sequence.focus;
-  const origin = anchorIndex === null ? new THREE.Vector3() : coffres[anchorIndex].group.position.clone();
+  let origin = anchorIndex === null ? new THREE.Vector3() : coffres[anchorIndex].group.position.clone();
+  if (sequence.network) origin = ARCHIPEL_POSITION.clone();
   const target = origin.clone().add(new THREE.Vector3(...sequence.camera.target));
   const offset = new THREE.Vector3(...sequence.camera.position).sub(new THREE.Vector3(...sequence.camera.target));
   // Écran étroit (téléphone) : on recule pour garder les étiquettes dans le cadre.
   offset.multiplyScalar(Math.max(1, (window.innerWidth > 760 ? 1.35 : 2) / (visibleAspect || 1)));
+  // L'archipel est plus large que la chaîne : en écran étroit, on recule encore pour voir Alice et Bob.
+  if (sequence.network && window.innerWidth <= 760) offset.multiplyScalar(1.4);
   return { position: target.clone().add(offset), target };
 }
 
 function moveCamera(sequence) {
+  // L'archipel est plus large que la chaîne : on autorise à reculer davantage.
+  controls.maxDistance = sequence.network ? 32 : 18;
   const goal = cameraGoal(sequence);
   if (reducedMotion) {
     camera.position.copy(goal.position);
@@ -158,14 +176,16 @@ const focused = () => (SEQUENCES[current].focus === null ? null : coffres[SEQUEN
 function renderText() {
   const sequence = SEQUENCES[current];
   const coffre = focused();
-  const open = sequence.chain ? linked : coffre?.inspected;
+  const open = sequence.chain || sequence.network ? linked : coffre?.inspected;
   const paragraphs = open && sequence.textInspected ? sequence.textInspected : sequence.text;
   ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
 
-  ui.inspect.hidden = !coffre && !sequence.chain;
+  ui.inspect.hidden = !coffre && !sequence.chain && !sequence.network;
   const [labelOff, labelOn] = sequence.button ?? ['Regarder dans le coffre', 'C’est bon, j’ai vu'];
   ui.inspect.textContent = open ? labelOn : labelOff;
-  ui.inspect.setAttribute('aria-pressed', String(Boolean(open)));
+  // Sur l'archipel, le bouton (r)envoie la transaction : ce n'est pas un interrupteur.
+  if (sequence.network) ui.inspect.removeAttribute('aria-pressed');
+  else ui.inspect.setAttribute('aria-pressed', String(Boolean(open)));
 
   ui.fields.hidden = !open;
   if (sequence.tamper && tampered) {
@@ -180,6 +200,16 @@ function renderText() {
     ]
       .map(([key, value]) => `<div><dt>${key}</dt><dd><code>${value}</code></dd></div>`)
       .join('');
+  } else if (sequence.network && linked) {
+    const { running, total, received, offline, unreached, bobReceived } = archipel.summary();
+    const rows = [
+      ['Ont reçu la transaction', `${received.length} île${received.length > 1 ? 's' : ''} sur ${total}${running ? ', et ça continue…' : ''}`],
+      ['Bob', bobReceived ? 'a reçu la transaction' : running ? 'attend encore' : 'pas joint'],
+      ['Îles éteintes', offline.length ? offline.join(', ') : 'aucune'],
+    ];
+    if (!running && unreached.length) rows.push(['Pas jointes', `${unreached.join(', ')} : plus aucun chemin allumé ne mène jusqu’à elles`]);
+    rows.push(['Île centrale', 'aucune : chaque île vérifie et fait suivre']);
+    ui.fields.innerHTML = rows.map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`).join('');
   } else if (sequence.chain && linked) {
     ui.fields.innerHTML = sequence.chain
       .map((i) => {
@@ -205,6 +235,10 @@ function renderText() {
     c.setGlow(Boolean(sequence.chain?.includes(i)) && linked && (!sequence.tamper || broken), broken ? BROKEN_COLOR : LINK_COLOR);
   });
   links.forEach((link, i) => link?.material.color.set(tampered && i === tampered.index + 1 ? BROKEN_COLOR : LINK_COLOR));
+  if (sequence.network) {
+    const { running, offline } = archipel.summary();
+    archipel.setHint(!linked ? 'send' : !running && !offline.length ? 'off' : null);
+  }
   fitView();
 }
 
@@ -217,6 +251,9 @@ function goTo(index) {
   });
   linked = false;
   tampered = null;
+  archipel.reset();
+  archipel.setHint(null);
+  archipel.group.visible = Boolean(sequence.network);
 
   ui.stepNumber.textContent = String(current + 1);
   ui.step.textContent = sequence.step;
@@ -235,6 +272,11 @@ function goTo(index) {
 
 async function toggleInspect() {
   const sequence = SEQUENCES[current];
+  if (sequence.network) {
+    linked = true;
+    archipel.send(reducedMotion);
+    return; // `send` prévient via `onChange`, qui redessine le panneau
+  }
   if (sequence.tamper) {
     const target = coffres[sequence.tamper.index];
     if (tampered) {
@@ -278,11 +320,22 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let downAt = null;
 
-function pickFocused(event) {
-  const candidates = SEQUENCES[current].chain?.map((i) => coffres[i]) ?? [focused()];
+function aim(event) {
   pointer.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
   raycaster.setFromCamera(pointer, camera);
+}
+
+function pickFocused(event) {
+  const candidates = SEQUENCES[current].chain?.map((i) => coffres[i]) ?? [focused()];
+  aim(event);
   return candidates.find((c) => c && raycaster.intersectObject(c.hitMesh).length) ?? null;
+}
+
+// Sur l'archipel : l'île d'Alice envoie la transaction, les autres s'allument ou s'éteignent.
+function pickIsland(event) {
+  if (!SEQUENCES[current].network) return -1;
+  aim(event);
+  return archipel.pick(raycaster);
 }
 
 canvas.addEventListener('pointerdown', (event) => {
@@ -291,13 +344,18 @@ canvas.addEventListener('pointerdown', (event) => {
 canvas.addEventListener('pointerup', (event) => {
   // Un glisser sert à tourner la caméra : seul un vrai clic inspecte.
   if (!downAt || Math.hypot(event.clientX - downAt.x, event.clientY - downAt.y) > 6) return;
-  if (pickFocused(event)) toggleInspect();
+  const island = pickIsland(event);
+  if (island === SENDER) toggleInspect();
+  else if (island >= 0) archipel.toggleOffline(island);
+  else if (pickFocused(event)) toggleInspect();
 });
 canvas.addEventListener('pointermove', (event) => {
   if (event.pointerType !== 'mouse') return;
   const hovered = pickFocused(event);
   coffres.forEach((c) => c.setHover(c === hovered));
-  canvas.style.cursor = hovered ? 'pointer' : '';
+  const island = pickIsland(event);
+  archipel?.setHover(island);
+  canvas.style.cursor = hovered || island >= 0 ? 'pointer' : '';
 });
 
 // Décale le centre de la vue pour que la scène ne soit pas cachée par le panneau
@@ -318,6 +376,7 @@ function fitView() {
   renderer.setSize(w, h);
   labelRenderer.setSize(w, h);
   setLeaderResolution(w, h);
+  setRouteResolution(w, h);
 }
 
 // Après un redimensionnement (ou si la page a été chargée dans une fenêtre cachée), on recadre.
@@ -334,6 +393,7 @@ timer.connect(document);
 await document.fonts.ready; // les sceaux sont dessinés avec la police mono
 await buildScene();
 setLeaderResolution(window.innerWidth, window.innerHeight);
+setRouteResolution(window.innerWidth, window.innerHeight);
 // ?etape=2 ouvre directement la 2e séquence (tests utilisateurs, soutenance).
 goTo(Number(new URLSearchParams(location.search).get('etape') ?? 1) - 1 || 0);
 
@@ -342,10 +402,11 @@ renderer.setAnimationLoop((time) => {
   const dt = Math.min(timer.getDelta(), 0.1);
   updateTween(dt);
   coffres.forEach((c) => c.update(dt, timer.getElapsed(), reducedMotion));
+  archipel.update(dt, timer.getElapsed(), reducedMotion);
   controls.update();
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 });
 
 // Accès pour le débogage dans la console.
-window.app = { scene, camera, controls, coffres, goTo };
+window.app = { scene, camera, controls, coffres, archipel, goTo };
