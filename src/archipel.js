@@ -8,7 +8,7 @@ import { COFFRE_SIZE, sealTexture } from './coffre.js';
 // Le réseau = un archipel. Chaque île est un nœud qui garde sa propre copie de la chaîne.
 // Aucune île n'est au centre : chacune n'est reliée qu'à quelques voisines, et la transaction
 // de Dylan se propage de proche en proche (gossip).
-const ISLANDS = [
+export const ISLANDS = [
   { name: 'Dylan', at: [-4.8, 0.5] },
   { name: 'Nicolas', at: [-2.5, -2.1] },
   { name: 'Pierre', at: [-2.3, 2.3] },
@@ -31,7 +31,7 @@ const HINT_OFF = 3; // l'île du milieu, la plus tentante à éteindre
 
 const R = 0.95; // rayon d'une île
 const GROUND_Y = -COFFRE_SIZE.h / 2;
-const TOP_Y = GROUND_Y + 0.3;
+export const TOP_Y = GROUND_Y + 0.3;
 const SPEED = 3.2; // vitesse d'un message, en unités par seconde
 const VERIFY_DELAY = 0.4; // une île vérifie la transaction avant de la faire suivre
 const ACCENT = 0xe0684b;

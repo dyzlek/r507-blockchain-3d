@@ -167,9 +167,10 @@ export function createCoffre(block) {
     ring.position.z += 0.01;
     ring.renderOrder = 9;
     group.add(ring);
+    return ring;
   };
-  makeRing(0.34, 0.4, seal.position);
-  makeRing(0.19, 0.23, parentSeal.position);
+  const sealRing = makeRing(0.34, 0.4, seal.position);
+  const parentRing = makeRing(0.19, 0.23, parentSeal.position);
   let glow = 0;
   let glowTarget = 0;
 
@@ -236,9 +237,12 @@ export function createCoffre(block) {
     setHint(value) {
       hint.visible = value;
     },
-    setGlow(value, color = 0xe0684b) {
+    // `own` / `parent` choisissent les anneaux allumés : le sceau du coffre, sa copie du sceau d'avant, ou les deux.
+    setGlow(value, color = 0xe0684b, { own = true, parent = true } = {}) {
       glowTarget = value ? 1 : 0;
       ringMaterial.color.set(color);
+      sealRing.visible = own;
+      parentRing.visible = parent;
     },
     // Affiche un contenu falsifié (ou remet l'original avec `null`) : nouveau sceau et nouvelles étiquettes.
     setShown(shown) {
@@ -269,6 +273,11 @@ export function createCoffre(block) {
       coinFace.map.dispose();
       coinFace.map = coinTexture(trial.nonce);
       coinFace.needsUpdate = true;
+    },
+    // Double dépense (notion 7) : texte de la plaque, en rouge pour la branche du tricheur ou un bloc abandonné.
+    setPlate(label, { broken = false } = {}) {
+      plate.element.textContent = label ?? `Bloc n°${block.index}`;
+      plate.element.classList.toggle('is-broken', broken);
     },
     setHover(value) {
       frame.material.opacity = value ? 1 : 0.9;

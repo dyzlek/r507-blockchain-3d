@@ -4,7 +4,8 @@
 // `tamper` : le bouton falsifie les données de ce bloc et on recalcule le vrai sceau.
 // `network` : la caméra part sur l'archipel, le bouton envoie la transaction de Dylan d'île en île.
 // `mining` : un nouveau coffre au bout de la chaîne, le bouton lance la recherche du nonce (textRunning pendant les essais).
-// Les notions 6 et 7 viendront s'ajouter ici.
+// `consensus` : sur l'archipel, une course (preuve de travail) ou un tirage (preuve d'enjeu) désigne l'île qui scelle.
+// `race` : la branche secrète de Dylan fait la course contre la chaîne honnête (double dépense).
 
 export const SEQUENCES = [
   {
@@ -14,7 +15,7 @@ export const SEQUENCES = [
     text: [
       'Une blockchain, c’est un cahier de comptes que tout le monde peut lire, et que personne ne peut modifier en douce.',
       'Ici, chaque page du cahier est un <strong>coffre en verre</strong>, fermé par un sceau. Les coffres sont accrochés les uns aux autres, dans l’ordre.',
-      'On va suivre une transaction : <strong>Dylan envoie 5 jetons à Maxens</strong>.',
+      'On va suivre une transaction : <strong>Dylan envoie 5 jetons à Maxens</strong>. D’abord, on regarde les coffres déjà posés ; celle de Dylan arrivera dans la chaîne à la notion 5.',
     ],
     enVrai:
       'Les coffres sont une image. En vrai, ce sont des données copiées sur des milliers d’ordinateurs. Bitcoin ajoute un bloc toutes les 10 minutes environ, depuis 2009.',
@@ -127,5 +128,65 @@ export const SEQUENCES = [
     camera: { position: [-0.4, 1.3, 5.6], target: [-0.4, -0.05, 0] },
     focus: 4,
     mining: true,
+  },
+  {
+    id: 'consensus',
+    notion: 6,
+    step: 'Notion 6 · Consensus',
+    title: 'Qui scelle le bloc ?',
+    text: [
+      'Chaque île peut proposer le prochain bloc. Mais il en faut <strong>un seul</strong> : comment choisir, sans chef ?',
+      '<strong>Preuve de travail</strong> : une course au sceau, comme à la notion 5. Plus une île a de machines, plus elle va vite.',
+      '<strong>Preuve d’enjeu</strong> : un tirage au sort. Chaque île mise des jetons, et chaque jeton misé est un ticket.',
+    ],
+    textDone: {
+      pow: [
+        'Toutes les îles ont calculé, mais <strong>une seule</strong> a gagné : le travail des autres est perdu. C’est sûr, mais ça consomme beaucoup d’électricité.',
+        'Relance plusieurs fois : l’île qui a le plus de machines gagne plus souvent, mais pas à chaque fois. Puis essaie la preuve d’enjeu.',
+      ],
+      pos: [
+        'Pas de course : <strong>un seul tirage</strong>, presque aucun calcul. Plus une île a misé de jetons, plus elle a de chances d’être tirée.',
+        'Si l’île tirée scelle un faux bloc, les autres le refusent et elle <strong>perd sa mise</strong>. C’est ce qui la pousse à rester honnête.',
+      ],
+    },
+    buttons: {
+      pow: ['Lancer la course', 'Course en cours…', 'Relancer la course'],
+      pos: ['Faire le tirage', 'Tirage en cours…', 'Refaire le tirage'],
+    },
+    enVrai:
+      'Le <strong>consensus</strong>, c’est la règle qui permet à des milliers de nœuds de se mettre d’accord sur le bloc suivant. Bitcoin utilise la <strong>preuve de travail</strong> (<em>Proof of Work</em>) : il consomme autant d’électricité qu’un pays entier. Ethereum est passé à la <strong>preuve d’enjeu</strong> (<em>Proof of Stake</em>) en 2022 et a réduit sa consommation de plus de 99 % ; pour participer, il faut y miser 32 ethers. Limite des deux : en PoW, ceux qui ont les plus grosses machines gagnent plus souvent ; en PoS, ce sont les plus riches. Ici, la récompense du gagnant n’est pas montrée.',
+    camera: { position: [0, 7.5, 8.5], target: [0, -0.3, 0.4] },
+    focus: null,
+    consensus: true,
+  },
+  {
+    id: 'attaque',
+    notion: 7,
+    step: 'Notion 7 · Transaction et attaque',
+    title: 'La double dépense',
+    text: [
+      'La transaction de Dylan a fait tout le chemin : signée, envoyée aux îles, mise en attente, puis rangée dans le <strong>bloc 4</strong>. Maxens a ses 5 jetons.',
+      'Mais Dylan veut tricher. En secret, il fabrique <strong>un autre bloc 4</strong>, où les mêmes jetons lui reviennent. S’il réussit, il pourra les dépenser une deuxième fois : c’est une <strong>double dépense</strong>.',
+      'Règle des îles : on garde toujours <strong>la chaîne la plus longue</strong>. Dylan doit donc construire sa branche plus vite que tout le réseau. Choisis sa puissance et lance la course.',
+    ],
+    textRunning: [
+      'Chaque bloc ajouté après le bloc 4 est une <strong>confirmation</strong> de plus pour Maxens : plus il y en a, plus il est dur de revenir en arrière.',
+      'Dylan mine seul sa branche secrète, contre le reste du réseau.',
+    ],
+    textInspected: [
+      'Raté ! La branche de Dylan est <strong>plus courte</strong> : les îles la rejettent. Maxens garde ses jetons.',
+      'Avec moins de la moitié de la puissance, Dylan prend du retard à chaque bloc. Plus Maxens attend de confirmations, plus la triche devient impossible.',
+      'Essaie avec <strong>60 %</strong> de la puissance.',
+    ],
+    textAttack: [
+      'Dylan a gagné : sa branche est <strong>plus longue</strong>, toutes les îles l’adoptent. Le bloc 4 de Maxens est abandonné : ses 5 jetons disparaissent.',
+      'C’est l’<strong>attaque des 51 %</strong> : elle ne marche que si on contrôle plus de la moitié de la puissance du réseau. Sur Bitcoin, ça coûterait des milliards en machines et en électricité.',
+    ],
+    button: ['Lancer la course', 'Rejouer la course'],
+    enVrai:
+      'Sur Bitcoin, on considère qu’une transaction est sûre après environ <strong>6 confirmations</strong>, soit une heure. Ici, la course montre la vitesse <strong>moyenne</strong> de chaque camp ; en vrai, le minage est un tirage au sort, et un tricheur minoritaire peut avoir de la chance sur un ou deux blocs : c’est pour ça qu’on attend plusieurs confirmations. L’attaque des 51 % est déjà arrivée sur de petites blockchains peu protégées, comme Ethereum Classic en 2019 et 2020.',
+    camera: { position: [0.3, 7, 8.8], target: [0.3, -0.2, 0] },
+    focus: null,
+    race: true,
   },
 ];

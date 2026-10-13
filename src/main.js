@@ -7,6 +7,8 @@ import { createCoffre, COFFRE_SIZE, setLeaderResolution } from './coffre.js';
 import { SEQUENCES } from './sequences.js';
 import { createArchipel, setRouteResolution, SENDER } from './archipel.js';
 import { createMiner, DIFFICULTIES } from './minage.js';
+import { createConsensus, METHODS } from './consensus.js';
+import { createRace, ATTACKS } from './race.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -57,7 +59,8 @@ light.castShadow = true;
 light.shadow.mapSize.set(2048, 2048);
 light.shadow.radius = 8;
 light.shadow.bias = -0.0005;
-Object.assign(light.shadow.camera, { left: -8, right: 8, top: 5, bottom: -5, near: 1, far: 30 });
+// Le cadre des ombres va jusqu'à la course de la notion 7, à droite de la chaîne.
+Object.assign(light.shadow.camera, { left: -8, right: 16, top: 6, bottom: -5, near: 1, far: 34 });
 scene.add(light);
 
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.16 }));
@@ -81,6 +84,11 @@ let archipel = null;
 const NEW_BLOCK_DATA = 'Dylan → Maxens : 5 jetons';
 let newCoffre = null;
 let miner = null;
+
+// Notion 6 : le consensus se joue sur l'archipel. Notion 7 : la double dépense, au bout de la chaîne.
+let consensus = null;
+let race = null;
+const onArchipel = (sequence) => Boolean(sequence.network || sequence.consensus);
 
 async function buildScene() {
   const chain = await buildChain();
@@ -123,10 +131,23 @@ async function buildScene() {
   scene.add(archipel.group);
   addPop('archipel', [archipel.group], { toward: true });
   addPop('newCoffre', [newCoffre.group, link]);
+
+  consensus = createConsensus();
+  archipel.group.add(consensus.group);
+  consensus.onChange = () => {
+    if (SEQUENCES[current].consensus) renderText();
+  };
+
+  race = await createRace({ fork: coffres[chain.length - 1], tip: newCoffre, data: NEW_BLOCK_DATA, spacing: SPACING });
+  scene.add(race.group);
+  race.onChange = () => {
+    if (SEQUENCES[current].race) renderText();
+  };
+  addPop('race', [race.group]);
 }
 
 // Apparition douce : l'archipel et le coffre à miner grandissent (ou rétrécissent) au lieu de surgir.
-const showing = { archipel: false, newCoffre: false };
+const showing = { archipel: false, newCoffre: false, race: false };
 const pops = [];
 // `toward` : l'objet rétrécit vers le point regardé par la caméra (le centre de l'écran) plutôt que vers
 // son propre centre, qui peut être loin dans un coin de l'image.
@@ -164,19 +185,20 @@ const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 function cameraGoal(sequence) {
   const anchorIndex = sequence.cameraOn ?? sequence.focus;
   let origin = anchorIndex === null ? new THREE.Vector3() : coffres[anchorIndex].group.position.clone();
-  if (sequence.network) origin = ARCHIPEL_POSITION.clone();
+  if (onArchipel(sequence)) origin = ARCHIPEL_POSITION.clone();
+  if (sequence.race) origin = race.center.clone();
   const target = origin.clone().add(new THREE.Vector3(...sequence.camera.target));
   const offset = new THREE.Vector3(...sequence.camera.position).sub(new THREE.Vector3(...sequence.camera.target));
   // Écran étroit (téléphone) : on recule pour garder les étiquettes dans le cadre.
   offset.multiplyScalar(Math.max(1, (window.innerWidth > 760 ? 1.35 : 2) / (visibleAspect || 1)));
   // L'archipel est plus large que la chaîne : en écran étroit, on recule encore pour voir Dylan et Maxens.
-  if (sequence.network && window.innerWidth <= 760) offset.multiplyScalar(1.4);
+  if ((onArchipel(sequence) || sequence.race) && window.innerWidth <= 760) offset.multiplyScalar(1.4);
   return { position: target.clone().add(offset), target };
 }
 
 function moveCamera(sequence) {
   // L'archipel est plus large que la chaîne : on autorise à reculer davantage.
-  controls.maxDistance = sequence.network ? 32 : 18;
+  controls.maxDistance = onArchipel(sequence) || sequence.race ? 32 : 18;
   const goal = cameraGoal(sequence);
   if (reducedMotion) {
     camera.position.copy(goal.position);
@@ -272,6 +294,16 @@ function renderText() {
     fitView();
     return;
   }
+  if (sequence.consensus) {
+    renderConsensus(sequence);
+    fitView();
+    return;
+  }
+  if (sequence.race) {
+    renderRace(sequence);
+    fitView();
+    return;
+  }
   const coffre = focused();
   const open = sequence.chain || sequence.network ? linked : coffre?.inspected;
   const paragraphs = open && sequence.textInspected ? sequence.textInspected : sequence.text;
@@ -289,13 +321,14 @@ function renderText() {
     const original = coffres[tampered.index].block;
     const next = coffres[tampered.index + 1].block;
     const valid = tampered.hash.startsWith(DIFFICULTY);
+    // Le texte reste en police normale : seules les vraies valeurs (transactions, sceaux) sont en <code>.
     ui.fields.innerHTML = [
-      ['Données', `${original.data} → ${tampered.data}`],
-      ['Nouveau sceau', `${shortHash(tampered.hash)} (avant : ${shortHash(original.hash)})`],
-      ['Difficulté', `${valid ? 'respectée' : `ne commence plus par ${DIFFICULTY} : le bloc serait refusé`}`],
-      [`Copie dans le bloc ${next.index}`, `${shortHash(next.parentHash)} ≠ ${shortHash(tampered.hash)} : la chaîne est cassée`],
+      ['Transaction', `avant : <code>${original.data}</code><br />après : <code>${tampered.data}</code>`],
+      ['Nouveau sceau', `<code>${shortHash(tampered.hash)}</code> (avant : <code>${shortHash(original.hash)}</code>)`],
+      ['Difficulté', valid ? 'encore respectée, par chance' : `le sceau ne commence plus par <code>${DIFFICULTY}</code> : le bloc serait refusé`],
+      [`Copie dans le bloc ${next.index}`, `<code>${shortHash(next.parentHash)}</code> ≠ <code>${shortHash(tampered.hash)}</code> : la chaîne est cassée`],
     ]
-      .map(([key, value]) => `<div><dt>${key}</dt><dd><code>${value}</code></dd></div>`)
+      .map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`)
       .join('');
   } else if (sequence.network && linked) {
     const { running, total, received, offline, unreached, bobReceived } = archipel.summary();
@@ -329,7 +362,9 @@ function renderText() {
   coffres.forEach((c) => c.setHint(c === coffre && !c.inspected));
   coffres.forEach((c, i) => {
     const broken = sequence.tamper && tampered && (i === tampered.index || i === tampered.index + 1);
-    c.setGlow(Boolean(sequence.chain?.includes(i)) && linked && (!sequence.tamper || broken), broken ? BROKEN_COLOR : LINK_COLOR);
+    // Bloc falsifié : seuls son nouveau sceau et la copie gardée par le suivant passent en rouge.
+    const rings = broken ? { own: i === tampered.index, parent: i === tampered.index + 1 } : undefined;
+    c.setGlow(Boolean(sequence.chain?.includes(i)) && linked && (!sequence.tamper || broken), broken ? BROKEN_COLOR : LINK_COLOR, rings);
   });
   links.forEach((link, i) => link?.material.color.set(tampered && i === tampered.index + 1 ? BROKEN_COLOR : LINK_COLOR));
   if (sequence.network) {
@@ -350,12 +385,17 @@ function goTo(index) {
   tampered = null;
   archipel.reset();
   archipel.setHint(null);
-  showing.archipel = Boolean(sequence.network);
-  showing.newCoffre = Boolean(sequence.mining);
+  showing.archipel = onArchipel(sequence);
+  showing.newCoffre = Boolean(sequence.mining || sequence.race);
+  showing.race = Boolean(sequence.race);
   ui.inspect.disabled = false;
   ui.panel.removeAttribute('aria-busy');
   miningState = 'idle';
   miner.reset();
+  consensus.clear();
+  // Après `miner.reset`, qui retire le sceau du bloc 4 : la notion 7 l'affiche scellé.
+  if (sequence.race) race.prepare();
+  else race.reset();
 
   ui.stepNumber.textContent = String(sequence.notion ?? 0);
   ui.nav.style.setProperty('--progress', String(current / (SEQUENCES.length - 1)));
@@ -393,8 +433,95 @@ function renderMining(sequence) {
   });
 }
 
+// Notion 6 : on choisit la méthode (course ou tirage), on la lance, le panneau compare.
+function renderConsensus(sequence) {
+  const { method, state, winner, totalTries, wins, rounds, tried } = consensus.summary();
+  const paragraphs = state === 'done' ? sequence.textDone[method] : sequence.text;
+  ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
+  const [labelIdle, labelRunning, labelDone] = sequence.buttons[method];
+  ui.inspect.hidden = false;
+  ui.inspect.disabled = state === 'running';
+  ui.inspect.textContent = state === 'running' ? labelRunning : state === 'done' ? labelDone : labelIdle;
+  ui.inspect.removeAttribute('aria-pressed');
+  ui.panel.setAttribute('aria-busy', String(state === 'running'));
+
+  const choices = Object.entries(METHODS)
+    .map(([key, { name, label }]) => `<button type="button" data-method="${key}" aria-label="${name}" aria-pressed="${key === method}"${state === 'running' ? ' disabled' : ''}>${label}</button>`)
+    .join('');
+  const pow = method === 'pow';
+  const rows = [
+    ['Méthode', `<div class="choices">${choices}</div>`],
+    ['Ce qui compte', pow ? 'la puissance de calcul : chaque machine fait des essais' : 'les jetons mis en jeu : un ticket par jeton'],
+  ];
+  if (state === 'done') {
+    rows.push(['Gagnante', `l’île ${/^[AEIOUÉ]/.test(winner.name) ? 'd’' : 'de '}${winner.name} (${METHODS[method].unit(winner.weight)}, ${Math.round(winner.chance * 100)} % de chances)`]);
+    rows.push(['Travail', pow ? `${totalTries.toLocaleString('fr-FR')} essais faits par tout le réseau ; un seul a servi` : 'un seul tirage : presque aucun calcul']);
+  }
+  rows.push(['Si elle triche', pow ? 'les autres îles refusent son bloc : son électricité est perdue' : 'les autres îles refusent son bloc et elle perd sa mise']);
+  if (rounds > 1) {
+    const list = wins.filter((w) => w.wins).map((w) => `${w.name} ${w.wins}`).join(', ');
+    rows.push(['Victoires', `${list} (sur ${rounds} tours)`]);
+  }
+  if (tried.pow && tried.pos) rows.push(['Bilan', 'preuve de travail : très sûre mais gourmande en énergie (Bitcoin). Preuve d’enjeu : sobre, mais les plus riches sont tirés plus souvent (Ethereum).']);
+  ui.fields.hidden = false;
+  ui.fields.innerHTML = rows.map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`).join('');
+  coffres.forEach((c) => {
+    c.setHint(false);
+    c.setGlow(false);
+  });
+}
+
+// Notion 7 : cycle de vie de la transaction, puis course entre la chaîne honnête et la branche secrète de Dylan.
+function renderRace(sequence) {
+  const { state, power, winner, honestLength, attackLength, goal, confirmations } = race.summary();
+  const paragraphs = state === 'done' ? (winner === 'attack' ? sequence.textAttack : sequence.textInspected) : state === 'running' ? sequence.textRunning : sequence.text;
+  ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
+  ui.inspect.hidden = false;
+  ui.inspect.disabled = state === 'running';
+  ui.inspect.textContent = state === 'running' ? 'Course en cours…' : sequence.button[state === 'done' ? 1 : 0];
+  ui.inspect.removeAttribute('aria-pressed');
+  ui.panel.setAttribute('aria-busy', String(state === 'running'));
+
+  const lost = winner === 'attack';
+  const steps = [
+    ['Signée par Dylan', true],
+    ['Envoyée à toutes les îles (notion 4)', true],
+    ['En attente dans la mempool', true],
+    ['Rangée dans le bloc 4 (notion 5)', !lost],
+    [lost ? 'Annulée : le bloc 4 est abandonné' : `Confirmée ${confirmations} fois`, !lost],
+  ];
+  const lifecycle = `<ol class="lifecycle">${steps.map(([label, ok]) => `<li class="${ok ? 'is-done' : 'is-lost'}">${label}</li>`).join('')}</ol>`;
+  const choices = ATTACKS.map(
+    (a) => `<button type="button" data-attack="${a}" aria-pressed="${a === power}"${state === 'running' ? ' disabled' : ''}>${Math.round(a * 100)} %</button>`,
+  ).join('');
+  const blocks = (n) => `${n} bloc${n > 1 ? 's' : ''}`;
+  const rows = [
+    ['Cycle de vie', lifecycle],
+    ['Puissance de Dylan', `${Math.round(power * 100)} % du réseau, contre ${Math.round((1 - power) * 100)} % pour les îles honnêtes<div class="choices">${choices}</div>`],
+  ];
+  if (state !== 'idle') {
+    rows.push(['Branche honnête', `${blocks(honestLength)} après le bloc 3`]);
+    rows.push(['Branche de Dylan', `${blocks(attackLength)} après le bloc 3`]);
+  }
+  rows.push(['Règle des îles', `garder la chaîne la plus longue (course arrêtée à ${goal} blocs)`]);
+  ui.fields.hidden = false;
+  ui.fields.innerHTML = rows.map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`).join('');
+  coffres.forEach((c) => {
+    c.setHint(false);
+    if (c !== newCoffre) c.setGlow(false);
+  });
+}
+
 async function toggleInspect() {
   const sequence = SEQUENCES[current];
+  if (sequence.consensus) {
+    consensus.start(reducedMotion);
+    return; // le consensus prévient via `onChange`
+  }
+  if (sequence.race) {
+    race.start(reducedMotion);
+    return; // la course prévient via `onChange`
+  }
   if (sequence.mining) {
     if (miner.summary().state !== 'running') miner.start(reducedMotion);
     return; // le mineur prévient via `onChange`
@@ -442,6 +569,10 @@ ui.inspect.addEventListener('click', toggleInspect);
 ui.fields.addEventListener('click', (event) => {
   const choice = event.target.closest('[data-difficulty]');
   if (choice) miner.setDifficulty(choice.dataset.difficulty);
+  const method = event.target.closest('[data-method]');
+  if (method) consensus.setMethod(method.dataset.method);
+  const attack = event.target.closest('[data-attack]');
+  if (attack) race.setPower(Number(attack.dataset.attack));
 });
 window.addEventListener('keydown', (event) => {
   if (event.target.closest?.('input, textarea')) return;
@@ -539,10 +670,12 @@ renderer.setAnimationLoop((time) => {
   coffres.forEach((c) => c.update(dt, timer.getElapsed(), reducedMotion));
   archipel.update(dt, timer.getElapsed(), reducedMotion);
   miner.update(dt);
+  consensus.update(dt, timer.getElapsed(), reducedMotion);
+  race.update(dt, timer.getElapsed(), reducedMotion);
   controls.update();
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 });
 
 // Accès pour le débogage dans la console.
-window.app = { scene, camera, controls, coffres, archipel, miner, goTo };
+window.app = { scene, camera, controls, coffres, archipel, miner, consensus, race, goTo };

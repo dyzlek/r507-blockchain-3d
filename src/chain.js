@@ -26,7 +26,7 @@ export function blockContent({ index, parentHash, data, nonce }) {
 }
 
 // Cherche un nonce qui donne une empreinte respectant la difficulté.
-async function mine(block) {
+export async function mine(block) {
   for (let nonce = 0; ; nonce++) {
     const hash = await sha256(blockContent({ ...block, nonce }));
     if (hash.startsWith(DIFFICULTY)) return { ...block, nonce, hash };
