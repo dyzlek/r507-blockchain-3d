@@ -3,7 +3,8 @@
 // `chain` : blocs dont on compare les sceaux (le bouton allume les liens), `cameraOn` : coffre au centre du cadre,
 // `tamper` : le bouton falsifie les données de ce bloc et on recalcule le vrai sceau.
 // `network` : la caméra part sur l'archipel, le bouton envoie la transaction d'Alice d'île en île.
-// Les notions 5 à 7 viendront s'ajouter ici.
+// `mining` : un nouveau coffre au bout de la chaîne, le bouton lance la recherche du nonce (textRunning pendant les essais).
+// Les notions 6 et 7 viendront s'ajouter ici.
 
 export const SEQUENCES = [
   {
@@ -101,5 +102,29 @@ export const SEQUENCES = [
     camera: { position: [0, 7.5, 8.5], target: [0, -0.3, 0.4] },
     focus: null,
     network: true,
+  },
+  {
+    id: 'minage',
+    notion: 5,
+    step: 'Notion 5 · Validation et minage',
+    title: 'La course au sceau',
+    text: [
+      'Pour entrer dans la chaîne, la transaction d’Alice doit être rangée dans un <strong>nouveau coffre</strong>, au bout. Il ne lui manque que son propre sceau.',
+      'Règle du jeu : le sceau doit commencer par <strong>00</strong>. On ne peut pas le choisir, seulement changer le <strong>nonce</strong> (la pièce) et recalculer. Lance le minage !',
+    ],
+    textRunning: [
+      'Chaque essai change le nonce, donc tout le sceau, au hasard. Aucun moyen de deviner le bon : on essaie, encore et encore.',
+      'C’est ça, <strong>miner</strong> : une course où l’on fait le plus d’essais possible, le plus vite possible.',
+    ],
+    textInspected: [
+      'Trouvé ! Il a fallu de nombreux essais pour <strong>trouver</strong> ce nonce, mais un seul calcul suffit pour le <strong>vérifier</strong>. C’est ce que fait chaque île avant d’accepter le bloc.',
+      'Tricher demanderait de refaire tout ce travail (notion 3). Essaie la difficulté <strong>000</strong> : un zéro de plus, 16 fois plus d’essais en moyenne. En moyenne seulement : c’est un tirage au sort.',
+    ],
+    button: ['Lancer le minage', 'Miner à nouveau'],
+    enVrai:
+      'Chez Bitcoin, l’empreinte doit commencer par une vingtaine de zéros (en hexadécimal). Les mineurs du monde entier font ensemble environ mille milliards de milliards d’essais… par seconde, et il faut quand même en moyenne <strong>10 minutes</strong> pour trouver. La difficulté est réajustée tous les 2 016 blocs (environ deux semaines) pour garder ce rythme. Le gagnant touche une récompense en bitcoins neufs, plus les frais des transactions : d’où le mot <strong>minage</strong>. Un vrai bloc contient aussi des milliers de transactions, choisies par le mineur dans sa mempool. Ici, ton navigateur calcule de vrais SHA-256, mais au ralenti pour que tu puisses suivre.',
+    camera: { position: [-0.4, 1.3, 5.6], target: [-0.4, -0.05, 0] },
+    focus: 4,
+    mining: true,
   },
 ];

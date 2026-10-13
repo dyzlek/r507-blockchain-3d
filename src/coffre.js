@@ -252,6 +252,24 @@ export function createCoffre(block) {
       plate.element.classList.toggle('is-broken', Boolean(shown));
       plate.element.textContent = shown ? `Bloc n°${block.index} · falsifié` : `Bloc n°${block.index}`;
     },
+    // Minage (notion 5) : affiche un essai { nonce, hash }, ou aucun sceau avec `null`.
+    // Un sceau qui ne respecte pas la difficulté reste pâle ; `label` remplace le texte de la plaque.
+    setTrial(trial, { valid = false, label } = {}) {
+      seal.visible = Boolean(trial);
+      plate.element.textContent = label ?? `Bloc n°${block.index}`;
+      plate.element.classList.toggle('is-sealed', valid);
+      if (!trial) return;
+      const text = (i, value) => (leaders[i].label.element.querySelector('.field-value').textContent = value);
+      text(1, trial.nonce);
+      text(2, shortHash(trial.hash));
+      seal.material.map.dispose();
+      seal.material.map = sealTexture(trial.hash);
+      seal.material.opacity = valid ? 1 : 0.45;
+      seal.material.needsUpdate = true;
+      coinFace.map.dispose();
+      coinFace.map = coinTexture(trial.nonce);
+      coinFace.needsUpdate = true;
+    },
     setHover(value) {
       frame.material.opacity = value ? 1 : 0.9;
       frame.material.color.set(value ? 0xe0684b : 0x7d8899);

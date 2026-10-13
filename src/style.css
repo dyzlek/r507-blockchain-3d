@@ -85,6 +85,40 @@ body {
   font-weight: 700;
 }
 
+/* Coffre miné (notion 5) : son sceau respecte la difficulté. */
+.plate.is-sealed {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Choix de la difficulté du minage. */
+.choices {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.choices button {
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.choices button[aria-pressed='true'] {
+  box-shadow: var(--inset-sm);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.choices button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
 /* Îles de l'archipel : celles qui ont reçu la transaction passent en accent, les éteintes s'effacent. */
 .plate.is-received {
   color: var(--accent);

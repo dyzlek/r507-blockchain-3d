@@ -6,6 +6,7 @@ import { buildChain, shortHash, sha256, blockContent, DIFFICULTY } from './chain
 import { createCoffre, COFFRE_SIZE, setLeaderResolution } from './coffre.js';
 import { SEQUENCES } from './sequences.js';
 import { createArchipel, setRouteResolution, SENDER } from './archipel.js';
+import { createMiner, DIFFICULTIES } from './minage.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -76,6 +77,11 @@ const BROKEN_COLOR = 0xb3261e;
 const ARCHIPEL_POSITION = new THREE.Vector3(0, 0, -22);
 let archipel = null;
 
+// Le coffre à miner (notion 5) : la transaction d'Alice, accrochée au bout de la chaîne, mais pas encore scellée.
+const NEW_BLOCK_DATA = 'Alice → Bob : 5 jetons';
+let newCoffre = null;
+let miner = null;
+
 async function buildScene() {
   const chain = await buildChain();
   const startX = -((chain.length - 1) * SPACING) / 2;
@@ -95,6 +101,21 @@ async function buildScene() {
       scene.add(link);
     }
   });
+
+  const pending = { index: chain.length, parentHash: chain.at(-1).hash, data: NEW_BLOCK_DATA };
+  newCoffre = createCoffre({ ...pending, nonce: 0, hash: await sha256(blockContent({ ...pending, nonce: 0 })) });
+  newCoffre.group.position.x = startX + chain.length * SPACING;
+  newCoffre.group.visible = false;
+  scene.add(newCoffre.group);
+  coffres.push(newCoffre);
+  const link = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, SPACING - COFFRE_SIZE.w, 12), new THREE.MeshStandardMaterial({ color: LINK_COLOR, roughness: 0.5 }));
+  link.rotation.z = Math.PI / 2;
+  link.position.set(newCoffre.group.position.x - SPACING / 2, 0.1, 0);
+  link.visible = false;
+  links[chain.length] = link;
+  scene.add(link);
+  miner = createMiner(pending);
+  miner.onChange = showMining;
 
   archipel = createArchipel(chain);
   archipel.group.position.copy(ARCHIPEL_POSITION);
@@ -155,6 +176,7 @@ function updateTween(dt) {
 
 // --- Panneau et navigation ---
 const ui = {
+  panel: document.querySelector('#panel'),
   step: document.querySelector('#step'),
   stepNumber: document.querySelector('#step-number'),
   title: document.querySelector('#title'),
@@ -173,8 +195,52 @@ let linked = false; // séquences à `chain` : sceaux comparés (ou bloc falsifi
 let tampered = null; // { index, data, hash } quand le bloc est falsifié
 const focused = () => (SEQUENCES[current].focus === null ? null : coffres[SEQUENCES[current].focus]);
 
+// Le coffre affiche le dernier essai ; le panneau suit. Appelé à chaque lot d'essais pendant le minage.
+let miningState = 'idle';
+function showMining() {
+  const { state, tries, last } = miner.summary();
+  const valid = state === 'found';
+  const label = valid ? `Bloc n°${newCoffre.block.index} · scellé` : last ? `Bloc n°${newCoffre.block.index} · essai n°${tries}` : `Bloc n°${newCoffre.block.index} · sans sceau`;
+  newCoffre.setTrial(last, { valid, label });
+  newCoffre.setGlow(valid);
+  if (!SEQUENCES[current].mining) return;
+  if (state !== miningState) {
+    miningState = state;
+    renderText();
+  } else renderMiningFields();
+}
+
+function renderMiningFields() {
+  const { state, tries, last, difficulty, expected } = miner.summary();
+  const running = state === 'running';
+  const rows = [];
+  if (state === 'found') {
+    rows.push(
+      ['Nonce trouvé', `<code>${last.nonce}</code>, après ${tries} essai${tries > 1 ? 's' : ''}`],
+      ['Sceau', `<code>${shortHash(last.hash)}</code> : commence bien par <code>${difficulty}</code>`],
+      ['Vérifier', 'un seul calcul suffit : chaque île refait le sceau avec ce nonce et l’accepte'],
+    );
+  } else if (last) {
+    rows.push(
+      ['Essais', String(tries)],
+      ['Nonce essayé', `<code>${last.nonce}</code>`],
+      ['Sceau obtenu', `<code>${shortHash(last.hash)}</code> : ne commence pas par <code>${difficulty}</code>`],
+    );
+  }
+  const choices = DIFFICULTIES.map(
+    (d) => `<button type="button" data-difficulty="${d}" aria-pressed="${d === difficulty}"${running ? ' disabled' : ''}>${d}</button>`,
+  ).join('');
+  rows.push(['Difficulté', `le sceau doit commencer par <code>${difficulty}</code>, soit ${expected.toLocaleString('fr-FR')} essais en moyenne<div class="choices">${choices}</div>`]);
+  ui.fields.innerHTML = rows.map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`).join('');
+}
+
 function renderText() {
   const sequence = SEQUENCES[current];
+  if (sequence.mining) {
+    renderMining(sequence);
+    fitView();
+    return;
+  }
   const coffre = focused();
   const open = sequence.chain || sequence.network ? linked : coffre?.inspected;
   const paragraphs = open && sequence.textInspected ? sequence.textInspected : sequence.text;
@@ -254,6 +320,11 @@ function goTo(index) {
   archipel.reset();
   archipel.setHint(null);
   archipel.group.visible = Boolean(sequence.network);
+  newCoffre.group.visible = links[newCoffre.block.index].visible = Boolean(sequence.mining);
+  ui.inspect.disabled = false;
+  ui.panel.removeAttribute('aria-busy');
+  miningState = 'idle';
+  miner.reset();
 
   ui.stepNumber.textContent = String(current + 1);
   ui.step.textContent = sequence.step;
@@ -270,8 +341,31 @@ function goTo(index) {
   moveCamera(sequence);
 }
 
+function renderMining(sequence) {
+  const { state } = miner.summary();
+  const open = state !== 'idle';
+  const paragraphs = state === 'found' ? sequence.textInspected : state === 'running' ? sequence.textRunning : sequence.text;
+  ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
+  ui.inspect.hidden = false;
+  ui.inspect.disabled = state === 'running';
+  ui.inspect.textContent = state === 'running' ? 'Minage en cours…' : sequence.button[open ? 1 : 0];
+  ui.inspect.removeAttribute('aria-pressed');
+  // Le panneau est annoncé aux lecteurs d'écran : on attend la fin de la course plutôt que d'annoncer chaque essai.
+  ui.panel.setAttribute('aria-busy', String(state === 'running'));
+  ui.fields.hidden = false; // la difficulté se choisit avant de lancer
+  renderMiningFields();
+  coffres.forEach((c) => {
+    c.setHint(c === newCoffre && state === 'idle');
+    if (c !== newCoffre) c.setGlow(false);
+  });
+}
+
 async function toggleInspect() {
   const sequence = SEQUENCES[current];
+  if (sequence.mining) {
+    if (miner.summary().state !== 'running') miner.start(reducedMotion);
+    return; // le mineur prévient via `onChange`
+  }
   if (sequence.network) {
     linked = true;
     archipel.send(reducedMotion);
@@ -309,6 +403,10 @@ ui.dots.innerHTML = SEQUENCES.map((s, i) => `<li><button type="button" aria-labe
 ui.prev.addEventListener('click', () => goTo(current - 1));
 ui.next.addEventListener('click', () => goTo(current + 1));
 ui.inspect.addEventListener('click', toggleInspect);
+ui.fields.addEventListener('click', (event) => {
+  const choice = event.target.closest('[data-difficulty]');
+  if (choice) miner.setDifficulty(choice.dataset.difficulty);
+});
 window.addEventListener('keydown', (event) => {
   if (event.target.closest?.('input, textarea')) return;
   if (event.key === 'ArrowRight') goTo(current + 1);
@@ -403,10 +501,11 @@ renderer.setAnimationLoop((time) => {
   updateTween(dt);
   coffres.forEach((c) => c.update(dt, timer.getElapsed(), reducedMotion));
   archipel.update(dt, timer.getElapsed(), reducedMotion);
+  miner.update(dt);
   controls.update();
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 });
 
 // Accès pour le débogage dans la console.
-window.app = { scene, camera, controls, coffres, archipel, goTo };
+window.app = { scene, camera, controls, coffres, archipel, miner, goTo };

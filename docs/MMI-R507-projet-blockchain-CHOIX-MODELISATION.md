@@ -15,7 +15,7 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
 | Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
-| Version et date de mise à jour | v0.5 — 13/10/2026 |
+| Version et date de mise à jour | v0.6 — 13/10/2026 |
 
 ## 2. Univers visuel et métaphore principale
 
@@ -274,6 +274,56 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 
 #### g) Limites assumées
 Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend environ une seconde au lieu de quelques millisecondes : il faut pouvoir suivre le message des yeux. La vérification est réduite à une courte pause, sans montrer les signatures. Les îles sont toutes honnêtes et complètes : les nœuds malveillants sont traités à la notion 7 (double dépense), et les nœuds « légers » ne sont pas représentés. Ces simplifications sont signalées dans l'encart « En vrai… ».
+
+### 4.5 — Validation et minage
+
+> Brouillon v0.6 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 6. À relire par Maxens et Dylan. Les tests utilisateurs restent à faire.
+
+**Issues liées :** #11
+**Séquence(s) concernée(s) :** séquence 6 « La course au sceau » (`?etape=6`)
+
+#### a) Objectif pédagogique
+> L'utilisateur doit comprendre que, pour être accepté, un bloc doit avoir une empreinte qui respecte une règle (commencer par des zéros), que le seul moyen d'y arriver est d'essayer des nonces un par un, que trouver demande beaucoup d'essais alors que vérifier n'en demande qu'un, et qu'un zéro de plus multiplie le travail.
+
+#### b) Risque de mauvaise compréhension
+> L'utilisateur ne doit pas comprendre que le mineur résout un calcul « intelligent » ou choisit le sceau, que miner veut dire créer la transaction, ni qu'un bloc trouvé vite est moins valable (c'est un tirage au sort, seul le résultat compte).
+
+#### c) Représentation choisie
+| Dimension | Choix | Pourquoi ce choix sert la compréhension |
+|:---|:---|:---|
+| Forme / géométrie | Un 5e coffre (bloc n°4) au bout de la chaîne, même forme que les autres : rouleau de la transaction, pièce du nonce, petit sceau du bloc 3 dans le coin. Au départ, pas de grand sceau | Le bloc est déjà rempli et déjà accroché à son parent : il ne manque que le sceau, donc l'œil va au seul élément qui change |
+| Taille et échelle | Identique aux autres coffres | Un bloc miné est un bloc comme les autres |
+| Couleur / matériau / texture | Pendant les essais, chaque sceau est dessiné depuis le vrai hash mais reste pâle (transparent). Le sceau valide est opaque, entouré des anneaux corail, la plaque passe en accent « Bloc n°4 · scellé » | Pâle = refusé, plein = accepté, sans texte. Le corail garde son sens de « lien valide » (notions 2 et 4) |
+| Position | Caméra centrée sur le bloc n°4, le bloc 3 visible à gauche avec le lien | On voit que le nouveau bloc s'ajoute à droite, dans le sens du temps (§3) |
+| Mouvement / animation | Le nonce et le sceau changent à chaque essai : environ 60 essais par seconde pour `00`, 600 pour `000` | Le défilement montre le hasard : chaque sceau est sans rapport avec le précédent. Plus rapide en `000` pour que l'attente reste supportable, mais le compteur montre bien 16 fois plus d'essais |
+| Interaction et retour visuel | Bouton « Lancer le minage » (ou clic sur le coffre), puis « Miner à nouveau ». Choix de la difficulté `00` / `000` dans le panneau, avec le nombre moyen d'essais (256 / 4 096). Le panneau affiche les essais, le nonce essayé et le sceau obtenu, puis le nonce trouvé et la vérification | L'utilisateur provoque lui-même la course et compare deux difficultés |
+| Son, si utilisé | Aucun | — |
+| Texte d'accompagnement | Avant : la règle du jeu. Pendant : « on essaie, encore et encore ». Après : trouver est long, vérifier est immédiat, invitation à essayer `000`. Encart « En vrai… » : difficulté de Bitcoin, puissance du réseau, 10 minutes, ajustement, récompense | Le texte change avec l'état de la course |
+
+#### d) Correspondance avec la réalité technique
+| Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
+|:---|:---|:---|
+| Sceau recalculé à chaque essai | SHA-256 du bloc avec le nonce essayé | Exacte (vrai calcul dans le navigateur) |
+| Règle « commence par 00 » | Cible de difficulté (le hash doit être inférieur à une valeur) | Simplifiée (préfixe hexadécimal au lieu d'une cible numérique) |
+| Pièce dont le nombre change | Nonce | Exacte |
+| Départ à un nonce au hasard | Chaque mineur cherche dans un espace différent (adresse de récompense, horodatage…) | Approximative |
+| « Un seul calcul pour vérifier » | Validation du bloc par chaque nœud | Simplifiée (un nœud vérifie aussi les transactions et les signatures) |
+| 60 à 600 essais par seconde | Environ 10²¹ essais par seconde sur tout le réseau Bitcoin | Approximative (ralenti volontaire) |
+
+#### e) Alternative écartée
+| Alternative | Raison du rejet |
+|:---|:---|
+| Toujours partir du nonce 0 | Les données étant fixes, le résultat était toujours le même, et par malchance `000` se trouvait en 469 essais contre 420 pour `00` : la démo contredisait le « 16 fois plus ». Le départ au hasard fait voir la moyenne et le côté tirage au sort |
+| Curseur de difficulté libre (1 à 5 zéros) | Avec 4 ou 5 zéros, des dizaines de secondes ou des minutes d'attente ; avec 1 zéro, trouvé presque tout de suite. Deux niveaux suffisent pour montrer l'effet d'un zéro de plus |
+| Plusieurs îles qui minent en même temps | C'est la course entre mineurs, sujet de la notion 6 (consensus PoW) : la montrer ici mélangerait les deux notions |
+
+#### f) Tests utilisateurs
+| Observation | Modification | Issue |
+|:---|:---|:---|
+| À faire (session 1) : vérifier que le testeur comprend qu'on ne peut pas choisir le sceau, et que vérifier est facile | | #17 |
+
+#### g) Limites assumées
+Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un seul mineur est montré : la course entre mineurs et la récompense ne sont que dans l'encart « En vrai… », la compétition étant le sujet de la notion 6. Le bloc ne contient qu'une transaction. **Incohérence connue du fil rouge, à trancher par le groupe :** la transaction « Alice → Bob : 5 jetons » est déjà dans le bloc n°2 depuis la notion 1, alors que la notion 4 la montre « pas encore dans un bloc » et que la notion 5 la range dans le bloc n°4. Il faudra soit mettre une autre transaction dans le bloc n°2, soit présenter les notions 1 à 3 comme la chaîne « déjà finie ».
 
 ### 4.X — [intitulé exact de la notion]
 
