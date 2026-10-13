@@ -121,15 +121,17 @@ async function buildScene() {
     if (SEQUENCES[current].network) renderText();
   };
   scene.add(archipel.group);
-  addPop('archipel', [archipel.group]);
+  addPop('archipel', [archipel.group], { toward: true });
   addPop('newCoffre', [newCoffre.group, link]);
 }
 
 // Apparition douce : l'archipel et le coffre à miner grandissent (ou rétrécissent) au lieu de surgir.
 const showing = { archipel: false, newCoffre: false };
 const pops = [];
-function addPop(key, objects) {
-  const pop = { key, objects, value: 0 };
+// `toward` : l'objet rétrécit vers le point regardé par la caméra (le centre de l'écran) plutôt que vers
+// son propre centre, qui peut être loin dans un coin de l'image.
+function addPop(key, objects, { toward = false } = {}) {
+  const pop = { key, objects, value: 0, toward, home: objects.map((object) => object.position.clone()) };
   pops.push(pop);
   objects.forEach((object) => (object.visible = false));
 }
@@ -138,9 +140,18 @@ function updatePops(dt) {
     const target = showing[pop.key] ? 1 : 0;
     pop.value = reducedMotion ? target : THREE.MathUtils.damp(pop.value, target, 4, dt);
     if (Math.abs(pop.value - target) < 0.005) pop.value = target;
-    pop.objects.forEach((object) => {
+    // Les étiquettes (éléments HTML) ne suivent pas l'échelle 3D : on les réduit à la main, plus vite que
+    // l'objet, pour qu'elles s'effacent avant lui (et arrivent après lui à l'apparition).
+    const labelScale = pop.value ** 3;
+    pop.objects.forEach((object, i) => {
       object.visible = pop.value > 0;
       object.scale.setScalar(Math.max(pop.value, 0.001));
+      if (pop.toward) object.position.lerpVectors(controls.target, pop.home[i], pop.value);
+      object.traverse((child) => {
+        if (!child.isCSS2DObject) return;
+        // Seulement l'échelle : l'opacité est gérée par les classes CSS (champs cachés tant qu'on n'inspecte pas).
+        child.element.style.scale = labelScale < 1 ? String(labelScale) : '';
+      });
     });
   }
 }
