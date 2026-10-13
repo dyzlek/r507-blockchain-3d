@@ -80,6 +80,11 @@ body {
   font-weight: 500;
 }
 
+.plate.is-broken {
+  color: #b3261e;
+  font-weight: 700;
+}
+
 .hint,
 .field {
   border-radius: var(--radius);
