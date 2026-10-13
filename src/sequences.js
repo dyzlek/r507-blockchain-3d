@@ -1,6 +1,8 @@
 // Le parcours, une séquence par étape. Chaque séquence fixe le point de vue de la caméra
 // et le coffre mis en avant (focus = index du bloc, ou null).
-// Les notions 2 à 7 viendront s'ajouter ici.
+// `chain` : blocs dont on compare les sceaux (le bouton allume les liens), `cameraOn` : coffre au centre du cadre,
+// `tamper` : le bouton falsifie les données de ce bloc et on recalcule le vrai sceau.
+// Les notions 4 à 7 viendront s'ajouter ici.
 
 export const SEQUENCES = [
   {
@@ -33,5 +35,48 @@ export const SEQUENCES = [
       'Un bloc, c’est un paquet de données. Chez Bitcoin, il contient souvent plusieurs milliers de transactions ; ici, on n’en a mis qu’une. Son empreinte est un <strong>hash SHA-256</strong> : 64 caractères calculés à partir de tout le contenu du bloc. Le sceau coloré sert juste à la rendre visible, et la vraie empreinte, calculée par ton navigateur, est écrite à côté. Le nonce sert au minage, on y revient à la notion 5. Un vrai bloc note aussi la date et l’heure ; on a laissé ça de côté.',
     camera: { position: [0.3, 0.9, 4.7], target: [0, -0.05, 0] },
     focus: 2,
+  },
+  {
+    id: 'chainage',
+    notion: 2,
+    step: 'Notion 2 · Chaînage cryptographique',
+    title: 'Chaque coffre porte le sceau du précédent',
+    text: [
+      'Regarde le petit sceau gravé dans le coin de chaque coffre : c’est une <strong>copie du sceau du coffre d’avant</strong>.',
+      'C’est ça, le chaînage. Pour savoir où est ta place dans la chaîne, il suffit de regarder qui est ton parent.',
+    ],
+    textInspected: [
+      'Les sceaux allumés sont jumeaux : le sceau du bloc 1 est recopié dans le bloc 2, celui du bloc 2 dans le bloc 3.',
+      'Et comme le sceau dépend de <strong>tout</strong> le contenu, changer un seul caractère d’un vieux bloc change son sceau, donc ne correspond plus à la copie du suivant. On y vient à la notion 3.',
+    ],
+    button: ['Comparer les sceaux', 'C’est bon, j’ai vu'],
+    enVrai:
+      'Dans une vraie blockchain, le bloc contient l’empreinte (hash) du bloc précédent dans son en-tête. C’est ce qui fait de l’ensemble une <strong>chaîne</strong> et pas un simple tas de blocs : modifier un bloc ancien obligerait à refaire le calcul de tous ceux qui suivent. Le premier bloc (genèse) n’a pas de parent, on met des zéros à la place.',
+    camera: { position: [0, 1.5, 6.4], target: [0, 0, 0] },
+    focus: null,
+    cameraOn: 2,
+    chain: [1, 2, 3],
+  },
+  {
+    id: 'immutabilite',
+    notion: 3,
+    step: 'Notion 3 · Immutabilité',
+    title: 'Trafiquer un coffre, ça se voit',
+    text: [
+      'Imagine que quelqu’un veuille tricher : changer en douce la transaction du <strong>bloc 1</strong>, pour que Carla envoie 200 jetons au lieu de 2.',
+      'Essaie. Le contenu du coffre change, donc son sceau est recalculé.',
+    ],
+    textInspected: [
+      'Le sceau du bloc 1 a complètement changé. Or le bloc 2 en gardait une copie : <strong>les deux ne correspondent plus</strong>, la chaîne est cassée à cet endroit, et tout le monde peut le voir.',
+      'Pour cacher la triche, il faudrait refaire le sceau du bloc 1, puis celui du bloc 2, puis du bloc 3… et ainsi de suite jusqu’au bout de la chaîne. C’est ça, l’immutabilité : pas impossible, mais beaucoup trop coûteux.',
+    ],
+    button: ['Falsifier le bloc 1', 'Remettre comme avant'],
+    enVrai:
+      'Sur le vrai Bitcoin, refaire un bloc demande de refaire le travail de minage de tous les suivants, pendant que le reste du réseau continue d’en ajouter. Le seul cas où ça marche, c’est quand un attaquant contrôle plus de la moitié de la puissance de calcul : c’est l’attaque des 51 %, qu’on voit à la notion 7. Ici, le nouveau sceau est calculé pour de vrai par ton navigateur : change un caractère et il ne ressemble plus à l’ancien.',
+    camera: { position: [0, 1.5, 6.4], target: [0, 0, 0] },
+    focus: null,
+    cameraOn: 2,
+    chain: [1, 2, 3],
+    tamper: { index: 1, data: 'Carla → David : 200 jetons' },
   },
 ];

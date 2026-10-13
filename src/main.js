@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { buildChain, shortHash } from './chain.js';
+import { buildChain, shortHash, sha256, blockContent, DIFFICULTY } from './chain.js';
 import { createCoffre, COFFRE_SIZE, setLeaderResolution } from './coffre.js';
 import { SEQUENCES } from './sequences.js';
 
@@ -67,7 +67,9 @@ scene.add(ground);
 // --- Chaîne de coffres ---
 const SPACING = 2.8;
 const coffres = [];
-const linkMaterial = new THREE.MeshStandardMaterial({ color: 0xe0684b, roughness: 0.5 });
+const links = []; // un matériau par lien, pour pouvoir le rougir quand la chaîne est cassée
+const LINK_COLOR = 0xe0684b;
+const BROKEN_COLOR = 0xb3261e;
 
 async function buildScene() {
   const chain = await buildChain();
@@ -81,7 +83,8 @@ async function buildScene() {
     // Lien entre le coffre précédent et celui-ci (le sceau du parent est gravé sur ce côté).
     if (i > 0) {
       const length = SPACING - COFFRE_SIZE.w;
-      const link = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, length, 12), linkMaterial);
+      const link = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, length, 12), new THREE.MeshStandardMaterial({ color: LINK_COLOR, roughness: 0.5 }));
+      links[i] = link;
       link.rotation.z = Math.PI / 2;
       link.position.set(coffre.group.position.x - SPACING / 2, 0.1, 0);
       scene.add(link);
@@ -95,7 +98,8 @@ const tween = { active: false, t: 0, duration: 1.4, fromPos: new THREE.Vector3()
 const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
 function cameraGoal(sequence) {
-  const origin = sequence.focus === null ? new THREE.Vector3() : coffres[sequence.focus].group.position.clone();
+  const anchorIndex = sequence.cameraOn ?? sequence.focus;
+  const origin = anchorIndex === null ? new THREE.Vector3() : coffres[anchorIndex].group.position.clone();
   const target = origin.clone().add(new THREE.Vector3(...sequence.camera.target));
   const offset = new THREE.Vector3(...sequence.camera.position).sub(new THREE.Vector3(...sequence.camera.target));
   // Écran étroit (téléphone) : on recule pour garder les étiquettes dans le cadre.
@@ -147,20 +151,44 @@ const ui = {
 };
 
 let current = 0;
+let linked = false; // séquences à `chain` : sceaux comparés (ou bloc falsifié)
+let tampered = null; // { index, data, hash } quand le bloc est falsifié
 const focused = () => (SEQUENCES[current].focus === null ? null : coffres[SEQUENCES[current].focus]);
 
 function renderText() {
   const sequence = SEQUENCES[current];
   const coffre = focused();
-  const paragraphs = coffre?.inspected && sequence.textInspected ? sequence.textInspected : sequence.text;
+  const open = sequence.chain ? linked : coffre?.inspected;
+  const paragraphs = open && sequence.textInspected ? sequence.textInspected : sequence.text;
   ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
 
-  ui.inspect.hidden = !coffre;
-  ui.inspect.textContent = coffre?.inspected ? 'C’est bon, j’ai vu' : 'Regarder dans le coffre';
-  ui.inspect.setAttribute('aria-pressed', String(Boolean(coffre?.inspected)));
+  ui.inspect.hidden = !coffre && !sequence.chain;
+  const [labelOff, labelOn] = sequence.button ?? ['Regarder dans le coffre', 'C’est bon, j’ai vu'];
+  ui.inspect.textContent = open ? labelOn : labelOff;
+  ui.inspect.setAttribute('aria-pressed', String(Boolean(open)));
 
-  ui.fields.hidden = !coffre?.inspected;
-  if (coffre?.inspected) {
+  ui.fields.hidden = !open;
+  if (sequence.tamper && tampered) {
+    const original = coffres[tampered.index].block;
+    const next = coffres[tampered.index + 1].block;
+    const valid = tampered.hash.startsWith(DIFFICULTY);
+    ui.fields.innerHTML = [
+      ['Données', `${original.data} → ${tampered.data}`],
+      ['Nouveau sceau', `${shortHash(tampered.hash)} (avant : ${shortHash(original.hash)})`],
+      ['Difficulté', `${valid ? 'respectée' : `ne commence plus par ${DIFFICULTY} : le bloc serait refusé`}`],
+      [`Copie dans le bloc ${next.index}`, `${shortHash(next.parentHash)} ≠ ${shortHash(tampered.hash)} : la chaîne est cassée`],
+    ]
+      .map(([key, value]) => `<div><dt>${key}</dt><dd><code>${value}</code></dd></div>`)
+      .join('');
+  } else if (sequence.chain && linked) {
+    ui.fields.innerHTML = sequence.chain
+      .map((i) => {
+        const { block } = coffres[i];
+        const parent = coffres[i - 1].block;
+        return `<div><dt>Bloc ${i}</dt><dd>parent <code>${shortHash(block.parentHash)}</code> = sceau du bloc ${i - 1} <code>${shortHash(parent.hash)}</code></dd></div>`;
+      })
+      .join('');
+  } else if (coffre?.inspected) {
     const { block } = coffre;
     ui.fields.innerHTML = [
       ['Données', block.data, 'ce que le bloc garde en mémoire, ici la transaction.'],
@@ -172,13 +200,23 @@ function renderText() {
       .join('');
   }
   coffres.forEach((c) => c.setHint(c === coffre && !c.inspected));
+  coffres.forEach((c, i) => {
+    const broken = sequence.tamper && tampered && (i === tampered.index || i === tampered.index + 1);
+    c.setGlow(Boolean(sequence.chain?.includes(i)) && linked && (!sequence.tamper || broken), broken ? BROKEN_COLOR : LINK_COLOR);
+  });
+  links.forEach((link, i) => link?.material.color.set(tampered && i === tampered.index + 1 ? BROKEN_COLOR : LINK_COLOR));
   fitView();
 }
 
 function goTo(index) {
   current = THREE.MathUtils.clamp(index, 0, SEQUENCES.length - 1);
   const sequence = SEQUENCES[current];
-  coffres.forEach((c) => c.setInspected(false));
+  coffres.forEach((c) => {
+    c.setInspected(false);
+    c.setShown(null);
+  });
+  linked = false;
+  tampered = null;
 
   ui.stepNumber.textContent = String(current + 1);
   ui.step.textContent = sequence.step;
@@ -195,7 +233,29 @@ function goTo(index) {
   moveCamera(sequence);
 }
 
-function toggleInspect() {
+async function toggleInspect() {
+  const sequence = SEQUENCES[current];
+  if (sequence.tamper) {
+    const target = coffres[sequence.tamper.index];
+    if (tampered) {
+      tampered = null;
+      linked = false;
+      target.setShown(null);
+    } else {
+      const { block } = target;
+      const hash = await sha256(blockContent({ ...block, data: sequence.tamper.data }));
+      tampered = { index: sequence.tamper.index, data: sequence.tamper.data, hash };
+      linked = true;
+      target.setShown(tampered);
+    }
+    renderText();
+    return;
+  }
+  if (sequence.chain) {
+    linked = !linked;
+    renderText();
+    return;
+  }
   const coffre = focused();
   if (!coffre) return;
   coffre.setInspected(!coffre.inspected);
@@ -219,11 +279,10 @@ const pointer = new THREE.Vector2();
 let downAt = null;
 
 function pickFocused(event) {
-  const coffre = focused();
-  if (!coffre) return null;
+  const candidates = SEQUENCES[current].chain?.map((i) => coffres[i]) ?? [focused()];
   pointer.set((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1);
   raycaster.setFromCamera(pointer, camera);
-  return raycaster.intersectObject(coffre.hitMesh).length ? coffre : null;
+  return candidates.find((c) => c && raycaster.intersectObject(c.hitMesh).length) ?? null;
 }
 
 canvas.addEventListener('pointerdown', (event) => {

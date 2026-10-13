@@ -159,6 +159,20 @@ export function createCoffre(block) {
   parentSeal.position.set(-w / 2 + 0.26, h / 2 - 0.24, d / 2 + 0.005);
   group.add(parentSeal);
 
+  // Anneaux corail autour des sceaux, allumés quand on compare un sceau à sa copie chez le suivant.
+  const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xe0684b, transparent: true, opacity: 0, depthTest: false });
+  const makeRing = (inner, outer, at) => {
+    const ring = new THREE.Mesh(new THREE.RingGeometry(inner, outer, 48), ringMaterial);
+    ring.position.copy(at);
+    ring.position.z += 0.01;
+    ring.renderOrder = 9;
+    group.add(ring);
+  };
+  makeRing(0.34, 0.4, seal.position);
+  makeRing(0.19, 0.23, parentSeal.position);
+  let glow = 0;
+  let glowTarget = 0;
+
   const plate = makeLabel('plate', `Bloc n°${block.index}`);
   plate.position.set(0, h / 2 + 0.3, 0);
   group.add(plate);
@@ -222,6 +236,22 @@ export function createCoffre(block) {
     setHint(value) {
       hint.visible = value;
     },
+    setGlow(value, color = 0xe0684b) {
+      glowTarget = value ? 1 : 0;
+      ringMaterial.color.set(color);
+    },
+    // Affiche un contenu falsifié (ou remet l'original avec `null`) : nouveau sceau et nouvelles étiquettes.
+    setShown(shown) {
+      const { data, hash } = shown ?? block;
+      const text = (i, value) => (leaders[i].label.element.querySelector('.field-value').textContent = value);
+      text(0, data);
+      text(2, shortHash(hash));
+      seal.material.map.dispose();
+      seal.material.map = sealTexture(hash);
+      seal.material.needsUpdate = true;
+      plate.element.classList.toggle('is-broken', Boolean(shown));
+      plate.element.textContent = shown ? `Bloc n°${block.index} · falsifié` : `Bloc n°${block.index}`;
+    },
     setHover(value) {
       frame.material.opacity = value ? 1 : 0.9;
       frame.material.color.set(value ? 0xe0684b : 0x7d8899);
@@ -233,6 +263,8 @@ export function createCoffre(block) {
       contents.position.y = reveal * (0.1 + Math.sin(elapsed * 2) * 0.02);
       scroll.material.emissive.setRGB(0.25 * reveal, 0.2 * reveal, 0.1 * reveal);
       leaderMaterial.opacity = reveal;
+      glow = instant ? glowTarget : THREE.MathUtils.damp(glow, glowTarget, 6, dt);
+      ringMaterial.opacity = glow * (0.75 + Math.sin(elapsed * 4) * 0.2);
       if (reveal > 0.001) updateLeaders();
     },
   };
