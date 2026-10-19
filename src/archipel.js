@@ -67,7 +67,7 @@ const miniGeometry = new THREE.BoxGeometry(0.3, 0.22, 0.22);
 const miniSealGeometry = new THREE.PlaneGeometry(0.17, 0.17);
 const miniLinkGeometry = new THREE.BoxGeometry(0.14, 0.05, 0.006);
 // Les messages sont des avions en papier.
-const messageGeometry = paperPlaneGeometry(0.9);
+const messageGeometry = paperPlaneGeometry(1.2);
 const messageMaterial = paperMaterial(COLORS.paper, { fibers: 40 }, { side: THREE.DoubleSide, flatShading: true });
 const miniLink = new THREE.MeshStandardMaterial({ color: ACCENT, roughness: 0.75, transparent: true, opacity: 0.9 });
 
@@ -350,8 +350,10 @@ export function createArchipel(chain) {
         const forward = message.from === message.route.a;
         const t = forward ? message.t : 1 - message.t;
         message.mesh.position.copy(message.route.curve.getPoint(t));
-        // L'avion regarde là où il va.
-        message.mesh.lookAt(message.route.curve.getPoint(THREE.MathUtils.clamp(t + (forward ? 0.03 : -0.03), 0, 1)));
+        // L'avion regarde là où il va. `lookAt` attend un point du monde, la route est dans le repère de l'archipel.
+        const ahead = message.route.curve.getPoint(THREE.MathUtils.clamp(t + (forward ? 0.04 : -0.04), 0, 1));
+        message.mesh.lookAt(group.localToWorld(ahead));
+        message.mesh.rotateZ(Math.sin(message.t * Math.PI * 2) * 0.25); // petit roulis
         return true;
       });
       if (running && !messages.length && !relays.length) {

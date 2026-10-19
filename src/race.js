@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { mine } from './chain.js';
-import { createCoffre, COFFRE_SIZE } from './coffre.js';
+import { createCoffre } from './coffre.js';
 import { createTape } from './papier.js';
 
 // Notion 7 : cycle de vie de la transaction de Dylan, puis tentative de double dépense.
@@ -20,8 +20,7 @@ export const ATTACK_DATA = ['Dylan → Dylan : 5 jetons', 'Bloc vide (Dylan)', '
 
 // Ruban adhésif entre deux coffres, comme dans la chaîne principale (en biais pour la fourche).
 function makeLink(from, to, color) {
-  const length = to.clone().sub(from).setY(0).length();
-  return createTape(from, to, color, { width: length - COFFRE_SIZE.w + 0.06 });
+  return createTape(from, to, color);
 }
 
 // `fork` : le coffre du bloc 3 ; `tip` : le coffre du bloc 4 (celui de la notion 5), qu'on affiche scellé ici.

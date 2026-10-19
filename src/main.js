@@ -97,7 +97,7 @@ async function buildScene() {
     // Lien entre le coffre précédent et celui-ci : un ruban adhésif collé d'une boîte à l'autre
     // (côté du sceau du parent). C'est un repère : la preuve du lien reste le sceau recopié.
     if (i > 0) {
-      const link = createTape(coffres[i - 1].group.position, coffre.group.position, LINK_COLOR, { width: SPACING - COFFRE_SIZE.w + 0.06 });
+      const link = createTape(coffres[i - 1].group.position, coffre.group.position, LINK_COLOR);
       links[i] = link;
       scene.add(link);
     }
@@ -108,7 +108,7 @@ async function buildScene() {
   newCoffre.group.position.x = startX + chain.length * SPACING;
   scene.add(newCoffre.group);
   coffres.push(newCoffre);
-  const link = createTape(coffres[chain.length - 1].group.position, newCoffre.group.position, LINK_COLOR, { width: SPACING - COFFRE_SIZE.w + 0.06 });
+  const link = createTape(coffres[chain.length - 1].group.position, newCoffre.group.position, LINK_COLOR);
   links[chain.length] = link;
   scene.add(link);
   miner = createMiner(pending);

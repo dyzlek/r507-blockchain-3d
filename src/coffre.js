@@ -122,12 +122,14 @@ export function createCoffre(block) {
   const seal = new THREE.Mesh(sealGeometry, stampMaterial(block.hash));
   seal.position.set(0.18, 0.16, d / 2 + 0.003);
   seal.rotation.z = -0.08 + ((block.index * 37) % 10) / 60;
+  seal.renderOrder = 2; // toujours après le calque transparent, sinon il le recouvre et le sceau paraît pâle
   group.add(seal);
 
   // Sceau du parent, recopié en petit dans le coin gauche (côté du coffre précédent).
   const parentSeal = new THREE.Mesh(parentSealGeometry, stampMaterial(block.parentHash));
   parentSeal.position.set(-w / 2 + 0.26, h / 2 - 0.24, d / 2 + 0.003);
   parentSeal.rotation.z = 0.1;
+  parentSeal.renderOrder = 2;
   group.add(parentSeal);
 
   // Cercles de surligneur corail autour des sceaux, allumés quand on compare un sceau à sa copie chez le suivant.
@@ -164,6 +166,7 @@ export function createCoffre(block) {
         const a = Math.random() * Math.PI * 2;
         const r = 0.33 + Math.random() * 0.1;
         dot.position.set(seal.position.x + Math.cos(a) * r, seal.position.y + Math.sin(a) * r, seal.position.z + 0.002);
+        dot.renderOrder = 2;
         group.add(dot);
         return dot;
       });
@@ -172,7 +175,7 @@ export function createCoffre(block) {
   }
   function updateStamp(dt, instant) {
     if (!stamping) return;
-    stamping.t = instant ? 1.2 : stamping.t + dt;
+    stamping.t = instant ? 1.7 : stamping.t + dt;
     const t = stamping.t;
     // 0 → 0,4 s : le tampon arrive ; 0,4 → 0,55 : il appuie ; 0,55 → 1 : il repart.
     const ease = (k) => (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2);
@@ -185,8 +188,9 @@ export function createCoffre(block) {
       stamping.hit = true;
       stampPop = 0;
     }
-    splats[0].material.opacity = t > 0.42 ? 0.7 : 0;
-    if (t >= 1.2) stamping = null;
+    // Les gouttes giclent à l'impact, puis sèchent et s'effacent : elles ne restent pas sur le coffre.
+    splats[0].material.opacity = t < 0.42 ? 0 : 0.7 * Math.max(0, 1 - (t - 0.9) / 0.8);
+    if (t >= 1.7) stamping = null;
   }
 
   const plate = makeLabel('plate', `Bloc n°${block.index}`);

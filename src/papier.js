@@ -146,18 +146,57 @@ export function coinTexture(nonce) {
 }
 
 // Ruban adhésif corail entre deux coffres : c'est le lien de la chaîne (un repère, la preuve reste le sceau).
-// Une bande de papier verticale, tendue entre les deux points, à mi-hauteur des coffres.
+// Un morceau de scotch collé sur les coins avant des deux coffres (en haut de la façade), un peu détendu
+// entre les deux. `size` : demi-largeur et demi-profondeur d'un coffre.
+// Un lien en biais (la fourche de la notion 7) part du bord du coffre au lieu d'être collé sur la façade.
 const tapeTexture = () => paperTexture('#ffffff', { fibers: 60, grain: 0.12 });
-export function createTape(from, to, color = COLORS.accent, { width, y = 0.1 } = {}) {
+export function createTape(from, to, color = COLORS.accent, { y = 0.46, size = [0.8, 0.55], overlap = 0.1, width = 0.17 } = {}) {
   const direction = to.clone().sub(from).setY(0);
-  const length = width ?? direction.length();
+  const length = direction.length();
+  direction.normalize();
+  const straight = Math.abs(direction.x) > 0.95;
+  const front = straight ? size[1] + 0.006 : 0;
+  const half = straight ? size[0] : Math.min(size[0] / Math.abs(direction.x || 1e-6), size[1] / Math.abs(direction.z || 1e-6));
+  const normal = new THREE.Vector3(-direction.z, 0, direction.x); // vers l'avant pour une chaîne de gauche à droite
+  const side = new THREE.Vector3(0, width / 2, 0);
+  // Géométrie centrée sur le milieu du ruban : il peut grandir ou rétrécir sur place (apparitions).
+  const middle = from.clone().lerp(to, 0.5).setY(y).addScaledVector(normal, front);
+  const at = (k, drop = 0) => from.clone().addScaledVector(direction, k).addScaledVector(normal, front).setY(y - drop).sub(middle);
+  // Collé à plat sur le coin du premier coffre, puis un léger creux dans le vide, puis collé sur le second.
+  const steps = 48;
+  const sag = Math.min(0.1, length * 0.03);
+  const positions = [];
+  const uvs = [];
+  const indices = [];
+  const start = half - overlap;
+  const span = length - 2 * start;
+  const points = Array.from({ length: steps + 1 }, (_, k) => {
+    const along = start + (span * k) / steps;
+    const gap = THREE.MathUtils.clamp((along - half) / (length - 2 * half), 0, 1); // 0 et 1 : sur les coffres
+    return at(along, sag * Math.sin(gap * Math.PI));
+  });
+  points.forEach((point, k) => {
+    // Bords un peu irréguliers, comme un ruban déchiré à la main.
+    const torn = k === 0 || k === steps ? 0.1 : 0;
+    positions.push(...point.clone().addScaledVector(side, 1 + torn).toArray(), ...point.clone().addScaledVector(side, -1 + torn * 0.5).toArray());
+    uvs.push((k / steps) * 3, 0, (k / steps) * 3, 1);
+    if (k > 0) {
+      const a = (k - 1) * 2;
+      indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    }
+  });
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
   const tape = new THREE.Mesh(
-    new THREE.BoxGeometry(length, 0.17, 0.012),
-    new THREE.MeshStandardMaterial({ map: tapeTexture(), color, roughness: 0.75, transparent: true, opacity: 0.9 }),
+    geometry,
+    new THREE.MeshStandardMaterial({ map: tapeTexture(), color, roughness: 0.7, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }),
   );
-  tape.position.copy(from).add(to).multiplyScalar(0.5).setY(y);
-  tape.rotation.y = -Math.atan2(direction.z, direction.x);
+  tape.position.copy(middle);
   tape.castShadow = true;
+  tape.receiveShadow = true;
   return tape;
 }
 
