@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { mine } from './chain.js';
 import { createCoffre, COFFRE_SIZE } from './coffre.js';
+import { createTape } from './papier.js';
 
 // Notion 7 : cycle de vie de la transaction de Dylan, puis tentative de double dépense.
 // La transaction est dans le bloc 4 (notion 5). En secret, Dylan fabrique un autre bloc 4, à partir du bloc 3,
@@ -17,13 +18,10 @@ const BROKEN_COLOR = 0xb3261e;
 const HONEST_DATA = ['Pierre → Thomas : 4 jetons', 'Julien → Lucas : 2 jetons'];
 export const ATTACK_DATA = ['Dylan → Dylan : 5 jetons', 'Bloc vide (Dylan)', 'Bloc vide (Dylan)'];
 
+// Ruban adhésif entre deux coffres, comme dans la chaîne principale (en biais pour la fourche).
 function makeLink(from, to, color) {
-  const direction = to.clone().sub(from);
-  const length = direction.length() - COFFRE_SIZE.w;
-  const link = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, Math.max(0.1, length), 12), new THREE.MeshStandardMaterial({ color, roughness: 0.5 }));
-  link.position.copy(from).add(to).multiplyScalar(0.5).setY(0.1);
-  link.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
-  return link;
+  const length = to.clone().sub(from).setY(0).length();
+  return createTape(from, to, color, { width: length - COFFRE_SIZE.w + 0.06 });
 }
 
 // `fork` : le coffre du bloc 3 ; `tip` : le coffre du bloc 4 (celui de la notion 5), qu'on affiche scellé ici.

@@ -11,10 +11,10 @@ export const SEQUENCES = [
   {
     id: 'intro',
     step: 'Avant de commencer',
-    title: 'Une chaîne de coffres en verre',
+    title: 'Une chaîne de coffres en carton',
     text: [
       'Une blockchain, c’est un cahier de comptes que tout le monde peut lire, et que personne ne peut modifier en douce.',
-      'Ici, chaque page du cahier est un <strong>coffre en verre</strong>, fermé par un sceau. Les coffres sont accrochés les uns aux autres, dans l’ordre.',
+      'Ici, chaque page du cahier est un <strong>coffre en carton</strong>, fermé par un coup de tampon : son sceau. Les coffres sont reliés les uns aux autres par un ruban, dans l’ordre.',
       'On va suivre une transaction : <strong>Dylan envoie 5 jetons à Maxens</strong>. D’abord, on regarde les coffres déjà posés ; celle de Dylan arrivera dans la chaîne à la notion 5.',
     ],
     enVrai:
@@ -29,7 +29,7 @@ export const SEQUENCES = [
     title: 'Le coffre',
     text: [
       'Ce coffre, c’est un <strong>bloc</strong>. Il contient une transaction : <strong>Thomas envoie 3 jetons à Julien</strong>.',
-      'Il est en verre : on voit dedans sans l’ouvrir. L’ouvrir casserait le sceau.',
+      'Il a une fenêtre en <strong>papier calque</strong> : on devine ce qu’il contient sans l’ouvrir. L’ouvrir casserait le sceau. Allume sa lampe pour lire à travers.',
     ],
     textInspected: [
       'Un bloc, c’est 4 choses : la <strong>transaction</strong>, un <strong>nombre</strong> (le nonce), son <strong>sceau</strong>, et le <strong>sceau du coffre d’avant</strong>.',

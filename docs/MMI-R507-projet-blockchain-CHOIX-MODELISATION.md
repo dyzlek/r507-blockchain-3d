@@ -15,7 +15,7 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
 | Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
-| Version et date de mise à jour | v0.7 — 13/10/2026 |
+| Version et date de mise à jour | v0.8 — 13/10/2026 (branche `styleV2`) |
 
 ## 2. Univers visuel et métaphore principale
 
@@ -26,12 +26,12 @@ Le public visé est fait de lycéens et d'étudiants hors informatique (16–25 
 3. ajouter un bloc demande un effort (PoW) ou une mise en jeu (PoS), ce qui rend la triche coûteuse.
 
 ### 2.2 Métaphore retenue
-**Un registre de coffres de verre scellés, recopié dans un archipel.** Le fil rouge suit une transaction, « Dylan envoie 5 jetons à Maxens », de sa création jusqu'à sa confirmation, puis montre une tentative de double dépense.
+**Un registre de coffres scellés, recopié dans un archipel, le tout en papier découpé.** Le fil rouge suit une transaction, « Dylan envoie 5 jetons à Maxens », de sa création jusqu'à sa confirmation, puis montre une tentative de double dépense.
 
-- **Bloc = coffre de verre** : le contenu est visible (données, nonce), ce qui rend la structure lisible (notion 1).
-- **Empreinte = sceau** à motif et couleur générés depuis le vrai hash (SHA-256 calculé dans le navigateur). Une modification minime donne un sceau totalement différent (notion 2).
+- **Bloc = coffre en carton à fenêtre de calque** : on devine le contenu (données, nonce) sans ouvrir, et la lampe du coffre le rend lisible (notion 1).
+- **Empreinte = sceau**, un coup de tampon encreur à motif et couleur générés depuis le vrai hash (SHA-256 calculé dans le navigateur). Une modification minime donne un sceau totalement différent (notion 2).
 - **Chaînage** : le sceau du parent est gravé sur le coffre suivant. Une incohérence se voit comme un lien qui devient rouge (notion 3).
-- **Nœud = île** qui possède sa propre copie de la chaîne. Les transactions et les blocs voyagent sous forme de messages lumineux entre îles (notion 4).
+- **Nœud = île** qui possède sa propre copie de la chaîne. Les transactions voyagent en avions en papier d'île en île (notion 4).
 - **Minage** : on fait défiler les essais de nonce jusqu'à obtenir un sceau qui respecte la difficulté (« commence par 00 ») (notion 5).
 - **Consensus** : une course entre îles (PoW) est comparée à un tirage pondéré par la mise (PoS) (notion 6).
 - **Attaque** : une double dépense est tentée sur une île minoritaire, puis rejetée par la chaîne majoritaire (notion 7).
@@ -42,7 +42,7 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 | Question | Réponse |
 |:---|:---|
 | Quelles propriétés deviennent évidentes ? | Le chaînage (sceau gravé sur le suivant), l'effet avalanche d'une modification, la distribution des copies (une île = une copie), l'absence de centre |
-| Quelles propriétés sont difficiles à représenter ou risquent d'être déformées ? | Un sceau suggère un objet physique qu'on pourrait recoller ou imiter, alors qu'un hash ne s'inverse pas. Le verre laisse penser que tout est lisible (vrai pour Bitcoin, pas pour toutes les blockchains). La difficulté réelle du minage, des milliards d'essais, est incomparable avec quelques secondes d'animation |
+| Quelles propriétés sont difficiles à représenter ou risquent d'être déformées ? | Un sceau suggère un objet physique qu'on pourrait recoller ou imiter, alors qu'un hash ne s'inverse pas. La fenêtre du coffre laisse penser que tout est lisible (vrai pour Bitcoin, pas pour toutes les blockchains). La difficulté réelle du minage, des milliards d'essais, est incomparable avec quelques secondes d'animation |
 | Comment ces limites sont-elles compensées ? | Un encart « En vrai… » à chaque notion, un compteur d'essais avec ordre de grandeur réel, le vrai hash hexadécimal affiché à côté du sceau, et des tests utilisateurs pour vérifier les idées fausses retenues |
 
 ### 2.4 Métaphores écartées
@@ -54,15 +54,18 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 ### 2.5 Charte visuelle
 | Élément | Choix | Justification pédagogique |
 |:---|:---|:---|
-| Palette et signification des couleurs | Une seule surface gris-bleu doux (sombre en thème sombre), partagée par l'interface et la scène 3D. Un seul accent, corail, pour ce qui demande l'attention (titres de champs, liens entre coffres, bouton d'action). La couleur d'un sceau vient de l'empreinte du bloc | Peu de couleurs, donc les seules couleurs vives à l'écran sont les sceaux : l'œil va naturellement vers l'empreinte, l'élément clé de la blockchain. Le corail relie : les liens de la chaîne et les libellés des champs ont la même couleur |
-| Formes, style et niveau d'abstraction | **Neumorphisme** : les éléments sortent de la surface (relief) ou s'y enfoncent (creux), coins très arrondis. En 3D : coffres de verre aux arêtes gris ardoise, rouleau, pièce, sceau de cire au bord irrégulier | Le relief donne un état lisible sans texte : un bouton enfoncé est actif, la liste des champs est un creux qui « contient » les données comme le coffre. Le sceau de cire remplace un premier essai en « camembert » multicolore, jugé gadget |
-| Éclairage et ambiance | Lumière douce venant d'en haut à gauche, dans la scène comme dans les ombres CSS ; le sol est invisible et ne garde que les ombres des coffres | Une seule source de lumière cohérente entre la 3D et l'interface, ce qui fait de l'ensemble un seul objet calme, sans distraction |
-| Typographie et lisibilité | Alegreya Sans (humaniste) pour le titre et le texte, Fira Mono pour les empreintes et les valeurs. Chiffres alignés sur les capitales | Une humaniste a un tracé proche de l'écriture manuscrite, plus chaleureux et moins « techno » qu'une grotesque : le ton reste accessible à un public non initié. La mono distingue les vraies données techniques (hash, nonce) du texte d'explication |
-| Échelle et rapport de taille | Coffres identiques ; le sceau du parent est environ deux fois plus petit que celui du bloc | Même structure pour tous les blocs ; la taille distingue « mon sceau » et « celui de mon parent » |
+| Palette et signification des couleurs | Papiers et cartons naturels : bureau crème, carton kraft, calque blanc cassé, mer de papier bleu, îles sable et vert. Un seul accent, le corail du ruban adhésif, pour ce qui relie ou demande l'attention (liens entre coffres, titres de champs, boutons, routes empruntées). Le rouge est réservé à la fraude. La couleur d'un tampon vient de l'empreinte du bloc | Les papiers sont tous doux et proches : les seules couleurs franches à l'écran sont les tampons, donc l'œil va vers l'empreinte, l'élément clé de la blockchain. Le corail relie : le ruban de la chaîne et les libellés des champs ont la même couleur |
+| Formes, style et niveau d'abstraction | **Maquette en papier découpé** posée sur un bureau. Bloc = coffre en carton avec une fenêtre en papier calque ; sceau = coup de tampon encreur ; lien = ruban adhésif ; îles = feuilles découpées empilées ; messages = avions en papier. Interface : fiche cartonnée lignée tenue par du ruban, boutons en carton à ombre découpée, post-it pour « En vrai… » | Le papier rend tout « fait main » et accessible, loin de l'image froide et spéculative de la crypto. Chaque objet garde son sens : le calque laisse deviner le contenu sans ouvrir (lire ne casse pas le sceau), le tampon s'imprime une fois et ne se recolle pas, le ruban n'est qu'un repère posé par-dessus |
+| Éclairage et ambiance | Lumière chaude de lampe de bureau, en haut à gauche, dans la scène comme sur le papier de la page (dégradé CSS) ; le sol est invisible et ne garde que les ombres. Inspecter un coffre, c'est allumer sa lampe : le calque s'éclaire par derrière | Une seule source de lumière cohérente entre la 3D et l'interface. La lampe du coffre transforme l'inspection en geste concret : on éclaire pour lire, sans ouvrir |
+| Typographie et lisibilité | Alegreya Sans (humaniste) pour le titre et le texte, Courier Prime (machine à écrire) pour les empreintes, les valeurs et les étiquettes. Chiffres alignés sur les capitales | L'humaniste garde un ton chaleureux et accessible. La machine à écrire va avec l'univers papier (étiquettes, registre) et distingue toujours les vraies données techniques (hash, nonce) du texte d'explication |
+| Échelle et rapport de taille | Coffres identiques ; le tampon du parent est environ deux fois plus petit que celui du bloc | Même structure pour tous les blocs ; la taille distingue « mon sceau » et « celui de mon parent » |
+| Mouvement | Coup de tampon : le coffre s'écrase légèrement et l'encre s'étale quand un sceau est posé (minage réussi, falsification). Un essai de minage raté laisse un tampon pâle | L'instant où un bloc est scellé devient physique et marquant ; le tampon pâle dit « pas valide » sans texte |
 
-> v0.5 (13/10/2026), direction demandée par Dylan et réalisée avec l'aide de l'IA, validée par Maxens le 13/10/2026 (#16). Une direction « registre de bord » (papier, cire, laiton) a été essayée puis abandonnée au profit du neumorphisme.
+> v0.8 (13/10/2026), branche `styleV2` : direction « maquette en papier découpé » proposée par Maxens, réalisée avec l'aide de l'IA (Claude), à valider par Dylan (#16).
 >
-> **Limite connue du neumorphisme : le contraste.** Les reliefs seuls ne suffisent pas à repérer un bouton. Pour compenser, le texte reste foncé sur fond clair (contraste AA), les boutons ont un libellé en gras de couleur accent, le focus clavier est entouré, et un bouton désactivé perd son relief. À vérifier pendant les tests utilisateurs.
+> **Direction écartée : le neumorphisme** (v0.4 à v0.7). Une surface gris-bleu unique où les éléments sortent en relief ou s'enfoncent en creux. Calme et cohérent, mais froid et peu attractif pour des 16-25 ans ; surtout, son contraste était faible (un relief seul ne suffit pas à repérer un bouton) et le coffre de verre se lisait mal sur un fond presque de la même couleur. Avant lui, une direction « registre de bord » (papier, cire, laiton) avait été essayée puis abandonnée.
+>
+> **Limites connues du papier.** Le calque laisse moins bien voir le contenu que le verre : la lampe du coffre compense à l'inspection. Les textures étant générées dans le code, le rendu reste un peu « propre ». Le contraste du texte reste foncé sur clair (encre sur papier crème) ; les boutons ont un bord et une ombre découpée, donc ils se repèrent sans relief. À vérifier pendant les tests utilisateurs.
 >
 > Les textes sont écrits en tutoiement, avec des phrases courtes et parlées, pour un public de 16 à 25 ans.
 
@@ -96,12 +99,12 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
 |:---|:---|:---|
-| Forme / géométrie | Coffre en verre (pavé) avec un rouleau (données) et une pièce gravée (nonce) à l'intérieur ; un grand sceau et un petit sceau sur la face avant | Le coffre évoque un contenant qu'on ferme ; chaque champ a un objet distinct, donc on peut les compter (4) |
+| Forme / géométrie | Coffre en carton (pavé) avec une fenêtre en papier calque ; un rouleau (données) et une pièce (nonce) à l'intérieur ; un grand tampon et un petit tampon sur la face avant | Le coffre évoque un contenant qu'on ferme ; chaque champ a un objet distinct, donc on peut les compter (4) |
 | Taille et échelle | Tous les coffres ont la même taille ; le sceau du parent est plus petit que le sien | Les blocs ont la même structure ; la taille distingue « mon empreinte » de « celle de mon parent » |
-| Couleur / matériau / texture | Verre transparent à arêtes gris ardoise ; sceau de cire dont la teinte, le bord et les rayons gravés sont tirés des octets du vrai hash | Le verre montre le contenu sans l'ouvrir ; le sceau rend le hash comparable d'un coup d'œil (le petit sceau violet du bloc 2 est identique au grand sceau du bloc 1) |
+| Couleur / matériau / texture | Carton kraft et calque translucide ; tampon encreur dont la teinte, les anneaux et les rayons sont tirés des octets du vrai hash. Inspecter = allumer la lampe du coffre, le calque s'éclaire | Le calque laisse deviner le contenu sans ouvrir, la lampe le rend lisible ; le sceau rend le hash comparable d'un coup d'œil (le petit sceau violet du bloc 2 est identique au grand sceau du bloc 1) |
 | Position | Le coffre « Thomas → Julien » (bloc n°2) est au centre de la vue, ses voisins restent visibles de chaque côté | On voit que le bloc fait partie d'une chaîne, ce qui prépare la notion 2 |
 | Mouvement / animation | À l'inspection, le contenu se soulève légèrement et s'éclaire ; les étiquettes apparaissent en fondu | Le changement d'état est visible, pas seulement textuel |
-| Interaction et retour visuel | Clic sur le coffre (ou bouton « Inspecter le coffre ») ; contour éclairé au survol | Interaction directe sur l'objet 3D, avec une alternative au clavier |
+| Interaction et retour visuel | Clic sur le coffre (ou bouton « Allumer la lampe du coffre ») ; contour éclairé au survol | Interaction directe sur l'objet 3D, avec une alternative au clavier |
 | Son, si utilisé | Aucun pour l'instant | — |
 | Texte d'accompagnement | Deux phrases courtes, puis la liste des 4 champs avec leur valeur et leur rôle ; encart « En vrai… » | Le texte nomme ce que l'image montre, l'encart corrige la métaphore |
 
@@ -112,13 +115,14 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 | Pièce gravée d'un nombre | Nonce | Exacte (le nonce a été réellement trouvé pour que le hash commence par `00`) |
 | Grand sceau + valeur affichée | Hash SHA-256 du bloc, calculé dans le navigateur | Exacte pour la valeur, approximative pour le motif (représentation visuelle du hash) |
 | Petit sceau dans le coin | Hash du bloc précédent stocké dans l'en-tête | Exacte |
-| Coffre de verre | Bloc de données numériques | Approximative (métaphore) |
+| Coffre en carton à fenêtre | Bloc de données numériques | Approximative (métaphore) |
 
 #### e) Alternative écartée
 | Alternative | Raison du rejet |
 |:---|:---|
-| Coffre qui s'ouvre avec un couvercle (première idée de l'issue #7) | Ouvrir le coffre voudrait dire briser le sceau : l'utilisateur pourrait croire que lire un bloc le modifie. Le verre permet de lire sans ouvrir |
-| Sceau en « camembert » de 12 couleurs | Lisible mais gadget, sans lien avec l'idée de cachet. Remplacé par un sceau de cire. Premier essai : la teinte venait du 1er octet du hash, toujours `00` à cause de la difficulté, donc tous les sceaux étaient rouges. Elle vient maintenant du dernier octet |
+| Coffre qui s'ouvre avec un couvercle (première idée de l'issue #7) | Ouvrir le coffre voudrait dire briser le sceau : l'utilisateur pourrait croire que lire un bloc le modifie. La fenêtre permet de lire sans ouvrir |
+| Coffre entièrement en verre (versions v0.4 à v0.7) | Il montrait bien le contenu, mais se fondait dans le fond gris-bleu et collait mal à l'univers papier de la v0.8. Remplacé par un coffre en carton avec une fenêtre de calque et une lampe : on garde l'idée « lire sans ouvrir »
+| Sceau en « camembert » de 12 couleurs | Lisible mais gadget, sans lien avec l'idée de cachet. Remplacé par un sceau de cire, puis par un tampon encreur dans la version papier. Premier essai : la teinte venait du 1er octet du hash, toujours `00` à cause de la difficulté, donc tous les sceaux étaient rouges. Elle vient maintenant du dernier octet |
 | Sceau du parent gravé sur la face latérale gauche | Testé : depuis la caméra, il était caché par le coffre voisin. Déplacé dans le coin avant gauche, côté du lien |
 
 #### f) Tests utilisateurs
@@ -134,7 +138,7 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 > v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 3. Relu par Maxens, à confirmer par Dylan. Les tests utilisateurs restent à faire.
 
 **Issues liées :** #8
-**Séquence(s) concernée(s) :** séquence 3 « Chaque coffre porte le sceau du précédent » (`?etape=3`)
+**Séquence(s) concernée(s) :** séquence 3 « Chaque coffre garde le sceau du précédent » (`?etape=3`)
 
 #### a) Objectif pédagogique
 > L'utilisateur doit comprendre que chaque bloc contient l'empreinte du bloc précédent, que c'est cette empreinte (et non leur position) qui relie les blocs dans un ordre fixe, et que changer un bloc changerait son empreinte, qui ne correspondrait plus à la copie gardée par le suivant.
@@ -145,7 +149,7 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 #### c) Représentation choisie
 | Dimension | Choix | Pourquoi ce choix sert la compréhension |
 |:---|:---|:---|
-| Forme / géométrie | Sur chaque coffre, un petit sceau dans le coin avant gauche : la copie du grand sceau du coffre précédent. Un tube corail relie les coffres, du côté de ce petit sceau | Le petit sceau est la preuve du lien ; le tube n'est qu'un repère de lecture placé au même endroit |
+| Forme / géométrie | Sur chaque coffre, un petit sceau dans le coin avant gauche : la copie du grand sceau du coffre précédent. Un ruban adhésif corail relie les coffres, du côté de ce petit sceau | Le petit sceau est la preuve du lien ; le ruban n'est qu'un repère de lecture, posé par-dessus |
 | Taille et échelle | Le petit sceau fait environ la moitié du grand | On distingue d'un coup d'œil « mon empreinte » et « celle de mon parent » |
 | Couleur / matériau / texture | Le petit sceau a exactement la même teinte, le même bord et les mêmes rayons que le grand sceau du coffre d'avant. Le bloc de genèse porte un sceau gris (empreinte faite de zéros) | La correspondance se voit sans lire de hash : deux sceaux jumeaux = deux blocs liés. Le gris signale qu'il n'y a pas de parent |
 | Position | Caméra centrée sur le bloc 2, les blocs 1 et 3 visibles de chaque côté. Chaîne de gauche (ancien) à droite (récent) | On voit trois liens à la fois, donc que le principe se répète tout au long de la chaîne |
@@ -197,7 +201,7 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 | Couleur / matériau / texture | Le grand sceau du bloc 1 est redessiné depuis le nouveau hash (nouvelle teinte, nouveaux rayons). Le rouge (seule apparition de cette couleur) marque le lien cassé : un anneau autour du nouveau sceau du bloc 1 et un autour de sa copie dans le bloc 2 (et seulement ceux-là), tube 1→2, plaque « Bloc n°1 · falsifié » | Le changement du sceau montre l'effet avalanche ; le rouge est réservé à la fraude, donc il attire l'œil sans ambiguïté |
 | Position | Même cadrage qu'à la notion 2 (bloc 2 au centre) | L'utilisateur compare l'avant et l'après au même endroit |
 | Mouvement / animation | Le sceau change au moment du clic, les anneaux rouges pulsent sur la paire qui ne correspond plus | La cause (modification) et la conséquence (lien rouge) sont simultanées. Un premier essai allumait les deux sceaux des blocs 1 et 2 : on croyait que le lien 0→1 était cassé lui aussi, d’où la correction |
-| Interaction et retour visuel | Bouton « Falsifier le bloc 1 » (ou clic sur un coffre) : « Nicolas → Pierre : 2 jetons » devient « 200 jetons ». Le panneau affiche les données avant/après, le nouveau sceau et l'ancien, si la difficulté est encore respectée et « copie dans le bloc 2 ≠ nouveau sceau ». « Remettre comme avant » annule | L'utilisateur provoque lui-même la triche et peut recommencer ; tout est réversible |
+| Interaction et retour visuel | Bouton « Falsifier le bloc 1 » (ou clic sur un coffre) : « Nicolas → Pierre : 2 jetons » devient « 200 jetons ». Le panneau affiche les données avant/après, le nouveau sceau et l'ancien, si la difficulté est encore respectée et « Copie dans le bloc 2 ≠ nouveau sceau : la chaîne est cassée ». « Remettre comme avant » annule | L'utilisateur provoque lui-même la triche et peut recommencer ; tout est réversible |
 | Son, si utilisé | Aucun | — |
 | Texte d'accompagnement | Avant : le scénario du tricheur. Après : pourquoi ça se voit, et pourquoi la cacher coûterait trop cher. Encart « En vrai… » : re-minage, attaque des 51 % (annonce de la notion 7) | Le texte transforme l'observation en règle générale |
 
@@ -205,7 +209,7 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 | Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
 |:---|:---|:---|
 | Nouveau sceau du bloc 1 | Nouveau hash SHA-256 après modification des données | Exacte (recalculé dans le navigateur) |
-| « La difficulté n'est plus respectée » | Preuve de travail invalide : le bloc serait rejeté | Exacte |
+| « le sceau ne commence plus par 00 : le bloc serait refusé » | Preuve de travail invalide : le bloc serait rejeté | Exacte |
 | Lien 1→2 rouge | Le hash précédent stocké dans le bloc 2 ne correspond plus : les nœuds rejettent la chaîne | Exacte dans le principe |
 | Seul le lien suivant devient rouge | Les blocs 2 et 3 restent cohérents entre eux | Exacte |
 | Bouton « Falsifier » | Un attaquant qui modifie sa propre copie | Simplifiée (on ne montre pas qui triche ni sur quelle copie) |
@@ -242,7 +246,7 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 |:---|:---|:---|
 | Forme / géométrie | 7 îles (disques de roche) reliées par des routes en pointillés. Sur chaque île, une copie miniature des 4 coffres de la chaîne. La transaction circule sous la forme d'une bille lumineuse, puis flotte en rouleau au-dessus de l'île qui l'a reçue | Une île est un lieu séparé et autonome, qui a « ses » coffres : une île = un nœud = une copie. Le rouleau reprend l'objet « données » de la notion 1 |
 | Taille et échelle | Toutes les îles ont la même taille ; aucune n'est plus grosse ni plus haute | Tous les nœuds ont le même rôle : aucun ne domine |
-| Couleur / matériau / texture | Roche gris-bleu neutre. Les sceaux miniatures reprennent les vraies couleurs de la chaîne. Corail (l'accent) pour ce qui a reçu la transaction : anneau de l'île, étiquette, routes empruntées. Une île éteinte devient gris foncé et s'enfonce | Les mêmes sceaux sur toutes les îles montrent que les copies sont identiques. Le corail garde son sens de « lien actif » (notions 2 et 3) et dessine le chemin réellement pris |
+| Couleur / matériau / texture | Îles en feuilles découpées (sable, herbe) sur une mer de papier froissé ; copie de la chaîne en petites boîtes de carton. Les sceaux miniatures reprennent les vraies couleurs de la chaîne. Corail (l'accent) pour ce qui a reçu la transaction : anneau de l'île, étiquette, routes empruntées. Une île éteinte passe en papier grisé et s'enfonce ; les messages sont des avions en papier | Les mêmes sceaux sur toutes les îles montrent que les copies sont identiques. Le corail garde son sens de « lien actif » (notions 2 et 3) et dessine le chemin réellement pris |
 | Position | Îles dispersées irrégulièrement, Dylan à gauche et Maxens à droite, sans île au centre. Chaque île n'est reliée qu'à 2 à 4 voisines. L'archipel est placé à l'écart de la grande chaîne | La disposition sans centre rend visible l'absence de chef. Gauche → droite reprend le sens de lecture de la chaîne. Le message doit passer par des intermédiaires pour atteindre Maxens |
 | Mouvement / animation | La bille part de l'île de Dylan ; chaque île qui la reçoit s'allume, attend un court instant (elle vérifie), puis l'envoie à toutes ses voisines sauf celle qui la lui a transmise. Une île qui l'a déjà reçue ignore le doublon | La propagation de proche en proche (gossip) se voit au lieu d'être racontée. Le délai matérialise la vérification. Les doublons montrent la redondance du réseau |
 | Interaction et retour visuel | Bouton « Envoyer la transaction de Dylan » (ou clic sur l'île de Dylan). Clic sur une autre île pour l'éteindre ou la rallumer, puis « Renvoyer la transaction ». Le panneau compte les îles jointes, dit si Maxens a reçu et liste les îles éteintes ou injoignables | En éteignant une île, l'utilisateur découvre lui-même que le message passe ailleurs : aucune île n'est indispensable. S'il en éteint trop, il voit aussi la limite (une île coupée de tout ne reçoit rien) |
@@ -343,7 +347,7 @@ Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un 
 |:---|:---|:---|
 | Forme / géométrie | Le même archipel qu'à la notion 4. En preuve de travail, chaque île a une rangée de machines (de 1 à 4) derrière sa copie de la chaîne. En preuve d'enjeu, une pile de jetons dorés (de 1 à 4) au même endroit | On reste dans le réseau sans centre : ce sont les mêmes îles qui doivent se mettre d'accord. Le nombre d'objets se compte d'un coup d'œil |
 | Taille et échelle | La rangée de machines ou la hauteur de la pile est proportionnelle au poids de l'île. Les poids ne sont pas les mêmes dans les deux méthodes (Thomas a 4 machines mais 1 jeton, Dylan 1 machine mais 4 jetons) | On voit que « ce qui compte » change d'une méthode à l'autre |
-| Couleur / matériau / texture | Machines gris ardoise avec un voyant vert qui clignote pendant la course ; jetons dorés, comme la pièce du nonce. Un anneau corail désigne l'île gagnante | Le voyant montre que toutes les machines travaillent en même temps. Le corail garde son sens de « ce qui est retenu » |
+| Couleur / matériau / texture | Machines en carton avec un voyant vert qui clignote pendant la course ; jetons dorés, comme la pièce du nonce. Un anneau corail désigne l'île gagnante | Le voyant montre que toutes les machines travaillent en même temps. Le corail garde son sens de « ce qui est retenu » |
 | Position | Vue d'ensemble de l'archipel, comme à la notion 4 | Toutes les îles sont visibles : on voit qu'une seule gagne |
 | Mouvement / animation | Preuve de travail : les compteurs d'essais de toutes les îles défilent, plus vite là où il y a plus de machines, puis une île trouve le sceau. Preuve d'enjeu : un anneau passe d'île en île de plus en plus lentement (une roue) et s'arrête sur l'île tirée | La course rend visible le travail perdu par les perdantes ; la roue rend visible le tirage, sans calcul |
 | Interaction et retour visuel | Choix de la méthode (« Travail (PoW) » / « Enjeu (PoS) »), bouton « Lancer la course » ou « Faire le tirage », relance possible. Le panneau donne la gagnante et sa probabilité, le nombre total d'essais (PoW), la sanction en cas de triche, le décompte des victoires sur plusieurs tours, puis un bilan une fois les deux méthodes essayées | En relançant, l'utilisateur constate lui-même que les victoires suivent les poids sans être certaines (une île à 1 machine peut gagner) |

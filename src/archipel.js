@@ -4,8 +4,10 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { COFFRE_SIZE, sealTexture } from './coffre.js';
+import { COLORS, cardboard, crumpledSheet, noisyDisc, paperMaterial, paperPlaneGeometry } from './papier.js';
 
-// Le réseau = un archipel. Chaque île est un nœud qui garde sa propre copie de la chaîne.
+// Le réseau = un archipel en papier découpé, posé sur une mer de papier froissé.
+// Chaque île est un nœud qui garde sa propre copie de la chaîne.
 // Aucune île n'est au centre : chacune n'est reliée qu'à quelques voisines, et la transaction
 // de Dylan se propage de proche en proche (gossip).
 export const ISLANDS = [
@@ -35,25 +37,26 @@ export const TOP_Y = GROUND_Y + 0.3;
 const SPEED = 3.2; // vitesse d'un message, en unités par seconde
 const VERIFY_DELAY = 0.4; // une île vérifie la transaction avant de la faire suivre
 const ACCENT = 0xe0684b;
-const ROUTE_COLOR = 0x8f9aab;
-const ROCK = 0xaab5c4;
-const ROCK_OFF = 0x6f7885;
+const ROUTE_COLOR = 0x8a7560; // pointillés au crayon
+const ROCK = 0xffffff; // teinte des papiers de l'île (multiplie la texture)
+const ROCK_OFF = 0x8d8d8d; // île éteinte : papier grisé
 
-const baseGeometry = new THREE.CylinderGeometry(R, R * 1.1, 0.3, 48);
+// Une île = trois feuilles découpées empilées (sable, herbe, herbe foncée) ; le dessus est à TOP_Y.
+const LAYERS = [
+  { r: R * 1.12, color: COLORS.sand },
+  { r: R * 1.0, color: COLORS.grass },
+  { r: R * 0.92, color: COLORS.grassDark },
+];
+const LAYER_DEPTH = 0.1;
 const ringGeometry = new THREE.RingGeometry(R - 0.1, R - 0.02, 48);
 const scrollGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.5, 16);
 const miniGeometry = new THREE.BoxGeometry(0.3, 0.22, 0.22);
-const miniEdges = new THREE.EdgesGeometry(miniGeometry);
 const miniSealGeometry = new THREE.PlaneGeometry(0.17, 0.17);
-const miniLinkGeometry = new THREE.CylinderGeometry(0.015, 0.015, 0.12, 6);
-const messageGeometry = new THREE.SphereGeometry(0.11, 16, 12);
-const haloGeometry = new THREE.SphereGeometry(0.2, 16, 12);
-
-const miniGlass = new THREE.MeshStandardMaterial({ color: 0xd8f0ea, transparent: true, opacity: 0.55, roughness: 0.1 });
-const miniFrame = new THREE.LineBasicMaterial({ color: 0x7d8899 });
-const miniLink = new THREE.MeshStandardMaterial({ color: ACCENT, roughness: 0.5 });
-const messageMaterial = new THREE.MeshBasicMaterial({ color: ACCENT });
-const haloMaterial = new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.3, depthWrite: false });
+const miniLinkGeometry = new THREE.BoxGeometry(0.14, 0.05, 0.006);
+// Les messages sont des avions en papier.
+const messageGeometry = paperPlaneGeometry(0.9);
+const messageMaterial = paperMaterial(COLORS.paper, { fibers: 40 }, { side: THREE.DoubleSide, flatShading: true });
+const miniLink = new THREE.MeshStandardMaterial({ color: ACCENT, roughness: 0.75, transparent: true, opacity: 0.9 });
 
 // Traits épais (Line2) : leur épaisseur est en pixels, il faut leur donner la taille de l'écran.
 const routeMaterials = [];
@@ -77,19 +80,16 @@ function createMiniChain(sealMaterials) {
   const spacing = 0.42;
   sealMaterials.forEach((sealMaterial, i) => {
     const x = (i - (sealMaterials.length - 1) / 2) * spacing;
-    const box = new THREE.Mesh(miniGeometry, miniGlass);
+    const box = new THREE.Mesh(miniGeometry, cardboard());
     box.position.set(x, TOP_Y + 0.11, 0);
+    box.castShadow = true;
     group.add(box);
-    const frame = new THREE.LineSegments(miniEdges, miniFrame);
-    frame.position.copy(box.position);
-    group.add(frame);
     const seal = new THREE.Mesh(miniSealGeometry, sealMaterial);
     seal.position.set(x, TOP_Y + 0.12, 0.111);
     group.add(seal);
     if (i > 0) {
       const link = new THREE.Mesh(miniLinkGeometry, miniLink);
-      link.rotation.z = Math.PI / 2;
-      link.position.set(x - spacing / 2, TOP_Y + 0.12, 0);
+      link.position.set(x - spacing / 2, TOP_Y + 0.12, 0.08);
       group.add(link);
     }
   });
@@ -99,8 +99,18 @@ function createMiniChain(sealMaterials) {
 export function createArchipel(chain) {
   const group = new THREE.Group();
   const sealMaterials = chain.map(
-    (block) => new THREE.MeshStandardMaterial({ map: sealTexture(block.hash), roughness: 0.45, transparent: true }),
+    (block) => new THREE.MeshStandardMaterial({ map: sealTexture(block.hash), roughness: 0.9, transparent: true, polygonOffset: true, polygonOffsetFactor: -2 }),
   );
+
+  // La mer : une grande feuille bleue froissée sous tout l'archipel.
+  const sea = new THREE.Mesh(
+    crumpledSheet(14, 9.5, 48),
+    new THREE.MeshStandardMaterial({ map: paperMaterial(COLORS.sea, { fibers: 120, repeat: 3 }).map, roughness: 0.95, flatShading: true }),
+  );
+  sea.position.y = GROUND_Y;
+  sea.rotation.y = 0.03;
+  sea.receiveShadow = true;
+  group.add(sea);
 
   const islands = ISLANDS.map(({ name, at }, index) => {
     const island = new THREE.Group();
@@ -108,9 +118,15 @@ export function createArchipel(chain) {
     island.userData.island = index;
     group.add(island);
 
-    const base = new THREE.Mesh(baseGeometry, new THREE.MeshStandardMaterial({ color: ROCK, roughness: 0.9 }));
-    base.position.y = GROUND_Y + 0.15;
-    island.add(base);
+    const layers = LAYERS.map(({ r, color }, i) => {
+      const layer = new THREE.Mesh(noisyDisc(r, index * 2.3 + i * 1.7, LAYER_DEPTH), paperMaterial(color).clone());
+      layer.position.y = GROUND_Y + i * LAYER_DEPTH; // la feuille du dessus finit à TOP_Y
+      layer.castShadow = true;
+      layer.receiveShadow = true;
+      island.add(layer);
+      return layer;
+    });
+    const base = layers.at(-1); // la feuille du dessus : elle s'éclaire au survol
 
     // Anneau corail : l'île a reçu la transaction.
     const ring = new THREE.Mesh(ringGeometry, new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 0 }));
@@ -121,10 +137,8 @@ export function createArchipel(chain) {
     island.add(createMiniChain(sealMaterials));
 
     // La transaction reçue flotte au-dessus de la copie de la chaîne : elle n'est pas encore dans un bloc.
-    const scroll = new THREE.Mesh(
-      scrollGeometry,
-      new THREE.MeshStandardMaterial({ color: 0xf2e6c9, roughness: 0.8, emissive: new THREE.Color(0.3, 0.2, 0.1) }),
-    );
+    const scroll = new THREE.Mesh(scrollGeometry, paperMaterial(COLORS.scroll, {}, { emissive: new THREE.Color(0.3, 0.2, 0.1) }));
+    scroll.castShadow = true;
     scroll.rotation.z = Math.PI / 2;
     scroll.position.y = TOP_Y + 0.62;
     scroll.scale.setScalar(0.001);
@@ -139,7 +153,7 @@ export function createArchipel(chain) {
     hint.visible = false;
     island.add(hint);
 
-    return { name, index, group: island, base, ring, scroll, plate, hint, neighbors: [], received: false, offline: false, glow: 0, lift: 0 };
+    return { name, index, group: island, base, layers, ring, scroll, plate, hint, neighbors: [], received: false, offline: false, glow: 0, lift: 0 };
   });
 
   const routes = ROUTES.map(([a, b]) => {
@@ -193,7 +207,7 @@ export function createArchipel(chain) {
     for (const { to, route } of islands[from].neighbors) {
       if (route === via || islands[to].offline) continue;
       const mesh = new THREE.Mesh(messageGeometry, messageMaterial);
-      mesh.add(new THREE.Mesh(haloGeometry, haloMaterial));
+      mesh.castShadow = true;
       group.add(mesh);
       messages.push({ route, from, to, t: 0, mesh });
     }
@@ -210,7 +224,7 @@ export function createArchipel(chain) {
       plate.element.textContent = `Île ${of(name)}${offline ? ' · éteinte' : ''}`;
       plate.element.classList.toggle('is-off', offline);
       plate.element.classList.toggle('is-received', received);
-      island.base.material.color.set(offline ? ROCK_OFF : ROCK);
+      island.layers.forEach((layer) => layer.material.color.set(offline ? ROCK_OFF : ROCK));
       island.hint.visible =
         (hintMode === 'send' && island.index === SENDER) || (hintMode === 'off' && island.index === HINT_OFF);
     });
@@ -304,8 +318,11 @@ export function createArchipel(chain) {
           arrive(message);
           return false;
         }
-        const t = message.from === message.route.a ? message.t : 1 - message.t;
+        const forward = message.from === message.route.a;
+        const t = forward ? message.t : 1 - message.t;
         message.mesh.position.copy(message.route.curve.getPoint(t));
+        // L'avion regarde là où il va.
+        message.mesh.lookAt(message.route.curve.getPoint(THREE.MathUtils.clamp(t + (forward ? 0.03 : -0.03), 0, 1)));
         return true;
       });
       if (running && !messages.length && !relays.length) {

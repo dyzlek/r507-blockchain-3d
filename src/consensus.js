@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { ISLANDS, TOP_Y } from './archipel.js';
+import { COLORS, cardboardDark, paperMaterial } from './papier.js';
 
 // Notion 6 : qui a le droit de sceller le prochain bloc ? Deux façons de choisir, sans chef,
 // posées sur l'archipel de la notion 4.
@@ -23,10 +24,10 @@ const DRAW_TIME = 2.4; // durée de la roue du tirage
 const ACCENT = 0xe0684b;
 
 const machineGeometry = new THREE.BoxGeometry(0.26, 0.34, 0.2);
-const machineMaterial = new THREE.MeshStandardMaterial({ color: 0x4a5566, roughness: 0.5, metalness: 0.3 });
+const machineMaterial = cardboardDark(); // machines en carton
 const ledGeometry = new THREE.BoxGeometry(0.06, 0.04, 0.01);
 const coinGeometry = new THREE.CylinderGeometry(0.14, 0.14, 0.08, 28);
-const coinMaterial = new THREE.MeshStandardMaterial({ color: 0xd9a93a, metalness: 0.8, roughness: 0.3 });
+const coinMaterial = paperMaterial(COLORS.gold, { fibers: 60 }); // jetons en carton doré
 const crownGeometry = new THREE.TorusGeometry(0.98, 0.05, 10, 64);
 
 function makeLabel(className, text) {
