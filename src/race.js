@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { mine } from './chain.js';
 import { createCoffre } from './coffre.js';
-import { createTape } from './papier.js';
+import { createRope } from './papier.js';
 
 // Notion 7 : cycle de vie de la transaction de Dylan, puis tentative de double dépense.
 // La transaction est dans le bloc 4 (notion 5). En secret, Dylan fabrique un autre bloc 4, à partir du bloc 3,
@@ -18,9 +18,9 @@ const BROKEN_COLOR = 0xb3261e;
 const HONEST_DATA = ['Pierre → Thomas : 4 jetons', 'Julien → Lucas : 2 jetons'];
 export const ATTACK_DATA = ['Dylan → Dylan : 5 jetons', 'Bloc vide (Dylan)', 'Bloc vide (Dylan)'];
 
-// Ruban adhésif entre deux coffres, comme dans la chaîne principale (en biais pour la fourche).
+// Corde entre deux coffres, comme dans la chaîne principale (en biais pour la fourche).
 function makeLink(from, to, color) {
-  return createTape(from, to, color);
+  return createRope(from, to, color);
 }
 
 // `fork` : le coffre du bloc 3 ; `tip` : le coffre du bloc 4 (celui de la notion 5), qu'on affiche scellé ici.
@@ -153,7 +153,8 @@ export async function createRace({ fork, tip, data, spacing }) {
       }
 
       const damp = (value, target, lambda = 6) => (instant ? target : THREE.MathUtils.damp(value, target, lambda, dt));
-      // Un bloc apparaît quand son camp l'a trouvé (`count` blocs visibles) ; la branche perdante s'enfonce.
+      // Un bloc apparaît quand son camp l'a trouvé (`count` blocs visibles) ; la branche perdante bascule
+      // en arrière, comme un carton renversé (s'enfoncer la ferait passer sous le sol, qui cache le bas du coffre).
       const place = (items, count, lost) =>
         items.forEach((item, i) => {
           item.shown = damp(item.shown, i < count ? 1 : 0);
@@ -161,15 +162,17 @@ export async function createRace({ fork, tip, data, spacing }) {
             object.visible = item.shown > 0.01;
             object.scale.setScalar(Math.max(item.shown, 0.001));
           });
-          item.coffre.group.position.y = damp(item.coffre.group.position.y, lost ? -0.45 : 0, 3);
+          item.coffre.group.rotation.x = damp(item.coffre.group.rotation.x, lost ? -0.35 : 0, 3);
+          item.coffre.group.position.y = -item.coffre.group.rotation.x * 0.5; // le bord arrière reste au-dessus du sol
           item.coffre.update(dt, time, instant);
         });
       // Branche honnête : `honestLength` compte le bloc 4, déjà posé ; les blocs 5 et 6 viennent ensuite.
       place(honest, honestLength - 1, state === 'done' && winner === 'attack');
       // Branche de Dylan : son bloc 4 apparaît au départ de la course.
       place(attack, state === 'idle' ? 0 : attackLength, state === 'done' && winner === 'honest');
-      tipSink = damp(tipSink, state === 'done' && winner === 'attack' ? -0.45 : 0, 3);
-      tip.group.position.y = tipSink;
+      tipSink = damp(tipSink, state === 'done' && winner === 'attack' ? -0.35 : 0, 3);
+      tip.group.rotation.x = tipSink;
+      tip.group.position.y = -tipSink * 0.5;
     },
   });
 

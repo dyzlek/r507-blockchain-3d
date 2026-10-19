@@ -145,59 +145,142 @@ export function coinTexture(nonce) {
   });
 }
 
-// Ruban adhésif corail entre deux coffres : c'est le lien de la chaîne (un repère, la preuve reste le sceau).
-// Un morceau de scotch collé sur les coins avant des deux coffres (en haut de la façade), un peu détendu
-// entre les deux. `size` : demi-largeur et demi-profondeur d'un coffre.
-// Un lien en biais (la fourche de la notion 7) part du bord du coffre au lieu d'être collé sur la façade.
-const tapeTexture = () => paperTexture('#ffffff', { fibers: 60, grain: 0.12 });
-export function createTape(from, to, color = COLORS.accent, { y = 0.46, size = [0.8, 0.55], overlap = 0.1, width = 0.17 } = {}) {
+// Lien entre deux coffres : une simple corde corail, nouée au flanc de chaque coffre et un peu détendue.
+// C'est un repère seulement : la preuve du lien reste le sceau recopié.
+// `size` : demi-largeur et demi-profondeur d'un coffre ; `y` : hauteur des nœuds.
+const ROPE_R = 0.035;
+const knotGeometry = new THREE.SphereGeometry(ROPE_R * 2, 16, 12);
+const ropeTexture = () =>
+  canvasTexture(64, (g, s) => {
+    // Brins torsadés : des rayures en biais, plus claires et plus foncées.
+    g.fillStyle = '#ffffff';
+    g.fillRect(0, 0, s, s);
+    g.strokeStyle = 'rgb(0 0 0 / 22%)';
+    g.lineWidth = 6;
+    for (let x = -s; x < s * 2; x += 16) {
+      g.beginPath();
+      g.moveTo(x, 0);
+      g.lineTo(x + s, s);
+      g.stroke();
+    }
+  });
+
+export function createRope(from, to, color = COLORS.accent, { y = 0.25, size = [0.8, 0.55], floor = -0.55 } = {}) {
   const direction = to.clone().sub(from).setY(0);
   const length = direction.length();
   direction.normalize();
-  const straight = Math.abs(direction.x) > 0.95;
-  const front = straight ? size[1] + 0.006 : 0;
-  const half = straight ? size[0] : Math.min(size[0] / Math.abs(direction.x || 1e-6), size[1] / Math.abs(direction.z || 1e-6));
-  const normal = new THREE.Vector3(-direction.z, 0, direction.x); // vers l'avant pour une chaîne de gauche à droite
-  const side = new THREE.Vector3(0, width / 2, 0);
-  // Géométrie centrée sur le milieu du ruban : il peut grandir ou rétrécir sur place (apparitions).
+  // Distance du centre du coffre à son bord, dans la direction du lien (marche aussi en biais, pour la fourche).
+  const half = Math.min(size[0] / Math.max(Math.abs(direction.x), 1e-6), size[1] / Math.max(Math.abs(direction.z), 1e-6));
+  // Corde droite : nouée vers l'avant des flancs, pour qu'on la voie bien (et la voie tomber une fois coupée).
+  const normal = new THREE.Vector3(-direction.z, 0, direction.x);
+  const front = Math.abs(direction.x) > 0.95 ? size[1] - 0.15 : 0;
   const middle = from.clone().lerp(to, 0.5).setY(y).addScaledVector(normal, front);
-  const at = (k, drop = 0) => from.clone().addScaledVector(direction, k).addScaledVector(normal, front).setY(y - drop).sub(middle);
-  // Collé à plat sur le coin du premier coffre, puis un léger creux dans le vide, puis collé sur le second.
-  const steps = 48;
-  const sag = Math.min(0.1, length * 0.03);
-  const positions = [];
-  const uvs = [];
-  const indices = [];
-  const start = half - overlap;
-  const span = length - 2 * start;
-  const points = Array.from({ length: steps + 1 }, (_, k) => {
-    const along = start + (span * k) / steps;
-    const gap = THREE.MathUtils.clamp((along - half) / (length - 2 * half), 0, 1); // 0 et 1 : sur les coffres
-    return at(along, sag * Math.sin(gap * Math.PI));
+  const gap = length - 2 * half;
+  const sag = Math.min(0.25, gap * 0.16);
+
+  // La corde est une petite simulation physique (intégration de Verlet) : des points reliés par des longueurs
+  // fixes, tirés vers le bas par la gravité. Les deux bouts sont noués aux coffres. Coupée, chaque moitié
+  // retombe et se balance au bout de son nœud ; renouée, elle se retend.
+  const COUNT = 25;
+  const CUT = Math.floor(COUNT / 2); // le segment entre CUT - 1 et CUT est celui qu'on coupe
+  const points = Array.from({ length: COUNT }, (_, k) => {
+    const t = k / (COUNT - 1);
+    return from
+      .clone()
+      .addScaledVector(direction, half + gap * t)
+      .addScaledVector(normal, front)
+      .setY(y - sag * Math.sin(t * Math.PI))
+      .sub(middle);
   });
-  points.forEach((point, k) => {
-    // Bords un peu irréguliers, comme un ruban déchiré à la main.
-    const torn = k === 0 || k === steps ? 0.1 : 0;
-    positions.push(...point.clone().addScaledVector(side, 1 + torn).toArray(), ...point.clone().addScaledVector(side, -1 + torn * 0.5).toArray());
-    uvs.push((k / steps) * 3, 0, (k / steps) * 3, 1);
-    if (k > 0) {
-      const a = (k - 1) * 2;
-      indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+  const previous = points.map((p) => p.clone());
+  const rest = points.slice(1).map((p, k) => p.distanceTo(points[k]));
+  const ground = floor - y + ROPE_R; // le bureau, dans le repère de la corde
+  let broken = false;
+  let moving = true;
+
+  const texture = ropeTexture();
+  texture.repeat.set(Math.round(gap * 12), 1);
+  const material = new THREE.MeshStandardMaterial({ map: texture, color, roughness: 0.9 });
+  const group = new THREE.Group();
+  group.position.copy(middle);
+  const strands = [0, 1].map(() => {
+    const mesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
+    mesh.castShadow = true;
+    group.add(mesh);
+    return mesh;
+  });
+  [0, COUNT - 1].forEach((k) => {
+    const knot = new THREE.Mesh(knotGeometry, material);
+    knot.position.copy(points[k]);
+    knot.castShadow = true;
+    group.add(knot);
+  });
+
+  function rebuild() {
+    // Intacte : un seul brin de bout en bout. Coupée : deux brins, chacun pendu à son nœud.
+    const parts = broken ? [points.slice(0, CUT), points.slice(CUT)] : [points, []];
+    parts.forEach((part, i) => {
+      strands[i].geometry.dispose();
+      strands[i].visible = part.length > 1;
+      if (part.length > 1) strands[i].geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(part), part.length * 3, ROPE_R, 8);
+    });
+  }
+
+  const gravity = new THREE.Vector3(0, -9.8, 0);
+  const velocity = new THREE.Vector3();
+  const delta = new THREE.Vector3();
+  function step(h) {
+    let energy = 0;
+    for (let k = 1; k < COUNT - 1; k++) {
+      velocity.subVectors(points[k], previous[k]).multiplyScalar(0.985); // amortissement : l'air freine la corde
+      energy += velocity.lengthSq();
+      previous[k].copy(points[k]);
+      points[k].add(velocity).addScaledVector(gravity, h * h);
     }
-  });
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-  geometry.setIndex(indices);
-  geometry.computeVertexNormals();
-  const tape = new THREE.Mesh(
-    geometry,
-    new THREE.MeshStandardMaterial({ map: tapeTexture(), color, roughness: 0.7, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }),
-  );
-  tape.position.copy(middle);
-  tape.castShadow = true;
-  tape.receiveShadow = true;
-  return tape;
+    // Les longueurs : plusieurs passes pour que la corde ne s'étire pas.
+    for (let pass = 0; pass < 12; pass++) {
+      for (let k = 0; k < COUNT - 1; k++) {
+        if (broken && k === CUT - 1) continue;
+        const a = points[k];
+        const b = points[k + 1];
+        delta.subVectors(b, a);
+        const distance = delta.length() || 1e-6;
+        const fix = (distance - rest[k]) / distance;
+        const pinA = k === 0;
+        const pinB = k + 1 === COUNT - 1;
+        if (pinA && pinB) continue;
+        const share = pinA || pinB ? 1 : 0.5;
+        if (!pinA) a.addScaledVector(delta, fix * share);
+        if (!pinB) b.addScaledVector(delta, -fix * share);
+      }
+      points.forEach((p) => (p.y = Math.max(p.y, ground)));
+    }
+    return energy;
+  }
+
+  // Laisse la corde trouver sa forme de repos dès le départ.
+  for (let i = 0; i < 120; i++) step(1 / 60);
+  previous.forEach((p, k) => p.copy(points[k]));
+  rebuild();
+  moving = false;
+
+  group.setColor = (value) => material.color.set(value);
+  group.setBroken = (value, brokenColor = 0xb3261e) => {
+    material.color.set(value ? brokenColor : color);
+    if (value === broken) return;
+    broken = value;
+    moving = true;
+  };
+  // `instant` (mouvements réduits) : la corde prend directement sa position finale.
+  group.update = (dt, instant) => {
+    if (!moving) return;
+    let energy = 0;
+    const steps = instant ? 240 : 2;
+    for (let i = 0; i < steps; i++) energy = step(Math.min(dt, 1 / 30) / (instant ? 1 : 2) || 1 / 60);
+    rebuild();
+    if (instant || energy < 1e-9) moving = false;
+  };
+  return group;
 }
 
 // Avion en papier : quatre triangles pliés (pointe vers +z).

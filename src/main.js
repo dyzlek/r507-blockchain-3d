@@ -9,7 +9,7 @@ import { createArchipel, setRouteResolution, SENDER } from './archipel.js';
 import { createMiner, DIFFICULTIES } from './minage.js';
 import { createConsensus, METHODS } from './consensus.js';
 import { createRace, ATTACKS } from './race.js';
-import { createTape } from './papier.js';
+import { createRope } from './papier.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -67,7 +67,7 @@ scene.add(ground);
 // --- Chaîne de coffres ---
 const SPACING = 2.8;
 const coffres = [];
-const links = []; // un matériau par lien, pour pouvoir le rougir quand la chaîne est cassée
+const links = []; // une corde par lien, qu'on peut couper quand un bloc est falsifié
 const LINK_COLOR = 0xe0684b;
 const BROKEN_COLOR = 0xb3261e;
 
@@ -94,10 +94,10 @@ async function buildScene() {
     scene.add(coffre.group);
     coffres.push(coffre);
 
-    // Lien entre le coffre précédent et celui-ci : un ruban adhésif collé d'une boîte à l'autre
+    // Lien entre le coffre précédent et celui-ci : une corde nouée d'une boîte à l'autre
     // (côté du sceau du parent). C'est un repère : la preuve du lien reste le sceau recopié.
     if (i > 0) {
-      const link = createTape(coffres[i - 1].group.position, coffre.group.position, LINK_COLOR);
+      const link = createRope(coffres[i - 1].group.position, coffre.group.position, LINK_COLOR);
       links[i] = link;
       scene.add(link);
     }
@@ -108,7 +108,7 @@ async function buildScene() {
   newCoffre.group.position.x = startX + chain.length * SPACING;
   scene.add(newCoffre.group);
   coffres.push(newCoffre);
-  const link = createTape(coffres[chain.length - 1].group.position, newCoffre.group.position, LINK_COLOR);
+  const link = createRope(coffres[chain.length - 1].group.position, newCoffre.group.position, LINK_COLOR);
   links[chain.length] = link;
   scene.add(link);
   miner = createMiner(pending);
@@ -357,7 +357,7 @@ function renderText() {
     const rings = broken ? { own: i === tampered.index, parent: i === tampered.index + 1 } : undefined;
     c.setGlow(Boolean(sequence.chain?.includes(i)) && linked && (!sequence.tamper || broken), broken ? BROKEN_COLOR : LINK_COLOR, rings);
   });
-  links.forEach((link, i) => link?.material.color.set(tampered && i === tampered.index + 1 ? BROKEN_COLOR : LINK_COLOR));
+  links.forEach((link, i) => link?.setBroken(Boolean(tampered && i === tampered.index + 1), BROKEN_COLOR));
   if (sequence.network) {
     const { running, offline } = archipel.summary();
     archipel.setHint(!linked ? 'send' : !running && !offline.length ? 'off' : null);
@@ -663,6 +663,7 @@ renderer.setAnimationLoop((time) => {
   updatePops(dt);
   coffres.forEach((c) => c.update(dt, timer.getElapsed(), reducedMotion));
   archipel.update(dt, timer.getElapsed(), reducedMotion);
+  links.forEach((link) => link?.update(dt, reducedMotion));
   miner.update(dt);
   consensus.update(dt, timer.getElapsed(), reducedMotion);
   race.update(dt, timer.getElapsed(), reducedMotion);
