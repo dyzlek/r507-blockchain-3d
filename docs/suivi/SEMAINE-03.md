@@ -22,14 +22,16 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 ### 1.1 Réalisé
 | Issue / tâche | Notion concernée | Statut | Preuve |
 |:---|:---|:---|:---|
-| Aucun commit entre le 17/10 et le 19/10 | — | — | `git log --since=2026-10-17` vide (au 19/10) |
+| #16 Page d'aperçu papier (île avec phare, avion en papier, coffre en calque) | Structure d'un bloc, réseau | En cours | `d8a1f77` (branche `apercu-ile-papier`) |
+| #20 Citations de CHOIX réalignées sur les textes affichés (version papier) | Toutes | Fonctionnel | branche `apercu-ile-papier` |
+| Fiches de suivi semaines 2 et 3, board mis à jour | — | Fonctionnel | `50421f3`, `96c3860` |
 | _À compléter d'ici le vendredi 23/10_ | | | |
 
 ### 1.2 Prévu mais non réalisé
 | Tâche | Cause | Report |
 |:---|:---|:---|
 | Tests utilisateurs — session 1 (#17) | Pas encore organisée | Semaine 4 au plus tard |
-| Mise à jour du board (notions 5, 6, 7 encore en `Backlog` / `À faire` alors que le code est fusionné) | Oubli après les fusions du 13/10 | Cette semaine |
+| Choix final entre la direction verre (`main`) et la direction papier | Aperçu papier livré le 19/10, à valider à deux | Avant le 23/10 |
 
 ### 1.3 État des 7 notions
 
@@ -54,8 +56,8 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| Maxens | | | 0 (au 19/10) |
-| Dylan | | | 0 (au 19/10) |
+| Maxens | Aperçu papier | #16 | 1 (au 19/10) |
+| Dylan | Fiches de suivi, board, réalignement de CHOIX | #20 | 3 (au 19/10) |
 
 ## 3. GitHub Projects
 
@@ -63,8 +65,8 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 |:---|:---|
 | Issues créées | 0 |
 | Issues fermées | 0 (#7 à #13 encore ouvertes) |
-| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 11 / 3 / 1 / 4 / 6 (relevé du 19/10) |
-| Board mis à jour pendant la semaine ? | Non pour l'instant : statuts des notions 5 à 7 en retard sur le code |
+| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 9 / 2 / 1 / 7 / 6 (relevé du 19/10) |
+| Board mis à jour pendant la semaine ? | Oui, le 19/10 : notions 5 à 7 passées en `À vérifier` |
 | Milestone concerné et état | |
 
 ## 4. Choix de modélisation

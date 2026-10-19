@@ -104,7 +104,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 | Couleur / matériau / texture | Carton kraft et calque translucide ; tampon encreur dont la teinte, les anneaux et les rayons sont tirés des octets du vrai hash. Inspecter = allumer la lampe du coffre, le calque s'éclaire | Le calque laisse deviner le contenu sans ouvrir, la lampe le rend lisible ; le sceau rend le hash comparable d'un coup d'œil (le petit sceau violet du bloc 2 est identique au grand sceau du bloc 1) |
 | Position | Le coffre « Thomas → Julien » (bloc n°2) est au centre de la vue, ses voisins restent visibles de chaque côté | On voit que le bloc fait partie d'une chaîne, ce qui prépare la notion 2 |
 | Mouvement / animation | À l'inspection, le contenu se soulève légèrement et s'éclaire ; les étiquettes apparaissent en fondu | Le changement d'état est visible, pas seulement textuel |
-| Interaction et retour visuel | Clic sur le coffre ; contour éclairé au survol | Interaction directe sur l'objet 3D (le bouton « Inspecter le coffre » a été retiré à la relecture du 13/10) |
+| Interaction et retour visuel | Clic sur le coffre (ou bouton « Allumer la lampe du coffre ») ; contour éclairé au survol | Interaction directe sur l'objet 3D, avec une alternative au clavier |
 | Son, si utilisé | Aucun pour l'instant | — |
 | Texte d'accompagnement | Deux phrases courtes, puis la liste des 4 champs avec leur valeur et leur rôle ; encart « En vrai… » | Le texte nomme ce que l'image montre, l'encart corrige la métaphore |
 
@@ -122,7 +122,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 |:---|:---|
 | Coffre qui s'ouvre avec un couvercle (première idée de l'issue #7) | Ouvrir le coffre voudrait dire briser le sceau : l'utilisateur pourrait croire que lire un bloc le modifie. La fenêtre permet de lire sans ouvrir |
 | Coffre entièrement en verre (versions v0.4 à v0.7) | Il montrait bien le contenu, mais se fondait dans le fond gris-bleu et collait mal à l'univers papier de la v0.8. Remplacé par un coffre en carton avec une fenêtre de calque et une lampe : on garde l'idée « lire sans ouvrir »
-| Sceau en « camembert » de 12 couleurs | Lisible mais gadget, sans lien avec l'idée de cachet. Remplacé par un sceau de cire. Premier essai : la teinte venait du 1er octet du hash, toujours `00` à cause de la difficulté, donc tous les sceaux étaient rouges. Elle vient maintenant du dernier octet |
+| Sceau en « camembert » de 12 couleurs | Lisible mais gadget, sans lien avec l'idée de cachet. Remplacé par un sceau de cire, puis par un tampon encreur dans la version papier. Premier essai : la teinte venait du 1er octet du hash, toujours `00` à cause de la difficulté, donc tous les sceaux étaient rouges. Elle vient maintenant du dernier octet |
 | Sceau du parent gravé sur la face latérale gauche | Testé : depuis la caméra, il était caché par le coffre voisin. Déplacé dans le coin avant gauche, côté du lien |
 
 #### f) Tests utilisateurs

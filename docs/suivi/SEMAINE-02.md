@@ -29,6 +29,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | #11 Course au sceau | Validation et minage | Fonctionnel | `651209c`, `52d1608` (PR #28) |
 | #12 / #13 PoW-PoS, double dépense | Consensus, transaction et attaque | Fonctionnel | `8c16cc2` (PR #29) |
 | #16 Direction visuelle neumorphique | — | En cours | `e9d437f` |
+| #16 Direction « maquette en papier découpé » (branche `styleV2`, non fusionnée) | Toutes | En cours | `1f1b7e2`, `c40aea8` |
 | #20 Fiches 4.1 à 4.7 de CHOIX-MODELISATION | Toutes | En cours | `60f667d`, `9f8386d` |
 
 ### 1.2 Prévu mais non réalisé
@@ -60,7 +61,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| Maxens | Notions 4, 6, 7, fiches CHOIX 4.2 à 4.7, navigation | #10 #12 #13 #15 #20 | 8 |
+| Maxens | Notions 4, 6, 7, fiches CHOIX 4.2 à 4.7, navigation, direction papier | #10 #12 #13 #15 #16 #20 | 10 |
 | Dylan | Parcours, notions 1, 2, 3, 5, design, relecture des textes | #7 #8 #9 #11 #15 #16 | 9 (dont 1 commit IA) |
 
 ## 3. GitHub Projects
@@ -79,7 +80,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 |:---|:---|
 | Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | 4.1 à 4.7 |
 | Choix important et justification | Coffre de verre : on lit le bloc sans « briser le sceau » (fiche 4.1) |
-| Choix remis en question | Direction « registre de bord » abandonnée pour le neumorphisme ; sceau « camembert » remplacé par un sceau de cire |
+| Choix remis en question | Direction « registre de bord » abandonnée pour le neumorphisme, lui-même remis en question par la direction papier (`styleV2`) ; sceau « camembert » remplacé par un sceau de cire |
 
 ## 5. Tests utilisateurs
 
