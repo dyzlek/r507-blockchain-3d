@@ -22,24 +22,26 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 ### 1.1 Réalisé
 | Issue / tâche | Notion concernée | Statut | Preuve |
 |:---|:---|:---|:---|
-| | | En cours / Fonctionnel / Testé / Bloqué | |
+| Aucun commit entre le 17/10 et le 19/10 | — | — | `git log --since=2026-10-17` vide (au 19/10) |
+| _À compléter d'ici le vendredi 23/10_ | | | |
 
 ### 1.2 Prévu mais non réalisé
 | Tâche | Cause | Report |
 |:---|:---|:---|
-| | | |
+| Tests utilisateurs — session 1 (#17) | Pas encore organisée | Semaine 4 au plus tard |
+| Mise à jour du board (notions 5, 6, 7 encore en `Backlog` / `À faire` alors que le code est fusionné) | Oubli après les fusions du 13/10 | Cette semaine |
 
 ### 1.3 État des 7 notions
 
 | Notion obligatoire | État | Remarque / preuve |
 |:---|:---|:---|
-| Structure d'un bloc | | |
-| Chaînage cryptographique | | |
-| Immutabilité et détection de falsification | | |
-| Réseau et décentralisation | | |
-| Validation et minage | | |
-| Comparaison d'au moins deux mécanismes de consensus | | |
-| Cycle de vie d'une transaction et scénario d'attaque illustré | | |
+| Structure d'un bloc | Fonctionnel | Coffre de verre, étape 1 (#7, `b506ce9`) ; pas de test documenté |
+| Chaînage cryptographique | Fonctionnel | Étape 3 (#8, `ce0c1c2`) ; fiche 4.2 rédigée |
+| Immutabilité et détection de falsification | Fonctionnel | Étape 4 (#9, `ce0c1c2`) ; fiche 4.3 mise à jour |
+| Réseau et décentralisation | Fonctionnel | Archipel et propagation (#10, PR #27) ; fiche 4.4 |
+| Validation et minage | Fonctionnel | Course au sceau, nonce en direct (#11, PR #28) ; fiche 4.5 |
+| Comparaison d'au moins deux mécanismes de consensus | Fonctionnel | PoW / PoS sur l'archipel (#12, PR #29) ; fiche 4.6 |
+| Cycle de vie d'une transaction et scénario d'attaque illustré | Fonctionnel | Double dépense, course entre deux branches (#13, PR #29) ; fiche 4.7 |
 
 **Définitions des états :**
 
@@ -52,25 +54,24 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| | | | |
-| | | | |
-| | | | |
+| Maxens | | | 0 (au 19/10) |
+| Dylan | | | 0 (au 19/10) |
 
 ## 3. GitHub Projects
 
 | Question | Réponse |
 |:---|:---|
-| Issues créées | |
-| Issues fermées | |
-| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | |
-| Board mis à jour pendant la semaine ? | |
+| Issues créées | 0 |
+| Issues fermées | 0 (#7 à #13 encore ouvertes) |
+| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 11 / 3 / 1 / 4 / 6 (relevé du 19/10) |
+| Board mis à jour pendant la semaine ? | Non pour l'instant : statuts des notions 5 à 7 en retard sur le code |
 | Milestone concerné et état | |
 
 ## 4. Choix de modélisation
 
 | Question | Réponse |
 |:---|:---|
-| Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | |
+| Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | 4.1 à 4.7 rédigées (semaine 2) ; 4.2 et 4.3 à confirmer par Dylan, textes à réaligner sur la PR #28 |
 | Choix important et justification | |
 | Choix remis en question | |
 
@@ -78,7 +79,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Question | Réponse |
 |:---|:---|
-| Nombre de testeurs extérieurs cette semaine | |
+| Nombre de testeurs extérieurs cette semaine | 0 |
 | Compréhension ou problème observé | |
 | Issue corrective | |
 
@@ -86,7 +87,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Question | Réponse |
 |:---|:---|
-| Usage de l'IA et vérifications effectuées | |
+| Usage de l'IA et vérifications effectuées | Claude : préparation de cette fiche à partir de `git log`, des issues et du board ; chiffres vérifiés par le groupe |
 | Blocage technique | |
 | Blocage pédagogique ou organisationnel | |
 | Besoin d'un point enseignant | |
@@ -95,15 +96,15 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Objectif | Responsable | Issue |
 |:---|:---|:---|
-| | | |
-| | | |
-| | | |
+| Mettre le board à jour et passer les notions 5 à 7 en `À vérifier` | Dylan | #11 #12 #13 |
+| Session 1 de tests utilisateurs (2 testeurs extérieurs) | Maxens | #17 |
+| Réaligner les fiches CHOIX sur les nouveaux textes | Maxens, Dylan | #20 |
 
 ## 8. Signaux d'alerte
 
 - [ ] Le board n'a été mis à jour qu'aujourd'hui.
 - [ ] La répartition est fortement déséquilibrée et non expliquée.
-- [ ] Nous n'avons pas encore atteint les 2 testeurs extérieurs requis.
+- [x] Nous n'avons pas encore atteint les 2 testeurs extérieurs requis.
 - [ ] Un choix de modélisation important n'est pas justifié.
 - [ ] Une notion n'a pas avancé depuis 2 semaines.
 
