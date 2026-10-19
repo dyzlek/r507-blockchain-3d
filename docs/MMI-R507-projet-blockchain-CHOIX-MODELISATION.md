@@ -101,7 +101,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 | Couleur / matériau / texture | Verre transparent à arêtes gris ardoise ; sceau de cire dont la teinte, le bord et les rayons gravés sont tirés des octets du vrai hash | Le verre montre le contenu sans l'ouvrir ; le sceau rend le hash comparable d'un coup d'œil (le petit sceau violet du bloc 2 est identique au grand sceau du bloc 1) |
 | Position | Le coffre « Thomas → Julien » (bloc n°2) est au centre de la vue, ses voisins restent visibles de chaque côté | On voit que le bloc fait partie d'une chaîne, ce qui prépare la notion 2 |
 | Mouvement / animation | À l'inspection, le contenu se soulève légèrement et s'éclaire ; les étiquettes apparaissent en fondu | Le changement d'état est visible, pas seulement textuel |
-| Interaction et retour visuel | Clic sur le coffre (ou bouton « Inspecter le coffre ») ; contour éclairé au survol | Interaction directe sur l'objet 3D, avec une alternative au clavier |
+| Interaction et retour visuel | Clic sur le coffre ; contour éclairé au survol | Interaction directe sur l'objet 3D (le bouton « Inspecter le coffre » a été retiré à la relecture du 13/10) |
 | Son, si utilisé | Aucun pour l'instant | — |
 | Texte d'accompagnement | Deux phrases courtes, puis la liste des 4 champs avec leur valeur et leur rôle ; encart « En vrai… » | Le texte nomme ce que l'image montre, l'encart corrige la métaphore |
 
@@ -134,7 +134,7 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 > v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 3. Relu par Maxens, à confirmer par Dylan. Les tests utilisateurs restent à faire.
 
 **Issues liées :** #8
-**Séquence(s) concernée(s) :** séquence 3 « Chaque coffre porte le sceau du précédent » (`?etape=3`)
+**Séquence(s) concernée(s) :** séquence 3 « Chaque coffre garde le sceau du précédent » (`?etape=3`)
 
 #### a) Objectif pédagogique
 > L'utilisateur doit comprendre que chaque bloc contient l'empreinte du bloc précédent, que c'est cette empreinte (et non leur position) qui relie les blocs dans un ordre fixe, et que changer un bloc changerait son empreinte, qui ne correspondrait plus à la copie gardée par le suivant.
@@ -197,7 +197,7 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 | Couleur / matériau / texture | Le grand sceau du bloc 1 est redessiné depuis le nouveau hash (nouvelle teinte, nouveaux rayons). Le rouge (seule apparition de cette couleur) marque le lien cassé : un anneau autour du nouveau sceau du bloc 1 et un autour de sa copie dans le bloc 2 (et seulement ceux-là), tube 1→2, plaque « Bloc n°1 · falsifié » | Le changement du sceau montre l'effet avalanche ; le rouge est réservé à la fraude, donc il attire l'œil sans ambiguïté |
 | Position | Même cadrage qu'à la notion 2 (bloc 2 au centre) | L'utilisateur compare l'avant et l'après au même endroit |
 | Mouvement / animation | Le sceau change au moment du clic, les anneaux rouges pulsent sur la paire qui ne correspond plus | La cause (modification) et la conséquence (lien rouge) sont simultanées. Un premier essai allumait les deux sceaux des blocs 1 et 2 : on croyait que le lien 0→1 était cassé lui aussi, d’où la correction |
-| Interaction et retour visuel | Bouton « Falsifier le bloc 1 » (ou clic sur un coffre) : « Nicolas → Pierre : 2 jetons » devient « 200 jetons ». Le panneau affiche les données avant/après, le nouveau sceau et l'ancien, si la difficulté est encore respectée et « copie dans le bloc 2 ≠ nouveau sceau ». « Remettre comme avant » annule | L'utilisateur provoque lui-même la triche et peut recommencer ; tout est réversible |
+| Interaction et retour visuel | Bouton « Falsifier le bloc 1 » (ou clic sur un coffre) : « Nicolas → Pierre : 2 jetons » devient « 200 jetons ». Le panneau affiche les données avant/après, le nouveau sceau et l'ancien, si la difficulté est encore respectée et « Copie dans le bloc 2 ≠ nouveau sceau : la chaîne est cassée ». « Remettre comme avant » annule | L'utilisateur provoque lui-même la triche et peut recommencer ; tout est réversible |
 | Son, si utilisé | Aucun | — |
 | Texte d'accompagnement | Avant : le scénario du tricheur. Après : pourquoi ça se voit, et pourquoi la cacher coûterait trop cher. Encart « En vrai… » : re-minage, attaque des 51 % (annonce de la notion 7) | Le texte transforme l'observation en règle générale |
 
@@ -205,7 +205,7 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 | Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
 |:---|:---|:---|
 | Nouveau sceau du bloc 1 | Nouveau hash SHA-256 après modification des données | Exacte (recalculé dans le navigateur) |
-| « La difficulté n'est plus respectée » | Preuve de travail invalide : le bloc serait rejeté | Exacte |
+| « le sceau ne commence plus par 00 : le bloc serait refusé » | Preuve de travail invalide : le bloc serait rejeté | Exacte |
 | Lien 1→2 rouge | Le hash précédent stocké dans le bloc 2 ne correspond plus : les nœuds rejettent la chaîne | Exacte dans le principe |
 | Seul le lien suivant devient rouge | Les blocs 2 et 3 restent cohérents entre eux | Exacte |
 | Bouton « Falsifier » | Un attaquant qui modifie sa propre copie | Simplifiée (on ne montre pas qui triche ni sur quelle copie) |
