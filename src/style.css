@@ -27,23 +27,9 @@
   --vignette: radial-gradient(ellipse 120% 100% at 50% 40%, transparent 55%, rgb(90 65 40 / 22%));
 }
 
-/* Le soir : bureau sombre, papier crème sous la lampe. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #2e2721;
-    --card: #3b332b;
-    --slip: #453c33;
-    --note: #5b5233;
-    --text: #f1e8da;
-    --muted: #c4b6a3;
-    --rule: rgb(160 180 210 / 14%);
-    --accent: #f2937a;
-    --accent-soft: #f08a6c;
-    --broken: #ff8a80;
-    --drop: 0 1px 1px rgb(0 0 0 / 30%), 4px 10px 22px rgb(0 0 0 / 45%);
-    --lamp: radial-gradient(ellipse 90% 80% at 25% 15%, rgb(255 210 150 / 16%), transparent 70%);
-    --vignette: radial-gradient(ellipse 120% 100% at 50% 40%, transparent 50%, rgb(0 0 0 / 40%));
-  }
+/* Pas de thème sombre : la maquette reste un papier clair sous une lampe de bureau, comme l'aperçu papier. */
+:root {
+  color-scheme: light;
 }
 
 * {

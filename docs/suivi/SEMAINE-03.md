@@ -25,13 +25,14 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | #16 Page d'aperçu papier (île avec phare, avion en papier, coffre en calque) | Structure d'un bloc, réseau | En cours | `d8a1f77` (branche `apercu-ile-papier`) |
 | #20 Citations de CHOIX réalignées sur les textes affichés (version papier) | Toutes | Fonctionnel | branche `apercu-ile-papier` |
 | Fiches de suivi semaines 2 et 3, board mis à jour | — | Fonctionnel | `50421f3`, `96c3860` |
+| #16 Direction de l'aperçu papier étendue à tout le parcours (tampon, décors pop-up, bureau clair) | Toutes | Fonctionnel | branche `apercu-ile-papier`, PR #31 |
 | _À compléter d'ici le vendredi 23/10_ | | | |
 
 ### 1.2 Prévu mais non réalisé
 | Tâche | Cause | Report |
 |:---|:---|:---|
 | Tests utilisateurs — session 1 (#17) | Pas encore organisée | Semaine 4 au plus tard |
-| Choix final entre la direction verre (`main`) et la direction papier | Aperçu papier livré le 19/10, à valider à deux | Avant le 23/10 |
+| Fusion de la PR #31 (direction papier retenue le 19/10) | Relecture par Maxens | Avant le 23/10 |
 
 ### 1.3 État des 7 notions
 
@@ -57,7 +58,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
 | Maxens | Aperçu papier | #16 | 1 (au 19/10) |
-| Dylan | Fiches de suivi, board, réalignement de CHOIX | #20 | 3 (au 19/10) |
+| Dylan | Fiches de suivi, board, réalignement de CHOIX, direction papier sur tout le parcours | #16 #20 | 4 (au 19/10) |
 
 ## 3. GitHub Projects
 
@@ -74,8 +75,8 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | Question | Réponse |
 |:---|:---|
 | Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | 4.1 à 4.7 rédigées (semaine 2) ; 4.2 et 4.3 à confirmer par Dylan, textes à réaligner sur la PR #28 |
-| Choix important et justification | |
-| Choix remis en question | |
+| Choix important et justification | Direction de l'aperçu papier retenue pour tout le parcours : plus chaleureuse et plus lisible, chaque geste (tamponner, déplier une île, envoyer un avion) reste un objet qu'on connaît (CHOIX §2.5, v0.9) |
+| Choix remis en question | Thème sombre retiré : le bureau marron foncé alourdissait la maquette |
 
 ## 5. Tests utilisateurs
 

@@ -145,20 +145,142 @@ export function coinTexture(nonce) {
   });
 }
 
-// Ruban adhésif corail entre deux coffres : c'est le lien de la chaîne (un repère, la preuve reste le sceau).
-// Une bande de papier verticale, tendue entre les deux points, à mi-hauteur des coffres.
-const tapeTexture = () => paperTexture('#ffffff', { fibers: 60, grain: 0.12 });
-export function createTape(from, to, color = COLORS.accent, { width, y = 0.1 } = {}) {
+// Lien entre deux coffres : une simple corde corail, nouée au flanc de chaque coffre et un peu détendue.
+// C'est un repère seulement : la preuve du lien reste le sceau recopié.
+// `size` : demi-largeur et demi-profondeur d'un coffre ; `y` : hauteur des nœuds.
+const ROPE_R = 0.035;
+const knotGeometry = new THREE.SphereGeometry(ROPE_R * 2, 16, 12);
+const ropeTexture = () =>
+  canvasTexture(64, (g, s) => {
+    // Brins torsadés : des rayures en biais, plus claires et plus foncées.
+    g.fillStyle = '#ffffff';
+    g.fillRect(0, 0, s, s);
+    g.strokeStyle = 'rgb(0 0 0 / 22%)';
+    g.lineWidth = 6;
+    for (let x = -s; x < s * 2; x += 16) {
+      g.beginPath();
+      g.moveTo(x, 0);
+      g.lineTo(x + s, s);
+      g.stroke();
+    }
+  });
+
+export function createRope(from, to, color = COLORS.accent, { y = 0.25, size = [0.8, 0.55], floor = -0.55 } = {}) {
   const direction = to.clone().sub(from).setY(0);
-  const length = width ?? direction.length();
-  const tape = new THREE.Mesh(
-    new THREE.BoxGeometry(length, 0.17, 0.012),
-    new THREE.MeshStandardMaterial({ map: tapeTexture(), color, roughness: 0.75, transparent: true, opacity: 0.9 }),
-  );
-  tape.position.copy(from).add(to).multiplyScalar(0.5).setY(y);
-  tape.rotation.y = -Math.atan2(direction.z, direction.x);
-  tape.castShadow = true;
-  return tape;
+  const length = direction.length();
+  direction.normalize();
+  // Distance du centre du coffre à son bord, dans la direction du lien (marche aussi en biais, pour la fourche).
+  const half = Math.min(size[0] / Math.max(Math.abs(direction.x), 1e-6), size[1] / Math.max(Math.abs(direction.z), 1e-6));
+  // Corde droite : nouée vers l'avant des flancs, pour qu'on la voie bien (et la voie tomber une fois coupée).
+  const normal = new THREE.Vector3(-direction.z, 0, direction.x);
+  const front = Math.abs(direction.x) > 0.95 ? size[1] - 0.15 : 0;
+  const middle = from.clone().lerp(to, 0.5).setY(y).addScaledVector(normal, front);
+  const gap = length - 2 * half;
+  const sag = Math.min(0.25, gap * 0.16);
+
+  // La corde est une petite simulation physique (intégration de Verlet) : des points reliés par des longueurs
+  // fixes, tirés vers le bas par la gravité. Les deux bouts sont noués aux coffres. Coupée, chaque moitié
+  // retombe et se balance au bout de son nœud ; renouée, elle se retend.
+  const COUNT = 25;
+  const CUT = Math.floor(COUNT / 2); // le segment entre CUT - 1 et CUT est celui qu'on coupe
+  const points = Array.from({ length: COUNT }, (_, k) => {
+    const t = k / (COUNT - 1);
+    return from
+      .clone()
+      .addScaledVector(direction, half + gap * t)
+      .addScaledVector(normal, front)
+      .setY(y - sag * Math.sin(t * Math.PI))
+      .sub(middle);
+  });
+  const previous = points.map((p) => p.clone());
+  const rest = points.slice(1).map((p, k) => p.distanceTo(points[k]));
+  const ground = floor - y + ROPE_R; // le bureau, dans le repère de la corde
+  let broken = false;
+  let moving = true;
+
+  const texture = ropeTexture();
+  texture.repeat.set(Math.round(gap * 12), 1);
+  const material = new THREE.MeshStandardMaterial({ map: texture, color, roughness: 0.9 });
+  const group = new THREE.Group();
+  group.position.copy(middle);
+  const strands = [0, 1].map(() => {
+    const mesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
+    mesh.castShadow = true;
+    group.add(mesh);
+    return mesh;
+  });
+  [0, COUNT - 1].forEach((k) => {
+    const knot = new THREE.Mesh(knotGeometry, material);
+    knot.position.copy(points[k]);
+    knot.castShadow = true;
+    group.add(knot);
+  });
+
+  function rebuild() {
+    // Intacte : un seul brin de bout en bout. Coupée : deux brins, chacun pendu à son nœud.
+    const parts = broken ? [points.slice(0, CUT), points.slice(CUT)] : [points, []];
+    parts.forEach((part, i) => {
+      strands[i].geometry.dispose();
+      strands[i].visible = part.length > 1;
+      if (part.length > 1) strands[i].geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(part), part.length * 3, ROPE_R, 8);
+    });
+  }
+
+  const gravity = new THREE.Vector3(0, -9.8, 0);
+  const velocity = new THREE.Vector3();
+  const delta = new THREE.Vector3();
+  function step(h) {
+    let energy = 0;
+    for (let k = 1; k < COUNT - 1; k++) {
+      velocity.subVectors(points[k], previous[k]).multiplyScalar(0.985); // amortissement : l'air freine la corde
+      energy += velocity.lengthSq();
+      previous[k].copy(points[k]);
+      points[k].add(velocity).addScaledVector(gravity, h * h);
+    }
+    // Les longueurs : plusieurs passes pour que la corde ne s'étire pas.
+    for (let pass = 0; pass < 12; pass++) {
+      for (let k = 0; k < COUNT - 1; k++) {
+        if (broken && k === CUT - 1) continue;
+        const a = points[k];
+        const b = points[k + 1];
+        delta.subVectors(b, a);
+        const distance = delta.length() || 1e-6;
+        const fix = (distance - rest[k]) / distance;
+        const pinA = k === 0;
+        const pinB = k + 1 === COUNT - 1;
+        if (pinA && pinB) continue;
+        const share = pinA || pinB ? 1 : 0.5;
+        if (!pinA) a.addScaledVector(delta, fix * share);
+        if (!pinB) b.addScaledVector(delta, -fix * share);
+      }
+      points.forEach((p) => (p.y = Math.max(p.y, ground)));
+    }
+    return energy;
+  }
+
+  // Laisse la corde trouver sa forme de repos dès le départ.
+  for (let i = 0; i < 120; i++) step(1 / 60);
+  previous.forEach((p, k) => p.copy(points[k]));
+  rebuild();
+  moving = false;
+
+  group.setColor = (value) => material.color.set(value);
+  group.setBroken = (value, brokenColor = 0xb3261e) => {
+    material.color.set(value ? brokenColor : color);
+    if (value === broken) return;
+    broken = value;
+    moving = true;
+  };
+  // `instant` (mouvements réduits) : la corde prend directement sa position finale.
+  group.update = (dt, instant) => {
+    if (!moving) return;
+    let energy = 0;
+    const steps = instant ? 240 : 2;
+    for (let i = 0; i < steps; i++) energy = step(Math.min(dt, 1 / 30) / (instant ? 1 : 2) || 1 / 60);
+    rebuild();
+    if (instant || energy < 1e-9) moving = false;
+  };
+  return group;
 }
 
 // Avion en papier : quatre triangles pliés (pointe vers +z).
@@ -198,4 +320,124 @@ export function crumpledSheet(width, height, segments = 36) {
   geometry.computeVertexNormals();
   geometry.rotateX(-Math.PI / 2);
   return geometry;
+}
+
+// Silhouette découpée avec une marge blanche, comme un autocollant de papier (phare, arbre, cabane des îles).
+const cutoutCache = new Map();
+export function cutoutMaterial(kind) {
+  if (!cutoutCache.has(kind)) {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 256;
+    const g = canvas.getContext('2d');
+    // D'abord le contour blanc épais (la marge découpée aux ciseaux), puis le dessin par-dessus.
+    g.lineJoin = 'round';
+    g.lineWidth = 16;
+    g.strokeStyle = '#fbf7ef';
+    DRAWINGS[kind](g, 256, true);
+    DRAWINGS[kind](g, 256, false);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    cutoutCache.set(kind, new THREE.MeshStandardMaterial({ map: texture, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.9 }));
+  }
+  return cutoutCache.get(kind);
+}
+
+const DRAWINGS = {
+  lighthouse(g, s, outline) {
+    g.beginPath();
+    g.moveTo(s * 0.4, s * 0.92);
+    g.lineTo(s * 0.45, s * 0.3);
+    g.lineTo(s * 0.55, s * 0.3);
+    g.lineTo(s * 0.6, s * 0.92);
+    g.closePath();
+    if (outline) {
+      g.rect(s * 0.41, s * 0.1, s * 0.18, s * 0.2);
+      return g.stroke();
+    }
+    g.fillStyle = '#f4efe6';
+    g.fill();
+    g.fillStyle = '#c2543a';
+    for (const y of [0.42, 0.62, 0.82]) g.fillRect(s * 0.42, s * y, s * 0.16, s * 0.07);
+    g.fillStyle = '#3a2f26';
+    g.fillRect(s * 0.43, s * 0.2, s * 0.14, s * 0.1);
+    g.fillStyle = '#ffd27a';
+    g.fillRect(s * 0.455, s * 0.215, s * 0.09, s * 0.07);
+    g.beginPath();
+    g.moveTo(s * 0.41, s * 0.2);
+    g.lineTo(s * 0.5, s * 0.1);
+    g.lineTo(s * 0.59, s * 0.2);
+    g.closePath();
+    g.fillStyle = '#c2543a';
+    g.fill();
+  },
+  tree(g, s, outline) {
+    g.beginPath();
+    g.arc(s * 0.5, s * 0.42, s * 0.26, 0, Math.PI * 2);
+    g.rect(s * 0.46, s * 0.6, s * 0.08, s * 0.32);
+    if (outline) return g.stroke();
+    g.fillStyle = '#7fa862';
+    g.beginPath();
+    g.arc(s * 0.5, s * 0.42, s * 0.26, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#6a9150';
+    g.beginPath();
+    g.arc(s * 0.58, s * 0.48, s * 0.14, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#8a5a35';
+    g.fillRect(s * 0.46, s * 0.62, s * 0.08, s * 0.3);
+  },
+  hut(g, s, outline) {
+    g.beginPath();
+    g.moveTo(s * 0.2, s * 0.5);
+    g.lineTo(s * 0.5, s * 0.22);
+    g.lineTo(s * 0.8, s * 0.5);
+    g.lineTo(s * 0.74, s * 0.5);
+    g.lineTo(s * 0.74, s * 0.92);
+    g.lineTo(s * 0.26, s * 0.92);
+    g.lineTo(s * 0.26, s * 0.5);
+    g.closePath();
+    if (outline) return g.stroke();
+    g.fillStyle = '#e8d3a8';
+    g.fillRect(s * 0.26, s * 0.48, s * 0.48, s * 0.44);
+    g.fillStyle = '#c2543a';
+    g.beginPath();
+    g.moveTo(s * 0.2, s * 0.5);
+    g.lineTo(s * 0.5, s * 0.22);
+    g.lineTo(s * 0.8, s * 0.5);
+    g.closePath();
+    g.fill();
+    g.fillStyle = '#8a5a35';
+    g.fillRect(s * 0.44, s * 0.66, s * 0.12, s * 0.26);
+    g.fillStyle = '#ffd27a';
+    g.fillRect(s * 0.31, s * 0.58, s * 0.09, s * 0.08);
+  },
+};
+
+// Une découpe qui se relève, articulée sur son bord bas (rotation.x : -π/2 à plat, 0 debout).
+export function createCutout(kind, size) {
+  const hinge = new THREE.Group();
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(size, size), cutoutMaterial(kind).clone());
+  card.position.y = size / 2;
+  card.castShadow = true;
+  hinge.add(card);
+  return { hinge, card };
+}
+
+// Le tampon encreur (l'objet) : caoutchouc, socle en bois, manche et pommeau. Le caoutchouc est en y = 0.
+export function createStampTool() {
+  const tool = new THREE.Group();
+  const parts = [
+    [new THREE.CylinderGeometry(0.3, 0.3, 0.05, 40), 0x5b3a33, 0.025],
+    [new THREE.CylinderGeometry(0.33, 0.33, 0.12, 40), 0xb07a4a, 0.11],
+    [new THREE.CylinderGeometry(0.07, 0.09, 0.42, 20), 0xc58a55, 0.38],
+    [new THREE.SphereGeometry(0.14, 24, 16), 0xc2543a, 0.64],
+  ];
+  for (const [geometry, color, y] of parts) {
+    const part = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color, roughness: 0.6 }));
+    part.position.y = y;
+    part.castShadow = true;
+    tool.add(part);
+  }
+  tool.visible = false;
+  return tool;
 }
