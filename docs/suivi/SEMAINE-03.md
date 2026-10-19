@@ -58,7 +58,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
 | Maxens | Aperçu papier | #16 | 1 (au 19/10) |
-| Dylan | Fiches de suivi, board, réalignement de CHOIX, direction papier sur tout le parcours | #16 #20 | 5 (au 19/10) |
+| Dylan | Fiches de suivi, board, réalignement de CHOIX, direction papier sur tout le parcours | #16 #20 | 4 (au 19/10) |
 
 ## 3. GitHub Projects
 
