@@ -377,6 +377,7 @@ function goTo(index) {
   archipel.reset();
   archipel.setHint(null);
   showing.archipel = onArchipel(sequence);
+  archipel.setOpen(showing.archipel);
   showing.newCoffre = Boolean(sequence.mining || sequence.race);
   showing.race = Boolean(sequence.race);
   // Machines et jetons de la notion 6 : seulement sur l'archipel de cette notion, pas à la notion 4.
@@ -529,13 +530,13 @@ async function toggleInspect() {
     if (tampered) {
       tampered = null;
       linked = false;
-      target.setShown(null);
+      target.setShown(null, { stamp: true });
     } else {
       const { block } = target;
       const hash = await sha256(blockContent({ ...block, data: sequence.tamper.data }));
       tampered = { index: sequence.tamper.index, data: sequence.tamper.data, hash };
       linked = true;
-      target.setShown(tampered);
+      target.setShown(tampered, { stamp: true });
     }
     renderText();
     return;

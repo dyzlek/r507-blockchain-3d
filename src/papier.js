@@ -199,3 +199,123 @@ export function crumpledSheet(width, height, segments = 36) {
   geometry.rotateX(-Math.PI / 2);
   return geometry;
 }
+
+// Silhouette découpée avec une marge blanche, comme un autocollant de papier (phare, arbre, cabane des îles).
+const cutoutCache = new Map();
+export function cutoutMaterial(kind) {
+  if (!cutoutCache.has(kind)) {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 256;
+    const g = canvas.getContext('2d');
+    // D'abord le contour blanc épais (la marge découpée aux ciseaux), puis le dessin par-dessus.
+    g.lineJoin = 'round';
+    g.lineWidth = 16;
+    g.strokeStyle = '#fbf7ef';
+    DRAWINGS[kind](g, 256, true);
+    DRAWINGS[kind](g, 256, false);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    cutoutCache.set(kind, new THREE.MeshStandardMaterial({ map: texture, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.9 }));
+  }
+  return cutoutCache.get(kind);
+}
+
+const DRAWINGS = {
+  lighthouse(g, s, outline) {
+    g.beginPath();
+    g.moveTo(s * 0.4, s * 0.92);
+    g.lineTo(s * 0.45, s * 0.3);
+    g.lineTo(s * 0.55, s * 0.3);
+    g.lineTo(s * 0.6, s * 0.92);
+    g.closePath();
+    if (outline) {
+      g.rect(s * 0.41, s * 0.1, s * 0.18, s * 0.2);
+      return g.stroke();
+    }
+    g.fillStyle = '#f4efe6';
+    g.fill();
+    g.fillStyle = '#c2543a';
+    for (const y of [0.42, 0.62, 0.82]) g.fillRect(s * 0.42, s * y, s * 0.16, s * 0.07);
+    g.fillStyle = '#3a2f26';
+    g.fillRect(s * 0.43, s * 0.2, s * 0.14, s * 0.1);
+    g.fillStyle = '#ffd27a';
+    g.fillRect(s * 0.455, s * 0.215, s * 0.09, s * 0.07);
+    g.beginPath();
+    g.moveTo(s * 0.41, s * 0.2);
+    g.lineTo(s * 0.5, s * 0.1);
+    g.lineTo(s * 0.59, s * 0.2);
+    g.closePath();
+    g.fillStyle = '#c2543a';
+    g.fill();
+  },
+  tree(g, s, outline) {
+    g.beginPath();
+    g.arc(s * 0.5, s * 0.42, s * 0.26, 0, Math.PI * 2);
+    g.rect(s * 0.46, s * 0.6, s * 0.08, s * 0.32);
+    if (outline) return g.stroke();
+    g.fillStyle = '#7fa862';
+    g.beginPath();
+    g.arc(s * 0.5, s * 0.42, s * 0.26, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#6a9150';
+    g.beginPath();
+    g.arc(s * 0.58, s * 0.48, s * 0.14, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#8a5a35';
+    g.fillRect(s * 0.46, s * 0.62, s * 0.08, s * 0.3);
+  },
+  hut(g, s, outline) {
+    g.beginPath();
+    g.moveTo(s * 0.2, s * 0.5);
+    g.lineTo(s * 0.5, s * 0.22);
+    g.lineTo(s * 0.8, s * 0.5);
+    g.lineTo(s * 0.74, s * 0.5);
+    g.lineTo(s * 0.74, s * 0.92);
+    g.lineTo(s * 0.26, s * 0.92);
+    g.lineTo(s * 0.26, s * 0.5);
+    g.closePath();
+    if (outline) return g.stroke();
+    g.fillStyle = '#e8d3a8';
+    g.fillRect(s * 0.26, s * 0.48, s * 0.48, s * 0.44);
+    g.fillStyle = '#c2543a';
+    g.beginPath();
+    g.moveTo(s * 0.2, s * 0.5);
+    g.lineTo(s * 0.5, s * 0.22);
+    g.lineTo(s * 0.8, s * 0.5);
+    g.closePath();
+    g.fill();
+    g.fillStyle = '#8a5a35';
+    g.fillRect(s * 0.44, s * 0.66, s * 0.12, s * 0.26);
+    g.fillStyle = '#ffd27a';
+    g.fillRect(s * 0.31, s * 0.58, s * 0.09, s * 0.08);
+  },
+};
+
+// Une découpe qui se relève, articulée sur son bord bas (rotation.x : -π/2 à plat, 0 debout).
+export function createCutout(kind, size) {
+  const hinge = new THREE.Group();
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(size, size), cutoutMaterial(kind).clone());
+  card.position.y = size / 2;
+  card.castShadow = true;
+  hinge.add(card);
+  return { hinge, card };
+}
+
+// Le tampon encreur (l'objet) : caoutchouc, socle en bois, manche et pommeau. Le caoutchouc est en y = 0.
+export function createStampTool() {
+  const tool = new THREE.Group();
+  const parts = [
+    [new THREE.CylinderGeometry(0.3, 0.3, 0.05, 40), 0x5b3a33, 0.025],
+    [new THREE.CylinderGeometry(0.33, 0.33, 0.12, 40), 0xb07a4a, 0.11],
+    [new THREE.CylinderGeometry(0.07, 0.09, 0.42, 20), 0xc58a55, 0.38],
+    [new THREE.SphereGeometry(0.14, 24, 16), 0xc2543a, 0.64],
+  ];
+  for (const [geometry, color, y] of parts) {
+    const part = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color, roughness: 0.6 }));
+    part.position.y = y;
+    part.castShadow = true;
+    tool.add(part);
+  }
+  tool.visible = false;
+  return tool;
+}

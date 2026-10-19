@@ -4,7 +4,7 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { COFFRE_SIZE, sealTexture } from './coffre.js';
-import { COLORS, cardboard, crumpledSheet, noisyDisc, paperMaterial, paperPlaneGeometry } from './papier.js';
+import { COLORS, cardboard, createCutout, crumpledSheet, noisyDisc, paperMaterial, paperPlaneGeometry } from './papier.js';
 
 // Le réseau = un archipel en papier découpé, posé sur une mer de papier froissé.
 // Chaque île est un nœud qui garde sa propre copie de la chaîne.
@@ -48,6 +48,19 @@ const LAYERS = [
   { r: R * 0.92, color: COLORS.grassDark },
 ];
 const LAYER_DEPTH = 0.1;
+
+// Décor de chaque île, en découpes qui se relèvent à l'arrivée sur l'archipel : [type, taille, x, z, rotation].
+// Il ne sert qu'à rendre les îles reconnaissables ; toutes jouent exactement le même rôle dans le réseau.
+const DECOR = [
+  [['hut', 0.6, -0.45, -0.5, 0.3], ['tree', 0.7, 0.5, -0.45, -0.3]],
+  [['tree', 0.75, -0.4, -0.5, 0.25], ['tree', 0.55, 0.45, -0.45, -0.35]],
+  [['lighthouse', 1.1, -0.45, -0.45, 0.25], ['tree', 0.6, 0.5, -0.5, -0.3]],
+  [['tree', 0.7, -0.5, -0.45, 0.3], ['hut', 0.55, 0.45, -0.5, -0.25]],
+  [['lighthouse', 1.1, 0.4, -0.5, -0.25]],
+  [['tree', 0.6, -0.45, -0.5, 0.3], ['tree', 0.75, 0.4, -0.45, -0.2]],
+  [['lighthouse', 1.1, -0.4, -0.5, 0.2], ['hut', 0.55, 0.5, -0.45, -0.3]],
+];
+const easeOutBack = (t) => 1 + 2.4 * (t - 1) ** 3 + 1.4 * (t - 1) ** 2;
 const ringGeometry = new THREE.RingGeometry(R - 0.1, R - 0.02, 48);
 const scrollGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.5, 16);
 const miniGeometry = new THREE.BoxGeometry(0.3, 0.22, 0.22);
@@ -136,6 +149,14 @@ export function createArchipel(chain) {
 
     island.add(createMiniChain(sealMaterials));
 
+    const decor = DECOR[index].map(([kind, size, x, z, rotY]) => {
+      const { hinge, card } = createCutout(kind, size * 1.35);
+      hinge.position.set(x, TOP_Y, z);
+      hinge.rotation.y = rotY;
+      island.add(hinge);
+      return { hinge, card };
+    });
+
     // La transaction reçue flotte au-dessus de la copie de la chaîne : elle n'est pas encore dans un bloc.
     const scroll = new THREE.Mesh(scrollGeometry, paperMaterial(COLORS.scroll, {}, { emissive: new THREE.Color(0.3, 0.2, 0.1) }));
     scroll.castShadow = true;
@@ -153,7 +174,7 @@ export function createArchipel(chain) {
     hint.visible = false;
     island.add(hint);
 
-    return { name, index, group: island, base, layers, ring, scroll, plate, hint, neighbors: [], received: false, offline: false, glow: 0, lift: 0 };
+    return { name, index, group: island, base, layers, decor, ring, scroll, plate, hint, neighbors: [], received: false, offline: false, glow: 0, lift: 0 };
   });
 
   const routes = ROUTES.map(([a, b]) => {
@@ -185,6 +206,8 @@ export function createArchipel(chain) {
   let messages = []; // { route, from, to, t, mesh }
   let relays = []; // { at, from, via }
   let hintMode = null;
+  let unfold = 0; // 0 = décors à plat, 1 = relevés
+  let unfoldTarget = 0;
   const api = { group, onChange: () => {} };
 
   function clearMessages() {
@@ -225,6 +248,7 @@ export function createArchipel(chain) {
       plate.element.classList.toggle('is-off', offline);
       plate.element.classList.toggle('is-received', received);
       island.layers.forEach((layer) => layer.material.color.set(offline ? ROCK_OFF : ROCK));
+      island.decor.forEach(({ card }) => card.material.color.set(offline ? ROCK_OFF : ROCK));
       island.hint.visible =
         (hintMode === 'send' && island.index === SENDER) || (hintMode === 'off' && island.index === HINT_OFF);
     });
@@ -305,8 +329,13 @@ export function createArchipel(chain) {
         bobReceived: islands[RECEIVER].received,
       };
     },
+    // Arrivée sur l'archipel : les décors se relèvent un à un ; au départ, ils se replient.
+    setOpen(value) {
+      unfoldTarget = value ? 1 : 0;
+    },
     update(dt, elapsed, instant) {
       clock += dt;
+      unfold = instant ? unfoldTarget : THREE.MathUtils.clamp(unfold + Math.sign(unfoldTarget - unfold) * dt * 0.8, 0, 1);
       const ready = relays.filter((r) => r.at <= clock);
       relays = relays.filter((r) => r.at > clock);
       ready.forEach(relay);
@@ -339,6 +368,11 @@ export function createArchipel(chain) {
         island.scroll.scale.setScalar(Math.max(0.001, island.glow));
         island.scroll.position.y = TOP_Y + 0.62 + Math.sin(elapsed * 2 + i) * 0.03;
         island.group.position.y = island.lift;
+        island.decor.forEach(({ hinge }, j) => {
+          const k = THREE.MathUtils.clamp((unfold - 0.2 - i * 0.06 - j * 0.08) / 0.35, 0, 1);
+          hinge.rotation.x = -Math.PI / 2 + (Math.PI / 2) * easeOutBack(k);
+          hinge.visible = k > 0;
+        });
       });
       routes.forEach((route) => {
         route.material.color.set(route.used ? ACCENT : ROUTE_COLOR);

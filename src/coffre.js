@@ -4,7 +4,7 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { shortHash } from './chain.js';
-import { COLORS, cardboard, cardboardDark, coinTexture, paperMaterial, stampTexture } from './papier.js';
+import { COLORS, cardboard, cardboardDark, coinTexture, createStampTool, paperMaterial, stampTexture } from './papier.js';
 
 // Un bloc = un coffre en carton avec une fenêtre en papier calque : on devine son contenu sans l'ouvrir
 // (l'ouvrir briserait le sceau). Inspecter le coffre, c'est allumer sa lampe : le calque devient lisible.
@@ -146,6 +146,49 @@ export function createCoffre(block) {
   let glowTarget = 0;
   let stampPop = 1; // repart de 0 à chaque coup de tampon (petit écrasement du coffre)
 
+  // Le vrai tampon encreur vient s'imprimer sur le calque, avec quelques gouttes d'encre autour.
+  // Créé au premier coup de tampon seulement : la plupart des coffres n'en ont jamais besoin.
+  let tool = null;
+  let splats = [];
+  let stamping = null; // { t } pendant l'animation
+  let stampedHash = null; // le minage peut redemander le même sceau : on ne retamponne pas
+  function startStamp() {
+    if (!tool) {
+      tool = createStampTool();
+      tool.rotation.x = Math.PI / 2; // le manche vers l'avant, le caoutchouc contre le calque
+      tool.scale.setScalar(0.85);
+      group.add(tool);
+      const ink = new THREE.MeshBasicMaterial({ color: COLORS.ink, transparent: true, opacity: 0, depthWrite: false });
+      splats = Array.from({ length: 12 }, () => {
+        const dot = new THREE.Mesh(new THREE.CircleGeometry(0.012 + Math.random() * 0.018, 10), ink);
+        const a = Math.random() * Math.PI * 2;
+        const r = 0.33 + Math.random() * 0.1;
+        dot.position.set(seal.position.x + Math.cos(a) * r, seal.position.y + Math.sin(a) * r, seal.position.z + 0.002);
+        group.add(dot);
+        return dot;
+      });
+    }
+    stamping = { t: 0 };
+  }
+  function updateStamp(dt, instant) {
+    if (!stamping) return;
+    stamping.t = instant ? 1.2 : stamping.t + dt;
+    const t = stamping.t;
+    // 0 → 0,4 s : le tampon arrive ; 0,4 → 0,55 : il appuie ; 0,55 → 1 : il repart.
+    const ease = (k) => (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2);
+    const away = t < 0.4 ? 1 - ease(t / 0.4) : t < 0.55 ? 0 : ease(Math.min(1, (t - 0.55) / 0.45));
+    tool.visible = t < 1;
+    tool.position.set(seal.position.x, seal.position.y, seal.position.z + 0.01 + away * 2.2);
+    const inked = Math.min(1, Math.max(0, (t - 0.4) / 0.1));
+    seal.material.opacity = inked;
+    if (t >= 0.4 && !stamping.hit) {
+      stamping.hit = true;
+      stampPop = 0;
+    }
+    splats[0].material.opacity = t > 0.42 ? 0.7 : 0;
+    if (t >= 1.2) stamping = null;
+  }
+
   const plate = makeLabel('plate', `Bloc n°${block.index}`);
   plate.position.set(0, h / 2 + 0.3, 0);
   group.add(plate);
@@ -217,7 +260,8 @@ export function createCoffre(block) {
       parentRing.visible = parent;
     },
     // Affiche un contenu falsifié (ou remet l'original avec `null`) : nouveau sceau et nouvelles étiquettes.
-    setShown(shown) {
+    // `stamp` : le changement se fait sous les yeux de l'utilisateur, avec un coup de tampon.
+    setShown(shown, { stamp = false } = {}) {
       const { data, hash } = shown ?? block;
       const text = (i, value) => (leaders[i].label.element.querySelector('.field-value').textContent = value);
       text(0, data);
@@ -225,7 +269,7 @@ export function createCoffre(block) {
       seal.material.map.dispose();
       seal.material.map = stampTexture(hash);
       seal.material.needsUpdate = true;
-      stampPop = 0; // nouveau coup de tampon
+      if (stamp) startStamp(); // nouveau coup de tampon
       plate.element.classList.toggle('is-broken', Boolean(shown));
       plate.element.textContent = shown ? `Bloc n°${block.index} · falsifié` : `Bloc n°${block.index}`;
     },
@@ -235,6 +279,10 @@ export function createCoffre(block) {
       seal.visible = Boolean(trial);
       plate.element.textContent = label ?? `Bloc n°${block.index}`;
       plate.element.classList.toggle('is-sealed', valid);
+      if (!valid) {
+        stampedHash = null;
+        if (splats.length) splats[0].material.opacity = 0; // l'encre du coup de tampon précédent
+      }
       if (!trial) return;
       const text = (i, value) => (leaders[i].label.element.querySelector('.field-value').textContent = value);
       text(1, trial.nonce);
@@ -244,7 +292,10 @@ export function createCoffre(block) {
       // Un essai raté laisse un tampon pâle (pas assez d'encre) ; le bon nonce, un vrai coup de tampon.
       seal.material.opacity = valid ? 1 : 0.35;
       seal.material.needsUpdate = true;
-      if (valid) stampPop = 0;
+      if (valid && trial.hash !== stampedHash) {
+        stampedHash = trial.hash;
+        startStamp();
+      }
       coinFace.map.dispose();
       coinFace.map = coinTexture(trial.nonce);
       coinFace.needsUpdate = true;
@@ -267,6 +318,7 @@ export function createCoffre(block) {
       vellum.material.emissiveIntensity = reveal * 0.35;
       vellum.material.opacity = 0.74 - reveal * 0.44;
       // Coup de tampon : le coffre s'écrase un instant puis reprend sa forme, l'encre s'étale.
+      updateStamp(dt, instant);
       stampPop = instant ? 1 : Math.min(1, stampPop + dt * 3.5);
       const squash = 1 - 0.12 * Math.sin(stampPop * Math.PI) * (1 - stampPop);
       shell.scale.set(1 + (1 - squash) * 0.4, squash, 1 + (1 - squash) * 0.4);
