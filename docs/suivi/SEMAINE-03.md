@@ -25,14 +25,17 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | #16 Page d'aperçu papier (île avec phare, avion en papier, coffre en calque) | Structure d'un bloc, réseau | En cours | `d8a1f77` (branche `apercu-ile-papier`) |
 | #20 Citations de CHOIX réalignées sur les textes affichés (version papier) | Toutes | Fonctionnel | branche `apercu-ile-papier` |
 | Fiches de suivi semaines 2 et 3, board mis à jour | — | Fonctionnel | `50421f3`, `96c3860` |
-| #16 Direction de l'aperçu papier étendue à tout le parcours (tampon, décors pop-up, bureau clair) | Toutes | Fonctionnel | branche `apercu-ile-papier`, PR #31 |
-| _À compléter d'ici le vendredi 23/10_ | | | |
+| #16 Direction de l'aperçu papier étendue à tout le parcours (tampon, décors pop-up, bureau clair) | Toutes | Fonctionnel | `ca51564`, PR #31 fusionnée le 19/10 |
+| #16 Corrections visuelles : sceaux nets devant le calque, avions orientés vers leur cible, encre qui s'efface | Chaînage, réseau | Fonctionnel | `bdeb912`, PR #32 |
+| #16 Corde physique entre les coffres, qui retombe quand la chaîne est coupée ; branche rejetée qui bascule | Chaînage, immutabilité, attaque | Fonctionnel | `baca4bb`, PR #32 fusionnée le 19/10 |
+| Déploiement de la version papier sur GitHub Pages | Toutes | Fonctionnel | action « Déploiement GitHub Pages » réussie le 19/10 |
 
 ### 1.2 Prévu mais non réalisé
 | Tâche | Cause | Report |
 |:---|:---|:---|
 | Tests utilisateurs — session 1 (#17) | Pas encore organisée | Semaine 4 au plus tard |
-| Fusion de la PR #31 (direction papier retenue le 19/10) | Relecture par Maxens | Avant le 23/10 |
+| Mesure des FPS sur un poste de TP (#19) | Priorité donnée à la direction papier | Semaine 4 |
+| Test de la version papier sur téléphone | Non fait | Semaine 4 |
 
 ### 1.3 État des 7 notions
 
@@ -57,8 +60,8 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| Maxens | Aperçu papier | #16 | 1 (au 19/10) |
-| Dylan | Fiches de suivi, board, réalignement de CHOIX, direction papier sur tout le parcours | #16 #20 | 4 (au 19/10) |
+| Maxens | Aperçu papier | #16 | 1 |
+| Dylan | Fiches de suivi, board, réalignement de CHOIX, direction papier sur tout le parcours, corrections visuelles, corde | #16 #20 | 7 |
 
 ## 3. GitHub Projects
 
@@ -66,15 +69,15 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 |:---|:---|
 | Issues créées | 0 |
 | Issues fermées | 0 (#7 à #13 encore ouvertes) |
-| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 9 / 2 / 1 / 7 / 6 (relevé du 19/10) |
+| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | 9 / 2 / 0 / 7 / 7 (relevé du 24/10) |
 | Board mis à jour pendant la semaine ? | Oui, le 19/10 : notions 5 à 7 passées en `À vérifier` |
-| Milestone concerné et état | |
+| Milestone concerné et état | M2 — Livraison (15/11) : 15 issues ouvertes, 0 fermée ; M1 — Cadrage : 6/6 fermées |
 
 ## 4. Choix de modélisation
 
 | Question | Réponse |
 |:---|:---|
-| Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | 4.1 à 4.7 rédigées (semaine 2) ; 4.2 et 4.3 à confirmer par Dylan, textes à réaligner sur la PR #28 |
+| Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | 4.1 à 4.7 rédigées ; citations réalignées sur les textes à l'écran (#20, `96c3860`) ; §2.5 (direction papier) et §4.4 (avion au lieu de bille) mis à jour ; sections « Tests utilisateurs » encore vides |
 | Choix important et justification | Direction de l'aperçu papier retenue pour tout le parcours : plus chaleureuse et plus lisible, chaque geste (tamponner, déplier une île, envoyer un avion) reste un objet qu'on connaît (CHOIX §2.5, v0.9) |
 | Choix remis en question | Thème sombre retiré : le bureau marron foncé alourdissait la maquette |
 
@@ -83,25 +86,26 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | Question | Réponse |
 |:---|:---|
 | Nombre de testeurs extérieurs cette semaine | 0 |
-| Compréhension ou problème observé | |
-| Issue corrective | |
+| Compréhension ou problème observé | Aucun test extérieur cette semaine |
+| Issue corrective | — |
 
 ## 6. IA, difficultés et besoins
 
 | Question | Réponse |
 |:---|:---|
 | Usage de l'IA et vérifications effectuées | Claude : préparation de cette fiche à partir de `git log`, des issues et du board ; chiffres vérifiés par le groupe |
-| Blocage technique | |
-| Blocage pédagogique ou organisationnel | |
-| Besoin d'un point enseignant | |
+| Blocage technique | Aucun ; le calque transparent rendait les sceaux pâles, corrigé (`bdeb912`) |
+| Blocage pédagogique ou organisationnel | Les tests utilisateurs n'ont pas encore été organisés |
+| Besoin d'un point enseignant | Non |
 
 ## 7. Objectifs de la semaine suivante
 
 | Objectif | Responsable | Issue |
 |:---|:---|:---|
-| Mettre le board à jour et passer les notions 5 à 7 en `À vérifier` | Dylan | #11 #12 #13 |
 | Session 1 de tests utilisateurs (2 testeurs extérieurs) | Maxens | #17 |
-| Réaligner les fiches CHOIX sur les nouveaux textes | Maxens, Dylan | #20 |
+| Reporter les retours dans les sections « Tests utilisateurs » de CHOIX | Maxens, Dylan | #20 |
+| Mesurer les FPS sur un poste de TP et tester sur téléphone | Dylan | #19 |
+| Passer #16 en `À vérifier` sur le board | Dylan | #16 |
 
 ## 8. Signaux d'alerte
 
@@ -118,5 +122,5 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | Élément | Réponse |
 |:---|:---|
 | Fiche relue par tous | Oui / Non |
-| Date d'envoi | |
-| Noms des membres | |
+| Date d'envoi | 24/10/2026 (dépôt dans le dépôt) |
+| Noms des membres | Maxens, Dylan |
