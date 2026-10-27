@@ -402,7 +402,9 @@ function goTo(index) {
   [...ui.dots.children].forEach((dot, i) => {
     dot.classList.toggle('is-current', i === current);
     dot.classList.toggle('is-done', i < current);
-    dot.toggleAttribute('aria-current', i === current);
+    const button = dot.firstElementChild;
+    if (i === current) button.setAttribute('aria-current', 'step');
+    else button.removeAttribute('aria-current');
   });
   renderText();
   moveCamera(sequence);
@@ -570,6 +572,7 @@ ui.fields.addEventListener('click', (event) => {
 });
 window.addEventListener('keydown', (event) => {
   if (event.target.closest?.('input, textarea')) return;
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return; // Alt + ← = page précédente du navigateur
   if (event.key === 'ArrowRight') goTo(current + 1);
   if (event.key === 'ArrowLeft') goTo(current - 1);
 });
