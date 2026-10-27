@@ -323,6 +323,7 @@ export function createArchipel(chain) {
         sent,
         running,
         total: islands.length,
+        islands: islands.map(({ name, offline }) => ({ name, offline })),
         received: names((island) => island.received),
         offline: names((island) => island.offline),
         unreached: names((island) => !island.offline && !island.received),
