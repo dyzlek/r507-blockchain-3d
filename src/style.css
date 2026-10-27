@@ -6,9 +6,9 @@
   --slip: #fffaf1; /* feuille blanche */
   --note: #fff1b0; /* post-it */
   --text: #3a2f26; /* encre */
-  --muted: #6f6253;
+  --muted: #655848;
   --rule: rgb(120 150 190 / 20%); /* lignes de la fiche */
-  --accent: #c2543a;
+  --accent: #a8442c; /* texte et fonds sous texte blanc : contraste ≥ 4.5 */
   --accent-soft: #e0684b;
   --tape: rgb(224 104 75 / 72%);
   --broken: #b3261e;
@@ -128,7 +128,7 @@ body {
 .choices button[aria-pressed='true'] {
   translate: 2px 2px;
   box-shadow: none;
-  background: var(--accent-soft);
+  background: var(--accent);
   color: #fff;
   font-weight: 700;
 }
@@ -558,7 +558,7 @@ summary:focus-visible {
 /* Étapes déjà vues : pastille corail. */
 #dots .is-done button {
   border-color: var(--accent);
-  background: var(--accent-soft);
+  background: var(--accent);
   color: #fff;
 }
 
