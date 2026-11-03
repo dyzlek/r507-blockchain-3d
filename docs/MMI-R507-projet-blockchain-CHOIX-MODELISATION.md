@@ -15,7 +15,7 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
 | Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
-| Version et date de mise à jour | v0.8 — 13/10/2026 (branche `styleV2`) |
+| Version et date de mise à jour | v0.10 — 27/10/2026 (accessibilité, protocole de test) |
 
 ## 2. Univers visuel et métaphore principale
 
@@ -60,6 +60,7 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 | Typographie et lisibilité | Alegreya Sans (humaniste) pour le titre et le texte, Courier Prime (machine à écrire) pour les empreintes, les valeurs et les étiquettes. Chiffres alignés sur les capitales | L'humaniste garde un ton chaleureux et accessible. La machine à écrire va avec l'univers papier (étiquettes, registre) et distingue toujours les vraies données techniques (hash, nonce) du texte d'explication |
 | Échelle et rapport de taille | Coffres identiques ; le tampon du parent est environ deux fois plus petit que celui du bloc | Même structure pour tous les blocs ; la taille distingue « mon sceau » et « celui de mon parent » |
 | Mouvement | Corde coupée : quand un bloc est falsifié, la corde qui le relie au suivant se coupe et ses deux moitiés retombent avec la gravité (petite simulation physique), puis se balancent. Coup de tampon : un vrai tampon encreur vient s'imprimer sur le calque, le coffre s'écrase légèrement et quelques gouttes d'encre giclent autour puis s'effacent (minage réussi, falsification). À l'arrivée sur l'archipel, les décors des îles se relèvent un à un. Un essai de minage raté laisse un tampon pâle | L'instant où un bloc est scellé devient physique et marquant ; le tampon pâle dit « pas valide » sans texte |
+| Accessibilité et lisibilité | **Contrastes mesurés (WCAG 2.2, cible AA = 4,5 pour le texte)** : encre sur fiche 11,6 ; corail `#a8442c` sur fiche 5,3 et sur feuille 5,7 ; gris `#655848` sur fiche 6,1 et sur le bureau 5,2 ; blanc sur corail 5,9 ; rouge de fraude sur feuille 6,3. Le corail d'origine (`#c2543a`, 4,0 sur la fiche) a été assombri pour le texte ; la version claire ne sert qu'au décor. **Pas d'information portée par la couleur seule** : falsifié = plaque « falsifié » + corde coupée, étape faite = numéro + pastille pleine, étape courante = `aria-current` + pastille agrandie, cycle de vie = ✓ / ✗, île éteinte = « · éteinte » dans l'étiquette. **Légende** : l'étape 1 dit que la couleur et le motif du tampon viennent du code du sceau. **Texte** : 17 px (étiquettes 12 à 13 px), tutoiement, phrases courtes. **Clavier et lecteurs d'écran** : tout se fait aux boutons (flèches ← → pour changer d'étape, sauf avec Alt/Ctrl/Maj), focus visible, boutons « Éteindre une île » en plus du clic sur la maquette, texte de l'étape annoncé (`aria-live`), scène 3D décrite par `aria-label`. **Mouvement** : `prefers-reduced-motion` coupe les animations (étiquettes, tampons, corde, avions) | Un public de 16 à 25 ans lit sur téléphone, parfois en plein jour : un contraste suffisant et des états doublés par du texte évitent qu'un daltonien ou un écran peu lumineux fasse rater l'idée clé (le sceau change, la chaîne casse). Ce qui n'est pas vérifié : lecteur d'écran réel, test sur un vrai téléphone (simulé à 375 px : pas de défilement horizontal, cibles ≥ 24 px) |
 
 > v0.8 (13/10/2026), branche `styleV2` : direction « maquette en papier découpé » proposée par Maxens, réalisée avec l'aide de l'IA (Claude) (#16).
 >
@@ -67,7 +68,7 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 >
 > **Direction écartée : le neumorphisme** (v0.4 à v0.7). Une surface gris-bleu unique où les éléments sortent en relief ou s'enfoncent en creux. Calme et cohérent, mais froid et peu attractif pour des 16-25 ans ; surtout, son contraste était faible (un relief seul ne suffit pas à repérer un bouton) et le coffre de verre se lisait mal sur un fond presque de la même couleur. Avant lui, une direction « registre de bord » (papier, cire, laiton) avait été essayée puis abandonnée.
 >
-> **Limites connues du papier.** Le calque laisse moins bien voir le contenu que le verre : la lampe du coffre compense à l'inspection. Les textures étant générées dans le code, le rendu reste un peu « propre ». Le contraste du texte reste foncé sur clair (encre sur papier crème) ; les boutons ont un bord et une ombre découpée, donc ils se repèrent sans relief. À vérifier pendant les tests utilisateurs.
+> **Limites connues du papier.** Le calque laisse moins bien voir le contenu que le verre : la lampe du coffre compense à l'inspection. Les textures étant générées dans le code, le rendu reste un peu « propre ». Le contraste du texte reste foncé sur clair (encre sur papier crème) ; les boutons ont un bord et une ombre découpée, donc ils se repèrent sans relief. Contrastes mesurés le 27/10/2026 (voir « Accessibilité et lisibilité ») ; reste à vérifier pendant les tests utilisateurs, sur un vrai téléphone et avec un lecteur d'écran.
 >
 > Les textes sont écrits en tutoiement, avec des phrases courtes et parlées, pour un public de 16 à 25 ans.
 
@@ -128,9 +129,18 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 | Sceau du parent gravé sur la face latérale gauche | Testé : depuis la caméra, il était caché par le coffre voisin. Déplacé dans le coin avant gauche, côté du lien |
 
 #### f) Tests utilisateurs
+**Hypothèse à vérifier :** Le testeur comprend que le coffre contient quatre choses (transaction, nonce, sceau, sceau du coffre d'avant) et que le sceau est une empreinte du contenu, pas un mot de passe.
+
+**Protocole :** `docs/TEST-UTILISATEUR.md`, étape 1, questions 1 à 4 ; question 2 de la partie C. Formulaire commun aux testeurs (lien dans le protocole).
+
+**À observer :** Il trouve seul la lampe du coffre ; il reformule « sceau = code unique calculé à partir du contenu » sans dire « mot de passe » ni « clé » ; il comprend que la couleur et le motif du tampon viennent du code.
+
+**Critère de réussite :** Nomme au moins 3 éléments du bloc et explique à quoi sert le sceau (note 2 à la question 2 de la partie C).
+
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| À faire (session 1) | | #17 |
+| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
 Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage ni de racine de Merkle : ces éléments n'apportent rien à la compréhension du chaînage visé ici et sont signalés dans l'encart « En vrai… ». La difficulté (`00`) est très inférieure à celle de Bitcoin pour que les blocs se calculent instantanément.
@@ -175,9 +185,18 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 | Le tube comme seul lien entre les blocs | Il suggère un lien mécanique qu'on pourrait détacher et raccrocher. La preuve du lien reste le sceau, le tube n'est qu'un repère |
 
 #### f) Tests utilisateurs
+**Hypothèse à vérifier :** Le testeur relie le petit sceau d'un coffre au grand sceau du coffre précédent, et comprend que c'est ce qui forme la chaîne.
+
+**Protocole :** `docs/TEST-UTILISATEUR.md`, étape 2, questions 1 à 3 ; question 3 de la partie C. Formulaire commun aux testeurs (lien dans le protocole).
+
+**À observer :** Il utilise le bouton « Comparer les sceaux » sans aide ; il dit que chaque bloc « connaît » le précédent ; il prévoit que modifier le premier coffre touche les suivants.
+
+**Critère de réussite :** Dit que le sceau du parent est recopié dans le bloc suivant (note 2 à la question 3 de la partie C).
+
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| À faire (session 1) : vérifier que le testeur relie le petit sceau au coffre précédent sans aide | | #17 |
+| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
 Le hash du précédent est montré seul : le vrai en-tête contient aussi la date, la racine de Merkle et la difficulté. Le sceau n'affiche que les 4 premiers caractères de l'empreinte, mais sa couleur et ses rayons viennent des autres octets, et l'empreinte complète est donnée dans le panneau. Le tube corail est un repère qui n'existe pas en vrai ; l'encart « En vrai… » le précise.
@@ -223,9 +242,18 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 | Rougir toute la chaîne à partir du bloc modifié | Plus spectaculaire mais faux : seul le lien vers le bloc suivant est cassé. Une représentation fausse aurait contredit la notion 2 |
 
 #### f) Tests utilisateurs
+**Hypothèse à vérifier :** Le testeur explique pourquoi la triche se voit (le sceau change, la copie dans le suivant ne correspond plus) sans conclure que c'est impossible.
+
+**Protocole :** `docs/TEST-UTILISATEUR.md`, étape 3, questions 1 à 4 ; question 4 de la partie C. Formulaire commun aux testeurs (lien dans le protocole).
+
+**À observer :** Il clique sur « Falsifier le bloc 1 » ; il relie la corde coupée et la plaque « falsifié » à l'écart entre deux sceaux ; il ne croit pas que falsifier est impossible (idée fausse à surveiller).
+
+**Critère de réussite :** Explique que la modification est détectée parce que les sceaux ne correspondent plus (note 2 à la question 4 de la partie C).
+
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| À faire (session 1) : vérifier que le testeur explique pourquoi la triche se voit, et qu'il ne conclut pas que c'est « impossible » | | #17 |
+| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
 La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la course contre le reste du réseau : c'est le sujet de la notion 7 (double dépense, attaque des 51 %). La falsification ne touche qu'une seule copie de la chaîne et le cadrage prévoyait que « les autres îles le signalent » ; l'archipel n'arrivant qu'à la notion 4, ce signalement n'est pas montré ici. Le tricheur n'est pas représenté : c'est l'utilisateur qui joue son rôle.
@@ -274,9 +302,18 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 | Réseau en étoile avec un serveur au milieu, pour comparer centralisé et décentralisé | Montrer un serveur central, même pour le critiquer, risquait de fixer la mauvaise image. Le contraste passe par l'interaction « éteindre une île » : rien ne s'arrête |
 
 #### f) Tests utilisateurs
+**Hypothèse à vérifier :** Le testeur comprend qu'il n'y a pas de chef, que chaque île a sa copie, et pense à éteindre une île pour voir si le réseau tient.
+
+**Protocole :** `docs/TEST-UTILISATEUR.md`, étape 4, questions 1 à 4 ; question 5 de la partie C. Formulaire commun aux testeurs (lien dans le protocole).
+
+**À observer :** Il comprend « île = ordinateur » et « avion = message » ; il éteint une île de lui-même, à la souris ou avec les boutons ; il dit que personne ne contrôle le réseau.
+
+**Critère de réussite :** Explique la copie chez plusieurs participants (note 2 à la question 5 de la partie C) et éteint au moins une île sans consigne.
+
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| À faire (session 1) : vérifier que le testeur comprend qu'il n'y a pas de chef et qu'il pense à éteindre une île | | #17 |
+| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
 Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend environ une seconde au lieu de quelques millisecondes : il faut pouvoir suivre le message des yeux. La vérification est réduite à une courte pause, sans montrer les signatures. Les îles sont toutes honnêtes et complètes : les nœuds malveillants sont traités à la notion 7 (double dépense), et les nœuds « légers » ne sont pas représentés. Ces simplifications sont signalées dans l'encart « En vrai… ».
@@ -324,9 +361,18 @@ Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend envi
 | Plusieurs îles qui minent en même temps | C'est la course entre mineurs, sujet de la notion 6 (consensus PoW) : la montrer ici mélangerait les deux notions |
 
 #### f) Tests utilisateurs
+**Hypothèse à vérifier :** Le testeur comprend qu'on ne peut pas choisir le sceau (seulement changer le nonce), qu'il faut beaucoup d'essais pour le trouver et un seul calcul pour le vérifier.
+
+**Protocole :** `docs/TEST-UTILISATEUR.md`, étape 5, questions 1 à 4 ; question 6 de la partie C. Formulaire commun aux testeurs (lien dans le protocole).
+
+**À observer :** Il lance le minage seul ; il explique le rôle du nonce ; il dit que « miner » = faire des essais, pas « résoudre une énigme » ; il comprend que passer à 000 coûte plus d'essais.
+
+**Critère de réussite :** Définit « miner » par les essais de nonce jusqu'à un sceau valide (note 2 à la question 6 de la partie C).
+
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| À faire (session 1) : vérifier que le testeur comprend qu'on ne peut pas choisir le sceau, et que vérifier est facile | | #17 |
+| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
 Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un seul mineur est montré : la course entre mineurs et la récompense ne sont que dans l'encart « En vrai… », la compétition étant le sujet de la notion 6. Le bloc ne contient qu'une transaction. Le fil rouge est cohérent : le bloc n°2 contient une autre transaction (Thomas → Julien), et celle de Dylan n'entre dans la chaîne qu'ici, dans le bloc n°4. Les blocs déjà présents sont scellés en `00` ; la difficulté `000` est présentée comme un durcissement pour les blocs à venir (comme le réajustement de Bitcoin), sans remettre en cause les anciens.
@@ -374,9 +420,18 @@ Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un 
 | Un vote à main levée entre les îles | Ce n'est pas ainsi que fonctionnent Bitcoin ou Ethereum, et cela aurait créé la fausse idée que le consensus est un vote d'opinion |
 
 #### f) Tests utilisateurs
+**Hypothèse à vérifier :** Le testeur sait dire ce qui compte dans chaque méthode (puissance de calcul en PoW, mise en PoS) et pourquoi la preuve de travail consomme plus.
+
+**Protocole :** `docs/TEST-UTILISATEUR.md`, étape 6, questions 1 à 3 ; question 7 de la partie C. Formulaire commun aux testeurs (lien dans le protocole).
+
+**À observer :** Il décrit la course et le tirage avec ses mots ; il relie « beaucoup de calcul perdu » à la consommation d'énergie ; il voit que les deux favorisent les plus gros (machines ou jetons).
+
+**Critère de réussite :** Cite les deux méthodes et ce qui donne l'avantage dans chacune (note 2 à la question 7 de la partie C).
+
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| À faire (session 1) : vérifier que le testeur sait dire ce qui compte dans chaque méthode et pourquoi la preuve de travail consomme plus | | #17 |
+| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
 La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montrée, ni la vérification du bloc par les autres îles après la victoire (vue à la notion 5). Les poids sont fixes et les îles toutes honnêtes. La preuve d'enjeu est réduite à un tirage pondéré, sans comités ni attestations. Ces simplifications sont signalées dans l'encart « En vrai… ».
@@ -424,9 +479,18 @@ La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montr
 | Un voleur extérieur qui prend les jetons de Maxens | Faux : l'attaque des 51 % ne permet pas de dépenser les jetons des autres, seulement de réécrire ses propres transactions. Le tricheur est donc l'émetteur, Dylan |
 
 #### f) Tests utilisateurs
+**Hypothèse à vérifier :** Le testeur sait citer les étapes de la vie d'une transaction et expliquer pourquoi Dylan perd à 30 % (la chaîne la plus longue gagne) et gagne à 60 %.
+
+**Protocole :** `docs/TEST-UTILISATEUR.md`, étape 7, questions 1 à 4 ; question 8 de la partie C. Formulaire commun aux testeurs (lien dans le protocole).
+
+**À observer :** Il décrit le trajet (signée, envoyée, en attente, rangée dans un bloc) ; il comprend « chaîne la plus longue gagne » ; il comprend pourquoi attendre plusieurs confirmations protège.
+
+**Critère de réussite :** Définit la double dépense et dit pourquoi une minorité échoue (note 2 à la question 8 de la partie C).
+
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| À faire (session 1) : vérifier que le testeur sait citer les étapes de la vie d'une transaction et expliquer pourquoi Dylan perd à 30 % | | #17 |
+| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
 La signature de la transaction n'est pas montrée (pas de clés publiques ni privées). La course n'a pas de hasard et s'arrête à 3 blocs au lieu de 6 confirmations. L'adoption de la branche gagnante par les îles est dite dans le texte, mais n'est pas animée sur l'archipel. Ces simplifications sont signalées dans l'encart « En vrai… ».

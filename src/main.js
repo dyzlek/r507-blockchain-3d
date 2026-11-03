@@ -322,11 +322,16 @@ function renderText() {
       .map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`)
       .join('');
   } else if (sequence.network && linked) {
-    const { running, total, received, offline, unreached, bobReceived } = archipel.summary();
+    const { running, total, received, offline, unreached, bobReceived, islands } = archipel.summary();
+    // Même geste que le clic sur une île, pour le clavier et les lecteurs d'écran.
+    const switches = islands
+      .map(({ name, offline: off }, i) => (i === SENDER ? '' : `<button type="button" data-island="${i}" aria-pressed="${off}">${name}</button>`))
+      .join('');
     const rows = [
       ['Ont reçu la transaction', `${received.length} île${received.length > 1 ? 's' : ''} sur ${total}${running ? ', et ça continue…' : ''}`],
       ['Maxens', bobReceived ? 'a reçu la transaction' : running ? 'attend encore' : 'pas joint'],
       ['Îles éteintes', offline.length ? offline.join(', ') : 'aucune'],
+      ['Éteindre une île', `<div class="choices">${switches}</div>`],
     ];
     if (!running && unreached.length) rows.push(['Pas jointes', `${unreached.join(', ')} : plus aucun chemin allumé ne mène jusqu’à elles`]);
     rows.push(['Île centrale', 'aucune : chaque île vérifie et fait suivre']);
@@ -569,6 +574,12 @@ ui.fields.addEventListener('click', (event) => {
   if (method) consensus.setMethod(method.dataset.method);
   const attack = event.target.closest('[data-attack]');
   if (attack) race.setPower(Number(attack.dataset.attack));
+  const island = event.target.closest('[data-island]');
+  if (island) {
+    archipel.toggleOffline(Number(island.dataset.island));
+    // Le panneau est redessiné : on rend le focus au bouton pour continuer au clavier.
+    ui.fields.querySelector(`[data-island="${island.dataset.island}"]`)?.focus();
+  }
 });
 window.addEventListener('keydown', (event) => {
   if (event.target.closest?.('input, textarea')) return;

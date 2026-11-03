@@ -33,7 +33,7 @@ export const SEQUENCES = [
     ],
     textInspected: [
       'Un bloc, c’est 4 choses : la <strong>transaction</strong>, un <strong>nombre</strong> (le nonce), son <strong>sceau</strong>, et le <strong>sceau du coffre d’avant</strong>.',
-      'Le sceau est un code unique calculé à partir de tout le contenu, un peu comme une empreinte digitale. Change une seule lettre dedans et le sceau devient complètement différent.',
+      'Le sceau est un code unique calculé à partir de tout le contenu, un peu comme une empreinte digitale. Change une seule lettre dedans et le sceau devient complètement différent. Sa couleur et son motif viennent de ce code : autre code, autre tampon.',
     ],
     enVrai:
       'Ce « sceau » s’appelle un <strong>hash</strong> (ici SHA-256) : 64 caractères calculés par ton navigateur, écrits à côté du dessin. Chez Bitcoin, un bloc contient plusieurs milliers de transactions et une date ; ici, une seule.',
