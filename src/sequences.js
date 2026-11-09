@@ -74,6 +74,7 @@ export const SEQUENCES = [
     textInspected: [
       'Le sceau du bloc 1 a complètement changé. Le bloc 2 en gardait une copie : <strong>elles ne correspondent plus</strong>. La chaîne est cassée, et tout le monde le voit.',
       'Pour cacher la triche, il faudrait refaire le bloc 1, puis le 2, puis le 3, jusqu’au bout. Pas impossible, mais beaucoup trop long.',
+      'Et les autres ordinateurs ont leur propre copie : à la notion 4, tu verras qu’ils <strong>refusent</strong> le bloc trafiqué.',
     ],
     button: ['Falsifier le bloc 1', 'Remettre comme avant'],
     enVrai:
@@ -98,8 +99,15 @@ export const SEQUENCES = [
       'Pas de chef. Chaque île vérifie la transaction, puis la transmet à ses voisines.',
       '<strong>Clique sur une île pour l’éteindre</strong>, puis renvoie la transaction : elle passe par un autre chemin. Aucune île n’est obligatoire.',
       'La transaction attend au-dessus des îles. Elle n’est pas encore dans un bloc. Le minage la rangera (notion 5).',
+      'Et si Dylan envoyait le <strong>bloc trafiqué</strong> de la notion 3 ? Choisis « Bloc 1 falsifié » plus bas, puis envoie-le.',
+    ],
+    textForged: [
+      'Les voisines de Dylan comparent ce bloc avec leur copie : <strong>le sceau ne correspond pas</strong>. Elles le refusent et ne le font pas suivre.',
+      'Le faux bloc s’arrête là. Maxens ne le reçoit jamais.',
+      '<strong>À retenir :</strong> chaque île vérifie tout ce qu’elle reçoit. Pour faire passer une triche, il faudrait tromper presque toutes les îles en même temps.',
     ],
     button: ['Envoyer la transaction de Dylan', 'Renvoyer la transaction'],
+    buttonForged: 'Envoyer le bloc 1 falsifié',
     enVrai:
       'Une île s’appelle un <strong>nœud</strong> : un ordinateur qui garde toute la chaîne. Bitcoin en a des dizaines de milliers. La transaction qui attend s’appelle la <strong>mempool</strong> : une salle d’attente.',
     camera: { position: [0, 94, 88], target: [0, 0, 22] },
@@ -136,18 +144,21 @@ export const SEQUENCES = [
     step: 'Notion 6 · Consensus',
     title: 'Qui scelle le bloc ?',
     text: [
-      'Chaque île peut proposer le prochain bloc. Mais il en faut <strong>un seul</strong>. Comment choisir, sans chef ?',
-      '<strong>Preuve de travail</strong> : une course au sceau, comme au minage. Plus une île a de machines, plus elle gagne souvent.',
-      '<strong>Preuve d’enjeu</strong> : un tirage au sort. Chaque île mise des jetons. Plus elle en a misé, plus elle a de tickets.',
+      'Toutes les îles peuvent proposer le prochain bloc. Il en faut <strong>un seul</strong>. Sans chef, comment choisir ?',
+      'Méthode 1, la <strong>course</strong> (preuve de travail) : la première île qui trouve un bon sceau gagne.',
+      'Méthode 2, le <strong>tirage au sort</strong> (preuve d’enjeu) : chaque île mise des jetons. Plus elle mise, plus elle a de chances.',
+      'Essaie les deux.',
     ],
     textDone: {
       pow: [
-        'Toutes les îles ont calculé, mais <strong>une seule</strong> gagne. Le travail des autres est perdu. C’est sûr, mais ça consomme beaucoup d’électricité.',
-        'Relance la course plusieurs fois. L’île avec le plus de machines gagne plus souvent, mais pas à chaque fois. Puis essaie la preuve d’enjeu.',
+        'Une seule île gagne. Les autres ont calculé pour rien : <strong>beaucoup d’électricité perdue</strong>.',
+        'L’île qui a le plus de machines gagne plus souvent. Essaie maintenant le tirage au sort.',
+        '<strong>À retenir :</strong> la course est très sûre, mais elle consomme beaucoup d’énergie.',
       ],
       pos: [
-        'Pas de course : <strong>un seul tirage</strong>, presque sans calcul. Plus une île a misé, plus elle a de chances.',
-        'Si l’île tirée valide un faux bloc, les autres le refusent et elle <strong>perd sa mise</strong>. Ça la pousse à rester honnête.',
+        'Un seul tirage, presque aucun calcul : <strong>très peu d’électricité</strong>.',
+        'Si l’île tirée triche, les autres refusent son bloc et elle <strong>perd sa mise</strong>. Elle a donc intérêt à rester honnête.',
+        '<strong>À retenir :</strong> le tirage est économe, mais les plus riches gagnent plus souvent.',
       ],
     },
     buttons: {
@@ -166,22 +177,22 @@ export const SEQUENCES = [
     step: 'Notion 7 · Transaction et attaque',
     title: 'La double dépense',
     text: [
-      'La transaction de Dylan a fait tout le chemin. Elle est dans le <strong>bloc 4</strong>. Maxens a ses 5 jetons.',
-      'Mais Dylan veut tricher. En secret, il fabrique <strong>un autre bloc 4</strong>, où les 5 jetons lui reviennent. Il pourrait les dépenser deux fois : c’est la <strong>double dépense</strong>.',
-      'Règle des îles : on garde <strong>la chaîne la plus longue</strong>. Dylan doit donc aller plus vite que tout le réseau. Choisis sa puissance et lance la course.',
+      'La transaction de Dylan est dans le <strong>bloc 4</strong>. Maxens a reçu ses 5 jetons.',
+      'Mais Dylan triche. En secret, il fabrique <strong>un autre bloc 4</strong>, où il garde ses 5 jetons. Il veut payer deux fois avec les mêmes jetons : c’est la <strong>double dépense</strong>.',
+      'Les îles suivent toujours <strong>la chaîne la plus longue</strong>. Pour gagner, Dylan doit aller plus vite que toutes les autres îles réunies. Lance la course.',
     ],
     textRunning: [
-      'Chaque bloc ajouté après le bloc 4 est une <strong>confirmation</strong> pour Maxens. Plus il y en a, plus revenir en arrière est dur.',
-      'Dylan mine seul sa branche secrète, contre le reste du réseau.',
+      'Les autres îles ajoutent des blocs après celui de Maxens. Dylan, seul, ajoute des blocs à sa chaîne secrète.',
+      'Chaque bloc ajouté après celui de Maxens est une <strong>confirmation</strong> : le paiement devient de plus en plus sûr.',
     ],
     textInspected: [
-      'Raté ! La branche de Dylan est <strong>plus courte</strong>. Les îles la rejettent. Maxens garde ses jetons.',
-      'Avec moins de la moitié de la puissance, Dylan prend du retard à chaque bloc. Plus Maxens attend, plus la triche est impossible.',
-      'Essaie avec <strong>60 %</strong> de la puissance.',
+      'Raté : la chaîne de Dylan est <strong>plus courte</strong>. Les îles l’ignorent. Maxens garde ses jetons.',
+      'Seul contre tous, Dylan est trop lent. Essaie avec <strong>60 %</strong> de la puissance.',
+      '<strong>À retenir :</strong> la double dépense, c’est payer deux fois avec les mêmes jetons. Elle échoue tant que le tricheur a moins de la moitié de la puissance.',
     ],
     textAttack: [
-      'Dylan a gagné : sa branche est <strong>plus longue</strong>, toutes les îles la suivent. Le bloc 4 de Maxens disparaît : ses 5 jetons aussi.',
-      'C’est l’<strong>attaque des 51 %</strong>. Elle ne marche que si on contrôle plus de la moitié de la puissance. Sur Bitcoin, ça coûterait des milliards.',
+      'Dylan a gagné : sa chaîne est <strong>plus longue</strong>, les îles la suivent. Le bloc de Maxens disparaît, et ses 5 jetons avec.',
+      '<strong>À retenir :</strong> pour tricher, il faut plus de la moitié de la puissance du réseau. C’est l’<strong>attaque des 51 %</strong>. Sur Bitcoin, ça coûterait des milliards.',
     ],
     button: ['Lancer la course', 'Rejouer la course'],
     enVrai:

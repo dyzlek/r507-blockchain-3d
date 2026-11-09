@@ -252,11 +252,11 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 1 (T1, T2) : T1 explique la détection par les sceaux ; T2 voit la cassure sans donner la raison. Le sujet demande aussi que la triche soit détectée par les autres nœuds, ce qui n'était pas montré | Le texte annonce que les autres îles refuseront le bloc ; la notion 4 permet d'envoyer le bloc 1 falsifié, que les voisines de Dylan refusent (avion rouge, île cerclée de rouge, « refuse le bloc ✗ ») | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
-La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la course contre le reste du réseau : c'est le sujet de la notion 7 (double dépense, attaque des 51 %). La falsification ne touche qu'une seule copie de la chaîne et le cadrage prévoyait que « les autres îles le signalent » ; l'archipel n'arrivant qu'à la notion 4, ce signalement n'est pas montré ici. Le tricheur n'est pas représenté : c'est l'utilisateur qui joue son rôle.
+La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la course contre le reste du réseau : c'est le sujet de la notion 7 (double dépense, attaque des 51 %). La falsification ne touche qu'une seule copie de la chaîne. L'archipel n'arrivant qu'à la notion 4, le refus par les autres îles est montré là (envoi du bloc 1 falsifié), et la notion 3 l'annonce. Le tricheur n'est pas représenté : c'est l'utilisateur qui joue son rôle.
 
 ### 4.4 — Réseau et décentralisation
 
@@ -312,7 +312,7 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 1 (T1, T2) : T1 dit « pour la sécurité » sans plus, T2 ne sait pas pourquoi la chaîne est copiée | Choix « Sa transaction / Bloc 1 falsifié » : on voit à quoi sert la copie (chaque île compare et refuse la triche) ; encadré « À retenir » | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
@@ -430,7 +430,7 @@ Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un 
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 1 (T1, T2) : aucun des deux ne cite les deux méthodes en fin de parcours ; T2 juge l'étape incompréhensible | Textes raccourcis, mots simples d'abord (« course », « tirage au sort ») puis le terme technique entre parenthèses ; un « À retenir » d'une phrase par méthode | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
@@ -489,7 +489,7 @@ La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montr
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 1 (T1, T2) : aucun des deux ne définit la double dépense ; T2 juge l'étape incompréhensible | Double dépense définie en mots simples (« payer deux fois avec les mêmes jetons ») ; textes raccourcis ; « À retenir » après la course (échec et réussite de l'attaque) | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées

@@ -47,6 +47,7 @@ export const TOP_Y = GROUND_Y + 0.105; // trois feuilles de 0,035 : une fois agr
 const SPEED = 3.2; // vitesse d'un message, en unités par seconde
 const VERIFY_DELAY = 0.4; // une île vérifie la transaction avant de la faire suivre
 const ACCENT = 0xe0684b;
+const REJECT = 0xb3261e; // bloc refusé : rouge de la chaîne cassée (notion 3)
 const ROUTE_COLOR = 0x8a7560; // pointillés au crayon
 const ROCK = 0xffffff; // teinte des papiers de l'île (multiplie la texture)
 const ROCK_OFF = 0x8d8d8d; // île éteinte : papier grisé
@@ -94,6 +95,8 @@ const miniLinkGeometry = new THREE.CylinderGeometry(0.004, 0.004, CHAIN_SPACING 
 // Les messages sont des avions en papier.
 const messageGeometry = paperPlaneGeometry(1.2);
 const messageMaterial = paperMaterial(COLORS.paper, { fibers: 40 }, { side: THREE.DoubleSide, flatShading: true });
+// Le bloc falsifié voyage dans un avion rouge : on le suit des yeux jusqu'à ce qu'il soit refusé.
+const forgedMaterial = new THREE.MeshStandardMaterial({ color: REJECT, roughness: 0.8, side: THREE.DoubleSide, flatShading: true });
 const miniLink = new THREE.MeshStandardMaterial({ color: ACCENT, roughness: 0.75, transparent: true, opacity: 0.9 });
 
 // Traits épais (Line2) : leur épaisseur est en pixels, il faut leur donner la taille de l'écran.
@@ -210,7 +213,7 @@ export function createArchipel(chain) {
     hint.visible = false;
     island.add(hint);
 
-    return { name, index, group: island, base, layers, decor, ring, scroll, plate, hint, neighbors: [], received: false, offline: false, glow: 0, lift: 0 };
+    return { name, index, group: island, base, layers, decor, ring, scroll, plate, hint, neighbors: [], received: false, rejected: false, offline: false, glow: 0, lift: 0 };
   });
 
   const routes = ROUTES.map(([a, b]) => {
@@ -239,6 +242,7 @@ export function createArchipel(chain) {
 
   let clock = 0;
   let sent = false;
+  let forged = false; // ce qui voyage est le bloc 1 falsifié de la notion 3
   let running = false;
   let messages = []; // { route, from, to, t, mesh }
   let relays = []; // { at, from, via }
@@ -266,22 +270,33 @@ export function createArchipel(chain) {
     if (islands[from].offline) return;
     for (const { to, route } of islands[from].neighbors) {
       if (route === via || islands[to].offline) continue;
-      const mesh = new THREE.Mesh(messageGeometry, messageMaterial);
+      const mesh = new THREE.Mesh(messageGeometry, forged ? forgedMaterial : messageMaterial);
       mesh.castShadow = true;
       group.add(mesh);
       messages.push({ route, from, to, t: 0, mesh });
     }
   }
 
-  // Une île qui a déjà la transaction ignore le doublon.
+  // Une île qui a déjà la transaction ignore le doublon. Le bloc falsifié, lui, est comparé à la copie de l'île :
+  // le sceau ne correspond pas, elle le refuse et ne le fait pas suivre.
   function arrive({ route, to }) {
-    if (!islands[to].offline && !islands[to].received) receive(to, route);
+    const island = islands[to];
+    if (island.offline || island.received || island.rejected) return;
+    if (forged) {
+      island.rejected = true;
+      route.rejected = true;
+      updateLabels();
+      api.onChange();
+      return;
+    }
+    receive(to, route);
   }
 
   function updateLabels() {
     islands.forEach((island) => {
-      const { plate, name, offline, received } = island;
-      plate.element.textContent = `Île ${of(name)}${offline ? ' · éteinte' : ''}`;
+      const { plate, name, offline, received, rejected } = island;
+      plate.element.textContent = `Île ${of(name)}${offline ? ' · éteinte' : rejected ? ' · refuse le bloc ✗' : ''}`;
+      plate.element.classList.toggle('is-rejected', rejected);
       plate.element.classList.toggle('is-off', offline);
       plate.element.classList.toggle('is-received', received);
       island.layers.forEach((layer) => layer.material.color.set(offline ? ROCK_OFF : ROCK));
@@ -295,12 +310,28 @@ export function createArchipel(chain) {
 
   Object.assign(api, {
     // Envoie la transaction de Dylan (ou la renvoie, en gardant les îles éteintes).
-    send(instant) {
+    // `asForged` : Dylan envoie le bloc 1 falsifié ; ses voisines le refusent.
+    send(instant, asForged = false) {
       clearMessages();
-      islands.forEach((island) => (island.received = false));
-      routes.forEach((route) => (route.used = false));
+      forged = asForged;
+      islands.forEach((island) => {
+        island.received = false;
+        island.rejected = false;
+      });
+      routes.forEach((route) => {
+        route.used = false;
+        route.rejected = false;
+      });
       sent = true;
-      if (instant) {
+      if (instant && forged) {
+        islands[SENDER].received = true;
+        for (const { to, route } of islands[SENDER].neighbors) {
+          if (islands[to].offline) continue;
+          islands[to].rejected = true;
+          route.rejected = true;
+        }
+        running = false;
+      } else if (instant) {
         // Mouvement réduit : on calcule directement qui est joint, sans animation.
         const queue = [SENDER];
         islands[SENDER].received = true;
@@ -324,10 +355,15 @@ export function createArchipel(chain) {
       clearMessages();
       islands.forEach((island) => {
         island.received = false;
+        island.rejected = false;
         island.offline = false;
       });
-      routes.forEach((route) => (route.used = false));
+      routes.forEach((route) => {
+        route.used = false;
+        route.rejected = false;
+      });
       sent = false;
+      forged = false;
       running = false;
       updateLabels();
     },
@@ -336,6 +372,7 @@ export function createArchipel(chain) {
       const island = islands[index];
       island.offline = !island.offline;
       island.received = false;
+      island.rejected = false;
       updateLabels();
       api.onChange();
     },
@@ -363,7 +400,9 @@ export function createArchipel(chain) {
         islands: islands.map(({ name, offline }) => ({ name, offline })),
         received: names((island) => island.received),
         offline: names((island) => island.offline),
-        unreached: names((island) => !island.offline && !island.received),
+        unreached: names((island) => !island.offline && !island.received && !island.rejected),
+        forged,
+        rejected: names((island) => island.rejected),
         bobReceived: islands[RECEIVER].received,
       };
     },
@@ -414,10 +453,11 @@ export function createArchipel(chain) {
 
       islands.forEach((island, i) => {
         const damp = (value, target) => (instant ? target : THREE.MathUtils.damp(value, target, 6, dt));
-        island.glow = damp(island.glow, island.received ? 1 : 0);
+        island.glow = damp(island.glow, island.received || island.rejected ? 1 : 0);
+        island.ring.material.color.set(island.rejected ? REJECT : ACCENT);
         island.lift = damp(island.lift, island.offline ? -0.2 : 0);
         island.ring.material.opacity = island.glow * (0.75 + Math.sin(elapsed * 4) * 0.2);
-        island.scroll.scale.setScalar(Math.max(0.001, island.glow));
+        island.scroll.scale.setScalar(Math.max(0.001, island.rejected ? 0 : island.glow));
         island.scroll.position.y = TOP_Y + 0.62 + Math.sin(elapsed * 2 + i) * 0.03;
         island.group.position.y = island.lift;
         island.decor.forEach(({ hinge }, j) => {
@@ -428,7 +468,7 @@ export function createArchipel(chain) {
         });
       });
       routes.forEach((route) => {
-        route.material.color.set(route.used ? ACCENT : ROUTE_COLOR);
+        route.material.color.set(route.rejected ? REJECT : route.used ? ACCENT : ROUTE_COLOR);
         // Les liaisons n'apparaissent que sur le réseau : vues depuis la chaîne, elles barreraient le ciel.
         route.material.opacity = (islands[route.a].offline || islands[route.b].offline ? 0.2 : 1) * unfold;
         route.line.visible = unfold > 0.01;
