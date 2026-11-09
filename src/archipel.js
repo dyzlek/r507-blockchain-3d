@@ -4,20 +4,30 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { COFFRE_SIZE, sealTexture } from './coffre.js';
+import { createBateau } from './bateau.js';
 import { COLORS, cardboard, createCutout, crumpledSheet, noisyDisc, paperMaterial, paperPlaneGeometry } from './papier.js';
 
 // Le réseau = un archipel en papier découpé, posé sur une mer de papier froissé.
 // Chaque île est un nœud qui garde sa propre copie de la chaîne.
 // Aucune île n'est au centre : chacune n'est reliée qu'à quelques voisines, et la transaction
 // de Dylan se propage de proche en proche (gossip).
+// La vraie chaîne de coffres est posée sur l'île de Dylan, une île comme les autres : on commence le parcours
+// dessus, et en reculant on découvre qu'elle n'est qu'une île parmi d'autres, qui ont chacune la même chaîne.
+// Dylan est devant, les autres derrière, de proche en proche jusqu'à Maxens, au fond.
+// Coordonnées dans le repère de l'archipel, que l'on agrandit (ARCHIPEL_SCALE) pour qu'une île porte la chaîne.
+export const ARCHIPEL_SCALE = 14;
+export const CHAIN_SPACING = 2.4; // écart entre deux coffres de la vraie chaîne (repère du monde)
+// Où est posée la chaîne sur une île, par rapport à son centre (repère de l'archipel) : au centre, un peu vers
+// l'arrière pour laisser devant la place à la branche secrète de la notion 7.
+export const CHAIN_SPOT = [0, -0.06];
 export const ISLANDS = [
-  { name: 'Dylan', at: [-4.8, 0.5] },
-  { name: 'Nicolas', at: [-2.5, -2.1] },
-  { name: 'Pierre', at: [-2.3, 2.3] },
-  { name: 'Thomas', at: [0.1, -0.1] },
-  { name: 'Julien', at: [2.4, -2.3] },
-  { name: 'Lucas', at: [2.5, 2.2] },
-  { name: 'Maxens', at: [4.8, -0.1] },
+  { name: 'Dylan', at: [0, 2.9] },
+  { name: 'Nicolas', at: [-3.3, 0.2] },
+  { name: 'Pierre', at: [3.3, 0.2] },
+  { name: 'Thomas', at: [0, -1.4] },
+  { name: 'Julien', at: [-2.9, -3.1] },
+  { name: 'Lucas', at: [2.9, -3.1] },
+  { name: 'Maxens', at: [0, -4.7] },
 ];
 
 // Liaisons entre îles (indices dans ISLANDS). Si on éteint n'importe quelle île (sauf Dylan),
@@ -31,9 +41,9 @@ export const SENDER = 0; // l'île de Dylan
 const RECEIVER = 6; // l'île de Maxens
 const HINT_OFF = 3; // l'île du milieu, la plus tentante à éteindre
 
-const R = 0.95; // rayon d'une île
+const R = 0.95; // rayon d'une île (≈ 9 unités du monde une fois agrandie)
 const GROUND_Y = -COFFRE_SIZE.h / 2;
-export const TOP_Y = GROUND_Y + 0.3;
+export const TOP_Y = GROUND_Y + 0.105; // trois feuilles de 0,035 : une fois agrandie, l'île a l'épaisseur d'un coffre
 const SPEED = 3.2; // vitesse d'un message, en unités par seconde
 const VERIFY_DELAY = 0.4; // une île vérifie la transaction avant de la faire suivre
 const ACCENT = 0xe0684b;
@@ -47,25 +57,40 @@ const LAYERS = [
   { r: R * 1.0, color: COLORS.grass },
   { r: R * 0.92, color: COLORS.grassDark },
 ];
-const LAYER_DEPTH = 0.1;
+const LAYER_DEPTH = 0.035;
 
-// Décor de chaque île, en découpes qui se relèvent à l'arrivée sur l'archipel : [type, taille, x, z, rotation].
-// Il ne sert qu'à rendre les îles reconnaissables ; toutes jouent exactement le même rôle dans le réseau.
-const DECOR = [
-  [['hut', 0.6, -0.45, -0.5, 0.3], ['tree', 0.7, 0.5, -0.45, -0.3]],
-  [['tree', 0.75, -0.4, -0.5, 0.25], ['tree', 0.55, 0.45, -0.45, -0.35]],
-  [['lighthouse', 1.1, -0.45, -0.45, 0.25], ['tree', 0.6, 0.5, -0.5, -0.3]],
-  [['tree', 0.7, -0.5, -0.45, 0.3], ['hut', 0.55, 0.45, -0.5, -0.25]],
-  [['lighthouse', 1.1, 0.4, -0.5, -0.25]],
-  [['tree', 0.6, -0.45, -0.5, 0.3], ['tree', 0.75, 0.4, -0.45, -0.2]],
-  [['lighthouse', 1.1, -0.4, -0.5, 0.2], ['hut', 0.55, 0.5, -0.45, -0.3]],
+// Décor de chaque île, en découpes de papier : un repère propre à l'île (cabane, phare ou grand arbre) et la même
+// petite végétation partout, tout autour de la chaîne (derrière, et sur les côtés devant). Il ne sert qu'à rendre
+// les îles vivantes et reconnaissables ; toutes jouent exactement le même rôle dans le réseau.
+// [type, hauteur en unités du monde, angle autour du centre (90° = devant), distance au centre (fraction du rayon)].
+const LANDMARKS = [['hut', 3.6], ['tree', 4.4], ['lighthouse', 6.2], ['hut', 3.4], ['lighthouse', 6.2], ['tree', 4.2], ['lighthouse', 6.2]];
+const PLANTS = [
+  ['palm', 5.2, 302, 0.84],
+  ['tree', 3.8, 266, 0.86],
+  ['palm', 4.2, 325, 0.8],
+  ['bush', 1.7, 205, 0.84],
+  ['bush', 1.5, 345, 0.84],
+  ['palm', 4, 150, 0.84],
+  ['bush', 1.3, 35, 0.86],
+  ['bush', 1.2, 120, 0.86],
 ];
+// Les îles impaires sont en miroir, et chaque île décale un peu ses plantes : elles ne se ressemblent pas toutes.
+function decorFor(index) {
+  const mirror = index % 2 ? -1 : 1;
+  const jitter = ((index * 37) % 21) - 10;
+  return [[...LANDMARKS[index], 236, 0.8], ...PLANTS].map(([kind, height, angle, distance], j) => {
+    const a = THREE.MathUtils.degToRad(angle + (j ? jitter : 0));
+    return [kind, height / ARCHIPEL_SCALE, Math.cos(a) * distance * R * mirror, Math.sin(a) * distance * R, (((index + j) * 53) % 40 - 20) / 100];
+  });
+}
 const easeOutBack = (t) => 1 + 2.4 * (t - 1) ** 3 + 1.4 * (t - 1) ** 2;
 const ringGeometry = new THREE.RingGeometry(R - 0.1, R - 0.02, 48);
 const scrollGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.5, 16);
-const miniGeometry = new THREE.BoxGeometry(0.3, 0.22, 0.22);
-const miniSealGeometry = new THREE.PlaneGeometry(0.17, 0.17);
-const miniLinkGeometry = new THREE.BoxGeometry(0.14, 0.05, 0.006);
+// Les copies ont la taille des vrais coffres une fois l'archipel agrandi.
+const MINI = { w: COFFRE_SIZE.w / ARCHIPEL_SCALE, h: COFFRE_SIZE.h / ARCHIPEL_SCALE, d: COFFRE_SIZE.d / ARCHIPEL_SCALE };
+const miniGeometry = new THREE.BoxGeometry(MINI.w, MINI.h, MINI.d);
+const miniSealGeometry = new THREE.PlaneGeometry(MINI.h * 0.56, MINI.h * 0.56);
+const miniLinkGeometry = new THREE.CylinderGeometry(0.004, 0.004, CHAIN_SPACING / ARCHIPEL_SCALE - MINI.w, 8).rotateZ(Math.PI / 2);
 // Les messages sont des avions en papier.
 const messageGeometry = paperPlaneGeometry(1.2);
 const messageMaterial = paperMaterial(COLORS.paper, { fibers: 40 }, { side: THREE.DoubleSide, flatShading: true });
@@ -87,22 +112,25 @@ function makeLabel(className, html) {
   return new CSS2DObject(el);
 }
 
-// Copie de la chaîne posée sur une île : mêmes blocs, mêmes sceaux que la grande chaîne.
+// Copie de la chaîne posée sur une île : mêmes coffres (à la même taille que la vraie chaîne une fois
+// l'archipel agrandi), mêmes sceaux, au même endroit de l'île que la vraie chaîne sur l'île de Dylan.
 function createMiniChain(sealMaterials) {
   const group = new THREE.Group();
-  const spacing = 0.42;
+  group.position.set(CHAIN_SPOT[0], 0, CHAIN_SPOT[1]);
+  const spacing = CHAIN_SPACING / ARCHIPEL_SCALE;
   sealMaterials.forEach((sealMaterial, i) => {
     const x = (i - (sealMaterials.length - 1) / 2) * spacing;
     const box = new THREE.Mesh(miniGeometry, cardboard());
-    box.position.set(x, TOP_Y + 0.11, 0);
+    box.position.set(x, TOP_Y + MINI.h / 2, 0);
     box.castShadow = true;
+    box.receiveShadow = true;
     group.add(box);
     const seal = new THREE.Mesh(miniSealGeometry, sealMaterial);
-    seal.position.set(x, TOP_Y + 0.12, 0.111);
+    seal.position.set(x + MINI.w * 0.1, TOP_Y + MINI.h * 0.6, MINI.d / 2 + 0.001);
     group.add(seal);
     if (i > 0) {
       const link = new THREE.Mesh(miniLinkGeometry, miniLink);
-      link.position.set(x - spacing / 2, TOP_Y + 0.12, 0.08);
+      link.position.set(x - spacing / 2, TOP_Y + MINI.h * 0.45, 0);
       group.add(link);
     }
   });
@@ -111,19 +139,24 @@ function createMiniChain(sealMaterials) {
 
 export function createArchipel(chain) {
   const group = new THREE.Group();
+  group.scale.setScalar(ARCHIPEL_SCALE);
   const sealMaterials = chain.map(
     (block) => new THREE.MeshStandardMaterial({ map: sealTexture(block.hash), roughness: 0.9, transparent: true, polygonOffset: true, polygonOffsetFactor: -2 }),
   );
 
-  // La mer : une grande feuille bleue froissée sous tout l'archipel.
+  // La mer : une grande feuille bleue froissée sous tout l'archipel. Elle déborde largement : elle va jusqu'à l'horizon, on ne voit pas son
+  // bord, même tout au fond.
   const sea = new THREE.Mesh(
-    crumpledSheet(14, 9.5, 48),
-    new THREE.MeshStandardMaterial({ map: paperMaterial(COLORS.sea, { fibers: 120, repeat: 3 }).map, roughness: 0.95, flatShading: true }),
+    crumpledSheet(60, 50, 200),
+    new THREE.MeshStandardMaterial({ map: paperMaterial(COLORS.sea, { fibers: 120, repeat: 18 }).map, roughness: 0.95, flatShading: true }),
   );
-  sea.position.y = GROUND_Y;
-  sea.rotation.y = 0.03;
+  sea.position.set(0, GROUND_Y, 0);
+  sea.rotation.y = 0.02;
   sea.receiveShadow = true;
   group.add(sea);
+  // Un bateau en papier mâché fait le tour de l'archipel, sans jamais toucher une île.
+  const bateau = createBateau(GROUND_Y + 0.01);
+  group.add(bateau.group);
 
   const islands = ISLANDS.map(({ name, at }, index) => {
     const island = new THREE.Group();
@@ -147,10 +180,11 @@ export function createArchipel(chain) {
     ring.position.y = TOP_Y + 0.006;
     island.add(ring);
 
-    island.add(createMiniChain(sealMaterials));
+    // Sur l'île de Dylan, c'est la vraie chaîne (main.js) qui est posée : pas de copie en plus.
+    if (index !== SENDER) island.add(createMiniChain(sealMaterials));
 
-    const decor = DECOR[index].map(([kind, size, x, z, rotY]) => {
-      const { hinge, card } = createCutout(kind, size * 1.35);
+    const decor = decorFor(index).map(([kind, size, x, z, rotY]) => {
+      const { hinge, card } = createCutout(kind, size);
       hinge.position.set(x, TOP_Y, z);
       hinge.rotation.y = rotY;
       island.add(hinge);
@@ -187,6 +221,7 @@ export function createArchipel(chain) {
     const curve = new THREE.QuadraticBezierCurve3(start, middle, end);
 
     const material = new LineMaterial({ color: ROUTE_COLOR, linewidth: 2.5, dashed: true, dashSize: 0.15, gapSize: 0.1, transparent: true });
+    material.fog = true; // sinon les pointillés traversent la brume des nuages en traits sombres
     routeMaterials.push(material);
     const geometry = new LineGeometry();
     geometry.setPositions(curve.getPoints(32).flatMap((p) => [p.x, p.y, p.z]));
@@ -194,7 +229,7 @@ export function createArchipel(chain) {
     line.computeLineDistances();
     group.add(line);
 
-    const route = { a, b, curve, material, duration: curve.getLength() / SPEED, used: false };
+    const route = { a, b, curve, material, line, duration: curve.getLength() / SPEED, used: false };
     islands[a].neighbors.push({ to: b, route });
     islands[b].neighbors.push({ to: a, route });
     return route;
@@ -334,8 +369,19 @@ export function createArchipel(chain) {
     setOpen(value) {
       unfoldTarget = value ? 1 : 0;
     },
+    // Les autres îles n'existent pas tant qu'on est sur la chaîne : elles apparaissent derrière les nuages, au dézoom.
+    setOthersVisible(visible) {
+      islands.forEach((island) => {
+        if (island.index !== SENDER) island.group.visible = visible;
+      });
+    },
+    // Les plaques « Île de… » ne s'affichent que sur les étapes de l'archipel : de loin, derrière la chaîne, elles gêneraient.
+    setLabels(visible) {
+      islands.forEach(({ plate }) => (plate.visible = visible));
+    },
     update(dt, elapsed, instant) {
       clock += dt;
+      bateau.update(dt, elapsed, instant);
       unfold = instant ? unfoldTarget : THREE.MathUtils.clamp(unfold + Math.sign(unfoldTarget - unfold) * dt * 0.8, 0, 1);
       const ready = relays.filter((r) => r.at <= clock);
       relays = relays.filter((r) => r.at > clock);
@@ -372,14 +418,17 @@ export function createArchipel(chain) {
         island.scroll.position.y = TOP_Y + 0.62 + Math.sin(elapsed * 2 + i) * 0.03;
         island.group.position.y = island.lift;
         island.decor.forEach(({ hinge }, j) => {
-          const k = THREE.MathUtils.clamp((unfold - 0.2 - i * 0.06 - j * 0.08) / 0.35, 0, 1);
+          // L'île de Dylan (celle de la chaîne) garde toujours ses décors debout ; les autres les relèvent à l'arrivée.
+          const k = i === SENDER ? 1 : THREE.MathUtils.clamp((unfold * 1.6 - i * 0.06 - j * 0.04) / 0.4, 0, 1);
           hinge.rotation.x = -Math.PI / 2 + (Math.PI / 2) * easeOutBack(k);
           hinge.visible = k > 0;
         });
       });
       routes.forEach((route) => {
         route.material.color.set(route.used ? ACCENT : ROUTE_COLOR);
-        route.material.opacity = islands[route.a].offline || islands[route.b].offline ? 0.2 : 1;
+        // Les liaisons n'apparaissent que sur le réseau : vues depuis la chaîne, elles barreraient le ciel.
+        route.material.opacity = (islands[route.a].offline || islands[route.b].offline ? 0.2 : 1) * unfold;
+        route.line.visible = unfold > 0.01;
       });
     },
   });

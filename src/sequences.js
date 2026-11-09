@@ -6,6 +6,7 @@
 // `mining` : un nouveau coffre au bout de la chaîne, le bouton lance la recherche du nonce (textRunning pendant les essais).
 // `consensus` : sur l'archipel, une course (preuve de travail) ou un tirage (preuve d'enjeu) désigne l'île qui scelle.
 // `race` : la branche secrète de Dylan fait la course contre la chaîne honnête (double dépense).
+// `overview` : dézoom final, on voit toutes les îles (la chaîne et l'archipel) d'un seul regard.
 
 export const SEQUENCES = [
   {
@@ -13,12 +14,12 @@ export const SEQUENCES = [
     step: 'Avant de commencer',
     title: 'Une chaîne de coffres en carton',
     text: [
-      'Une blockchain, c’est un cahier de comptes que tout le monde peut lire, et que personne ne peut modifier en douce.',
-      'Ici, chaque page du cahier est un <strong>coffre en carton</strong>, fermé par un coup de tampon : son sceau. Les coffres sont reliés les uns aux autres par un ruban, dans l’ordre.',
-      'On va suivre une transaction : <strong>Dylan envoie 5 jetons à Maxens</strong>. D’abord, on regarde les coffres déjà posés ; celle de Dylan arrivera dans la chaîne à la notion 5.',
+      'Une blockchain, c’est un cahier de comptes. Tout le monde peut le lire, personne ne peut le modifier en douce.',
+      'Chaque <strong>coffre</strong> est un bloc, fermé par un tampon : son <strong>sceau</strong>. Un ruban rouge les relie dans l’ordre.',
+      'On va suivre une transaction : <strong>Dylan envoie 5 jetons à Maxens</strong>. Elle arrivera à la notion 5.',
     ],
     enVrai:
-      'Les coffres sont une image. En vrai, ce sont des données copiées sur des milliers d’ordinateurs. Bitcoin ajoute un bloc toutes les 10 minutes environ, depuis 2009.',
+      'Les coffres ne sont qu’un dessin. En vrai, ce sont des données sur des ordinateurs. Des milliers d’ordinateurs gardent la même copie. Sur Bitcoin, un nouveau bloc s’ajoute toutes les 10 minutes environ, depuis 2009.',
     camera: { position: [0.5, 3.4, 11], target: [0, 0, 0] },
     focus: null,
   },
@@ -28,15 +29,15 @@ export const SEQUENCES = [
     step: 'Notion 1 · Structure d’un bloc',
     title: 'Le coffre',
     text: [
-      'Ce coffre, c’est un <strong>bloc</strong>. Il contient une transaction : <strong>Thomas envoie 3 jetons à Julien</strong>.',
-      'Il a une fenêtre en <strong>papier calque</strong> : on devine ce qu’il contient sans l’ouvrir. L’ouvrir casserait le sceau. Allume sa lampe pour lire à travers.',
+      'Le coffre marqué d’une flèche est un <strong>bloc</strong>. Il contient une transaction : <strong>Thomas envoie 3 jetons à Julien</strong>.',
+      'Sa fenêtre est en <strong>papier calque</strong> : on devine l’intérieur sans l’ouvrir (l’ouvrir casserait le sceau). Allume la <strong>lampe</strong> cachée dans le coffre pour mieux voir.',
     ],
     textInspected: [
       'Un bloc, c’est 4 choses : la <strong>transaction</strong>, un <strong>nombre</strong> (le nonce), son <strong>sceau</strong>, et le <strong>sceau du coffre d’avant</strong>.',
       'Le sceau est un code unique calculé à partir de tout le contenu, un peu comme une empreinte digitale. Change une seule lettre dedans et le sceau devient complètement différent. Sa couleur et son motif viennent de ce code : autre code, autre tampon.',
     ],
     enVrai:
-      'Ce « sceau » s’appelle un <strong>hash</strong> (ici SHA-256) : 64 caractères calculés par ton navigateur, écrits à côté du dessin. Chez Bitcoin, un bloc contient plusieurs milliers de transactions et une date ; ici, une seule.',
+      'Le « sceau » s’appelle un <strong>hash</strong>. C’est un code de 64 caractères, calculé par ton navigateur avec une formule (SHA-256). L’étiquette « Sceau » n’en montre que le début et la fin. Chez Bitcoin, un bloc contient des milliers de transactions et une date. Ici, une seule, pour rester simple.',
     camera: { position: [0.3, 0.9, 4.7], target: [0, -0.05, 0] },
     focus: 2,
   },
@@ -89,19 +90,19 @@ export const SEQUENCES = [
     step: 'Notion 4 · Réseau',
     title: 'L’archipel',
     text: [
-      'Qui garde cette chaîne ? Personne en particulier : <strong>tout le monde</strong>.',
-      'Chaque île est un ordinateur du réseau, avec sa propre copie de la chaîne (mêmes sceaux partout).',
-      'Dylan est sur son île. Envoie sa transaction et regarde-la voyager jusqu’à Maxens.',
+      'Recule : la chaîne était posée sur <strong>l’île de Dylan</strong>. Et ce n’est qu’une île parmi d’autres.',
+      'Chaque île est un ordinateur. Il a sa propre copie de la chaîne, avec les mêmes sceaux. Personne n’est le chef : <strong>tout le monde</strong> garde le cahier.',
+      'Clique sur l’île de Dylan : sa transaction part et voyage jusqu’à Maxens.',
     ],
     textInspected: [
-      'Pas de chef, pas de serveur central : chaque île vérifie la transaction puis la passe à ses voisines.',
-      '<strong>Clique sur une île pour l’éteindre</strong> et renvoie la transaction : elle trouve un autre chemin. Aucune île n’est indispensable.',
-      'La transaction attend encore au-dessus des îles : elle n’est pas dans un bloc. Le minage va l’y ranger (notion 5).',
+      'Pas de chef. Chaque île vérifie la transaction, puis la transmet à ses voisines.',
+      '<strong>Clique sur une île pour l’éteindre</strong>, puis renvoie la transaction : elle passe par un autre chemin. Aucune île n’est obligatoire.',
+      'La transaction attend au-dessus des îles. Elle n’est pas encore dans un bloc. Le minage la rangera (notion 5).',
     ],
     button: ['Envoyer la transaction de Dylan', 'Renvoyer la transaction'],
     enVrai:
-      'Une île, c’est un <strong>nœud</strong> : un ordinateur qui garde une copie complète de la chaîne. Bitcoin en compte des dizaines de milliers. Les messages passent de proche en proche, comme le bouche-à-oreille (<em>gossip</em>). En attendant d’être dans un bloc, une transaction patiente dans la <strong>mempool</strong>, une salle d’attente.',
-    camera: { position: [0, 7.5, 8.5], target: [0, -0.3, 0.4] },
+      'Une île s’appelle un <strong>nœud</strong> : un ordinateur qui garde toute la chaîne. Bitcoin en a des dizaines de milliers. La transaction qui attend s’appelle la <strong>mempool</strong> : une salle d’attente.',
+    camera: { position: [0, 94, 88], target: [0, 0, 22] },
     focus: null,
     network: true,
   },
@@ -111,20 +112,20 @@ export const SEQUENCES = [
     step: 'Notion 5 · Minage',
     title: 'La course au sceau',
     text: [
-      'Pour entrer dans la chaîne, la transaction de Dylan est rangée dans un <strong>nouveau coffre</strong>, au bout. Il lui manque un sceau.',
-      'Règle : le sceau doit commencer par <strong>00</strong>. On ne peut pas le choisir : on change seulement le <strong>nonce</strong> (la pièce) et on recalcule. Lance le minage !',
+      'La transaction de Dylan va dans un <strong>nouveau coffre</strong>, au bout de la chaîne. Il manque son sceau.',
+      'La règle : le sceau doit commencer par <strong>00</strong>. On ne peut pas le choisir. On change seulement le <strong>nonce</strong> (la pièce), et on recalcule. Lance le minage !',
     ],
     textRunning: [
-      'Chaque essai change le nonce, donc le sceau, au hasard. Impossible de deviner : on essaie, encore et encore.',
+      'Chaque essai change le nonce, donc le sceau. On ne peut pas deviner : on essaie, encore et encore.',
       '<strong>Miner</strong>, c’est ça : faire le plus d’essais possible, le plus vite possible.',
     ],
     textInspected: [
-      'Trouvé ! Il a fallu beaucoup d’essais pour <strong>trouver</strong> le bon nonce, mais un seul calcul suffit pour le <strong>vérifier</strong>. Chaque île le fait avant d’accepter le bloc.',
-      'Essaie la difficulté <strong>000</strong> : un zéro de plus, environ 16 fois plus d’essais. Environ, car c’est un tirage au sort.',
+      'Trouvé ! Il a fallu beaucoup d’essais pour <strong>trouver</strong> le bon nonce. Mais un seul calcul suffit pour <strong>vérifier</strong> qu’il est bon.',
+      'Essaie <strong>000</strong> : un zéro de plus, environ 16 fois plus d’essais. « Environ », car c’est du hasard.',
     ],
     button: ['Lancer le minage', 'Miner à nouveau'],
     enVrai:
-      'Chez Bitcoin, le hash doit commencer par une vingtaine de zéros. Les mineurs du monde font en tout des milliards de milliards d’essais par seconde, et il faut quand même <strong>10 minutes</strong> en moyenne. Le gagnant reçoit des bitcoins neufs : d’où le mot « minage ». Ici, les blocs déjà posés sont en <strong>00</strong> ; passer à <strong>000</strong> durcit la règle pour les blocs à venir, comme Bitcoin le fait quand il réajuste la difficulté.',
+      'Chez Bitcoin, le sceau doit commencer par une vingtaine de zéros, et il faut en moyenne 10 minutes pour trouver le bon. Le gagnant reçoit des bitcoins neufs : d’où le mot « minage ». Ici, passer à 000 durcit la règle pour les blocs suivants, comme Bitcoin le fait.',
     camera: { position: [-0.4, 1.3, 5.6], target: [-0.4, -0.05, 0] },
     focus: 4,
     mining: true,
@@ -135,18 +136,18 @@ export const SEQUENCES = [
     step: 'Notion 6 · Consensus',
     title: 'Qui scelle le bloc ?',
     text: [
-      'Chaque île peut proposer le prochain bloc. Mais il en faut <strong>un seul</strong> : comment choisir, sans chef ?',
-      '<strong>Preuve de travail</strong> : une course au sceau, comme à la notion 5. Plus une île a de machines, plus elle va vite.',
-      '<strong>Preuve d’enjeu</strong> : un tirage au sort. Chaque île mise des jetons, et chaque jeton misé est un ticket.',
+      'Chaque île peut proposer le prochain bloc. Mais il en faut <strong>un seul</strong>. Comment choisir, sans chef ?',
+      '<strong>Preuve de travail</strong> : une course au sceau, comme au minage. Plus une île a de machines, plus elle gagne souvent.',
+      '<strong>Preuve d’enjeu</strong> : un tirage au sort. Chaque île mise des jetons. Plus elle en a misé, plus elle a de tickets.',
     ],
     textDone: {
       pow: [
-        'Toutes les îles ont calculé, mais <strong>une seule</strong> a gagné : le travail des autres est perdu. C’est sûr, mais ça consomme beaucoup d’électricité.',
-        'Relance plusieurs fois : l’île qui a le plus de machines gagne plus souvent, mais pas à chaque fois. Puis essaie la preuve d’enjeu.',
+        'Toutes les îles ont calculé, mais <strong>une seule</strong> gagne. Le travail des autres est perdu. C’est sûr, mais ça consomme beaucoup d’électricité.',
+        'Relance la course plusieurs fois. L’île avec le plus de machines gagne plus souvent, mais pas à chaque fois. Puis essaie la preuve d’enjeu.',
       ],
       pos: [
-        'Pas de course : <strong>un seul tirage</strong>, presque aucun calcul. Plus une île a misé de jetons, plus elle a de chances d’être tirée.',
-        'Si l’île tirée scelle un faux bloc, les autres le refusent et elle <strong>perd sa mise</strong>. C’est ce qui la pousse à rester honnête.',
+        'Pas de course : <strong>un seul tirage</strong>, presque sans calcul. Plus une île a misé, plus elle a de chances.',
+        'Si l’île tirée valide un faux bloc, les autres le refusent et elle <strong>perd sa mise</strong>. Ça la pousse à rester honnête.',
       ],
     },
     buttons: {
@@ -154,8 +155,8 @@ export const SEQUENCES = [
       pos: ['Faire le tirage', 'Tirage en cours…', 'Refaire le tirage'],
     },
     enVrai:
-      'Le <strong>consensus</strong>, c’est la règle qui permet à des milliers de nœuds de se mettre d’accord sur le bloc suivant. Bitcoin utilise la <strong>preuve de travail</strong> (<em>Proof of Work</em>) : il consomme autant d’électricité qu’un pays entier. Ethereum est passé à la <strong>preuve d’enjeu</strong> (<em>Proof of Stake</em>) en 2022 et a réduit sa consommation de plus de 99 % ; pour participer, il faut y miser 32 ethers. Limite des deux : en PoW, ceux qui ont les plus grosses machines gagnent plus souvent ; en PoS, ce sont les plus riches. Ici, la récompense du gagnant n’est pas montrée.',
-    camera: { position: [0, 7.5, 8.5], target: [0, -0.3, 0.4] },
+      'Le <strong>consensus</strong> est la règle qui fait que des milliers d’ordinateurs se mettent d’accord sur le bloc suivant. Bitcoin utilise la <strong>preuve de travail</strong> (<em>Proof of Work</em>) : elle consomme autant d’électricité qu’un pays entier. Ethereum est passé à la <strong>preuve d’enjeu</strong> (<em>Proof of Stake</em>) en 2022 et a réduit sa consommation de plus de 99 %. Limite : en PoW, les plus grosses machines gagnent plus souvent ; en PoS, les plus riches. Ici, la récompense du gagnant n’est pas montrée.',
+    camera: { position: [0, 94, 88], target: [0, 0, 22] },
     focus: null,
     consensus: true,
   },
@@ -165,28 +166,43 @@ export const SEQUENCES = [
     step: 'Notion 7 · Transaction et attaque',
     title: 'La double dépense',
     text: [
-      'La transaction de Dylan a fait tout le chemin : signée, envoyée aux îles, mise en attente, puis rangée dans le <strong>bloc 4</strong>. Maxens a ses 5 jetons.',
-      'Mais Dylan veut tricher. En secret, il fabrique <strong>un autre bloc 4</strong>, où les mêmes jetons lui reviennent. S’il réussit, il pourra les dépenser une deuxième fois : c’est une <strong>double dépense</strong>.',
-      'Règle des îles : on garde toujours <strong>la chaîne la plus longue</strong>. Dylan doit donc construire sa branche plus vite que tout le réseau. Choisis sa puissance et lance la course.',
+      'La transaction de Dylan a fait tout le chemin. Elle est dans le <strong>bloc 4</strong>. Maxens a ses 5 jetons.',
+      'Mais Dylan veut tricher. En secret, il fabrique <strong>un autre bloc 4</strong>, où les 5 jetons lui reviennent. Il pourrait les dépenser deux fois : c’est la <strong>double dépense</strong>.',
+      'Règle des îles : on garde <strong>la chaîne la plus longue</strong>. Dylan doit donc aller plus vite que tout le réseau. Choisis sa puissance et lance la course.',
     ],
     textRunning: [
-      'Chaque bloc ajouté après le bloc 4 est une <strong>confirmation</strong> de plus pour Maxens : plus il y en a, plus il est dur de revenir en arrière.',
+      'Chaque bloc ajouté après le bloc 4 est une <strong>confirmation</strong> pour Maxens. Plus il y en a, plus revenir en arrière est dur.',
       'Dylan mine seul sa branche secrète, contre le reste du réseau.',
     ],
     textInspected: [
-      'Raté ! La branche de Dylan est <strong>plus courte</strong> : les îles la rejettent. Maxens garde ses jetons.',
-      'Avec moins de la moitié de la puissance, Dylan prend du retard à chaque bloc. Plus Maxens attend de confirmations, plus la triche devient impossible.',
+      'Raté ! La branche de Dylan est <strong>plus courte</strong>. Les îles la rejettent. Maxens garde ses jetons.',
+      'Avec moins de la moitié de la puissance, Dylan prend du retard à chaque bloc. Plus Maxens attend, plus la triche est impossible.',
       'Essaie avec <strong>60 %</strong> de la puissance.',
     ],
     textAttack: [
-      'Dylan a gagné : sa branche est <strong>plus longue</strong>, toutes les îles l’adoptent. Le bloc 4 de Maxens est abandonné : ses 5 jetons disparaissent.',
-      'C’est l’<strong>attaque des 51 %</strong> : elle ne marche que si on contrôle plus de la moitié de la puissance du réseau. Sur Bitcoin, ça coûterait des milliards en machines et en électricité.',
+      'Dylan a gagné : sa branche est <strong>plus longue</strong>, toutes les îles la suivent. Le bloc 4 de Maxens disparaît : ses 5 jetons aussi.',
+      'C’est l’<strong>attaque des 51 %</strong>. Elle ne marche que si on contrôle plus de la moitié de la puissance. Sur Bitcoin, ça coûterait des milliards.',
     ],
     button: ['Lancer la course', 'Rejouer la course'],
     enVrai:
-      'Sur Bitcoin, on considère qu’une transaction est sûre après environ <strong>6 confirmations</strong>, soit une heure. Ici, la course montre la vitesse <strong>moyenne</strong> de chaque camp ; en vrai, le minage est un tirage au sort, et un tricheur minoritaire peut avoir de la chance sur un ou deux blocs : c’est pour ça qu’on attend plusieurs confirmations. L’attaque des 51 % est déjà arrivée sur de petites blockchains peu protégées, comme Ethereum Classic en 2019 et 2020.',
+      'Sur Bitcoin, on considère une transaction sûre après environ <strong>6 confirmations</strong>, soit une heure. Ici, la course montre la vitesse moyenne de chaque camp. En vrai, le minage est un tirage au sort : un tricheur peut avoir de la chance sur un bloc ou deux. C’est pour ça qu’on attend plusieurs confirmations. L’attaque des 51 % est déjà arrivée sur de petites blockchains, comme Ethereum Classic en 2019 et 2020.',
     camera: { position: [0.3, 7, 8.8], target: [0.3, -0.2, 0] },
     focus: null,
     race: true,
+  },
+  {
+    id: 'ensemble',
+    step: 'Vue d’ensemble',
+    title: 'Tout l’archipel',
+    text: [
+      'Voilà tout le chemin parcouru. La <strong>chaîne de coffres</strong> qu’on a ouverte est sur l’île de Dylan, et chaque île de l’<strong>archipel</strong> en garde la même copie.',
+      'Une blockchain, c’est ça : un cahier de comptes recopié partout, où chaque page est scellée à la précédente.',
+      'Tu peux tourner autour de la scène pour tout revoir.',
+    ],
+    enVrai:
+      'Bitcoin compte des dizaines de milliers d’« îles » (des nœuds) réparties dans le monde, qui gardent toutes la même chaîne de plus de 900 000 blocs.',
+    camera: { position: [-46, 92, 76], target: [0, 0, 4] },
+    focus: null,
+    overview: true,
   },
 ];
