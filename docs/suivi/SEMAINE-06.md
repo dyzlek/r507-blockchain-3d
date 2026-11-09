@@ -24,7 +24,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 |:---|:---|:---|:---|
 | #15 Une seule scène : la chaîne de coffres est posée sur l'île de Dylan, une île de l'archipel comme les autres (archipel agrandi ×14, copies de la chaîne à la taille réelle sur chaque île) | 4, 7 | Fonctionnel | `src/archipel.js`, `src/main.js` (PR de la semaine) |
 | #15 Au départ on ne voit que l'île de Dylan ; au dézoom (notion 3 → 4), la caméra traverse une couche de nuages et découvre les 6 autres îles en sortant ; même chose au retour (notion 4 → 5) | 4 | Fonctionnel | `src/nuages.js`, `src/main.js` (`CLOUDS`, brume `scene.fog`) |
-| #15 Nuages en volume (boules de papier mâché) au lieu de disques plats, dessinés en 2 appels (InstancedMesh) ; scène préparée au chargement (`compileAsync`) pour supprimer la saccade de la première traversée | 4 | En cours | Build OK ; fluidité non mesurée dans le panneau de prévisualisation |
+| #15 Nuages en volume (boules de papier mâché) au lieu de disques plats, dessinés en 2 appels (InstancedMesh) ; scène préparée au chargement (`compileAsync`) pour supprimer la saccade de la première traversée | 4 | Fonctionnel | Parcours testé sur une petite configuration le 09/11 par Dylan : fluide (#19) |
 | #15 Traits sombres dans les nuages : brume appliquée aux pointillés des routes, biais d'ombre adapté au recul de la caméra | 4 | En cours | Cause supposée, à confirmer à l'écran |
 | #16 Décors des îles : repère par île (cabane, arbre, phare), palmiers et buissons, plantés dans le sol (motte au pied) et relevés à l'arrivée sur l'archipel | 4 | Fonctionnel | `src/archipel.js` (`decorFor`), `src/papier.js` (`createCutout`) |
 | #16 Mer agrandie (60 × 50) : son bord ne se voit plus en vue d'ensemble ; bateau en papier mâché qui fait le tour de l'archipel sans traverser d'île | 4 | En cours | `src/bateau.js` ; trajet calculé à ≥ 0,6 rayon d'île des rivages |
@@ -34,7 +34,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 ### 1.2 Prévu mais non réalisé
 | Tâche | Cause | Report |
 |:---|:---|:---|
-| Vérification visuelle et mesure des FPS de la traversée des nuages (#19) | Panneau de prévisualisation caché pendant les modifications | À faire sur un poste de TP |
+| Mesure chiffrée des FPS sur un poste de TP (#19) | Test fait sur petite configuration (fluide, validé par Dylan le 09/11), sans relevé chiffré | Relevé du compteur d'images/s sur un poste de TP |
 | Session 2 de tests utilisateurs (#18) | Corrections de la session 1 en cours | Semaine 7 |
 
 ### 1.3 État des 7 notions
