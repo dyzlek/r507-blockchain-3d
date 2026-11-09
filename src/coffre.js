@@ -45,11 +45,67 @@ export function setLeaderResolution(width, height) {
   leaderMaterials.forEach((material) => material.resolution.set(width, height));
 }
 
+// Flèche imprimée au pochoir sur le couvercle, comme sur un carton de déménagement : elle montre le sens
+// de la chaîne (du bloc le plus ancien vers le plus récent, vers +x). Une seule texture pour tous les coffres.
+let arrowStencil = null;
+function arrowStencilTexture() {
+  if (arrowStencil) return arrowStencil;
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 128;
+  const g = canvas.getContext('2d');
+  g.fillStyle = 'rgba(74, 52, 32, 0.82)';
+  // Corps de la flèche en trois tirets (les ponts du pochoir), puis la pointe.
+  [[20, 62], [72, 114], [124, 160]].forEach(([from, to]) => g.fillRect(from, 50, to - from, 28));
+  g.beginPath();
+  g.moveTo(168, 18);
+  g.lineTo(240, 64);
+  g.lineTo(168, 110);
+  g.closePath();
+  g.fill();
+  // Encre un peu irrégulière : on gratte quelques points au hasard.
+  g.globalCompositeOperation = 'destination-out';
+  for (let i = 0; i < 260; i++) {
+    g.fillStyle = `rgba(0, 0, 0, ${Math.random() * 0.5})`;
+    g.fillRect(Math.random() * 256, Math.random() * 128, 1 + Math.random() * 3, 1 + Math.random() * 3);
+  }
+  arrowStencil = new THREE.CanvasTexture(canvas);
+  arrowStencil.colorSpace = THREE.SRGBColorSpace;
+  arrowStencil.anisotropy = 4;
+  return arrowStencil;
+}
+const lidArrowGeometry = new THREE.PlaneGeometry(1.0, 0.5);
+
 // Le sceau est un coup de tampon encreur, tiré du vrai hash (voir papier.js).
 export const sealTexture = stampTexture;
 
 const stampMaterial = (hash) =>
   new THREE.MeshStandardMaterial({ map: stampTexture(hash), transparent: true, roughness: 0.95, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+
+// Lueur de la lampe : un halo rond qui s'efface sur les bords, créé une fois pour tous les coffres.
+let lampLightTextures = null;
+function lampLight() {
+  if (lampLightTextures) return lampLightTextures;
+  const make = (width, height, paint) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    paint(canvas.getContext('2d'), width, height);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+  };
+  const halo = make(128, 128, (g, width, height) => {
+    const radial = g.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width / 2);
+    radial.addColorStop(0, 'rgba(255, 238, 195, 1)');
+    radial.addColorStop(0.3, 'rgba(255, 214, 140, 0.5)');
+    radial.addColorStop(1, 'rgba(255, 200, 120, 0)');
+    g.fillStyle = radial;
+    g.fillRect(0, 0, width, height);
+  });
+  lampLightTextures = { halo };
+  return lampLightTextures;
+}
 
 function makeLabel(className, html) {
   const el = document.createElement('div');
@@ -83,6 +139,14 @@ export function createCoffre(block) {
   panel(T, h, d, w / 2 - T / 2, 0, 0);
   panel(w, T, d, 0, -h / 2 + T / 2, 0);
   panel(w + 0.08, T * 1.6, d + 0.08, 0, h / 2 + T * 0.8, 0, cardboardDark());
+  const lidArrow = new THREE.Mesh(
+    lidArrowGeometry,
+    new THREE.MeshStandardMaterial({ map: arrowStencilTexture(), transparent: true, roughness: 0.95, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }),
+  );
+  lidArrow.rotation.x = -Math.PI / 2; // à plat sur le couvercle, la pointe vers le coffre suivant (+x)
+  lidArrow.position.set(0, h / 2 + T * 1.6 + 0.002, 0);
+  lidArrow.receiveShadow = true;
+  shell.add(lidArrow);
   const frame = shadowed(new THREE.Mesh(frameGeometry, walls));
   frame.position.z = d / 2 - T;
   shell.add(frame);
@@ -193,14 +257,44 @@ export function createCoffre(block) {
     if (t >= 1.7) stamping = null;
   }
 
-  const plate = makeLabel('plate', `Bloc n°${block.index}`);
+  const plate = makeLabel('plate plate--bloc', `Bloc n°${block.index}`);
   plate.position.set(0, h / 2 + 0.3, 0);
   group.add(plate);
 
-  const hint = makeLabel('hint', 'Clique sur le coffre');
+  const hint = makeLabel('hint', 'Clique pour allumer la lampe');
   hint.position.set(0, -h / 2 - 0.35, 0);
   hint.visible = false;
   group.add(hint);
+
+  // Flèche corail au-dessus du coffre visé, tant qu'on ne l'a pas encore inspecté : « ce coffre-là ».
+  const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.28, 18), new THREE.MeshBasicMaterial({ color: 0xe0684b }));
+  arrow.rotation.x = Math.PI; // la pointe vers le bas
+  arrow.visible = false;
+  group.add(arrow);
+
+  // La lampe du coffre : une petite lampe de bureau posée au fond de la boîte, derrière le calque, entre le rouleau
+  // et la pièce. Éteinte, l'ampoule est grise ; à l'inspection elle s'allume et la fenêtre s'éclaire de l'intérieur.
+  const lamp = new THREE.Group();
+  lamp.position.set(0.42, -h / 2 + T, -0.2);
+  const brass = new THREE.MeshStandardMaterial({ color: COLORS.gold, roughness: 0.5, metalness: 0.3, side: THREE.DoubleSide });
+  const lampBase = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.03, 20), brass));
+  lampBase.position.y = 0.015;
+  const lampArm = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.3, 8), brass));
+  lampArm.position.y = 0.18;
+  const lampShade = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.16, 20, 1, true), brass));
+  lampShade.position.set(0, 0.36, 0);
+  lampShade.rotation.x = -0.6; // l'ouverture regarde la fenêtre du coffre, vers l'avant
+  const bulbOff = new THREE.Color(0x6b5d4a);
+  const bulbOn = new THREE.Color(0xffe2a8);
+  const bulbMaterial = new THREE.MeshBasicMaterial({ color: bulbOff });
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 12), bulbMaterial);
+  bulb.position.set(0, 0.32, 0.03);
+  const light = lampLight();
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: light.halo, blending: THREE.AdditiveBlending, transparent: true, opacity: 0, depthWrite: false }));
+  halo.scale.setScalar(1.3); // la lueur remplit la fenêtre
+  halo.position.copy(bulb.position);
+  lamp.add(lampBase, lampArm, lampShade, bulb, halo);
+  group.add(lamp);
 
   // Étiquettes des champs : un trait épais relie chaque étiquette à une pastille posée sur l'objet.
   // `offset` place la pastille sur la face visible de l'objet.
@@ -321,6 +415,11 @@ export function createCoffre(block) {
       scroll.material.emissive.setRGB(0.25 * reveal, 0.2 * reveal, 0.1 * reveal);
       vellum.material.emissiveIntensity = reveal * 0.35;
       vellum.material.opacity = 0.74 - reveal * 0.44;
+      // L'ampoule et la lueur de la lampe suivent l'allumage.
+      bulbMaterial.color.copy(bulbOff).lerp(bulbOn, reveal);
+      halo.material.opacity = reveal * (0.95 + Math.sin(elapsed * 3) * 0.05);
+      arrow.visible = hint.visible;
+      arrow.position.set(0, h / 2 + 0.8 + Math.sin(elapsed * 4) * 0.07, 0);
       // Coup de tampon : le coffre s'écrase un instant puis reprend sa forme, l'encre s'étale.
       updateStamp(dt, instant);
       stampPop = instant ? 1 : Math.min(1, stampPop + dt * 3.5);

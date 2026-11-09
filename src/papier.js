@@ -386,6 +386,70 @@ const DRAWINGS = {
     g.fillStyle = '#8a5a35';
     g.fillRect(s * 0.46, s * 0.62, s * 0.08, s * 0.3);
   },
+  palm(g, s, outline) {
+    // Tronc courbé, puis cinq palmes en amande autour du sommet.
+    const top = [s * 0.56, s * 0.3];
+    const leaves = [-2.7, -2.1, -1.4, -0.7, -0.15];
+    const trunk = () => {
+      g.beginPath();
+      g.moveTo(s * 0.44, s * 0.94);
+      g.quadraticCurveTo(s * 0.4, s * 0.55, top[0] - s * 0.03, top[1]);
+      g.lineTo(top[0] + s * 0.03, top[1]);
+      g.quadraticCurveTo(s * 0.48, s * 0.56, s * 0.52, s * 0.94);
+      g.closePath();
+    };
+    const leaf = (a) => {
+      const tip = [top[0] + Math.cos(a) * s * 0.3, top[1] + Math.sin(a) * s * 0.22 + s * 0.08];
+      g.beginPath();
+      g.moveTo(top[0], top[1]);
+      g.quadraticCurveTo(top[0] + Math.cos(a - 0.5) * s * 0.2, top[1] + Math.sin(a - 0.5) * s * 0.2, tip[0], tip[1]);
+      g.quadraticCurveTo(top[0] + Math.cos(a + 0.4) * s * 0.12, top[1] + Math.sin(a + 0.4) * s * 0.12, top[0], top[1]);
+    };
+    if (outline) {
+      trunk();
+      g.stroke();
+      leaves.forEach((a) => (leaf(a), g.stroke()));
+      return;
+    }
+    g.fillStyle = '#9a6a40';
+    trunk();
+    g.fill();
+    g.strokeStyle = '#7d5230';
+    g.lineWidth = 3;
+    for (let y = 0.45; y < 0.92; y += 0.08) {
+      g.beginPath();
+      g.moveTo(s * 0.43, s * y);
+      g.lineTo(s * 0.5, s * (y - 0.015));
+      g.stroke();
+    }
+    leaves.forEach((a, i) => {
+      g.fillStyle = i % 2 ? '#6f9a52' : '#83b062';
+      leaf(a);
+      g.fill();
+    });
+  },
+  bush(g, s, outline) {
+    const blobs = [[0.32, 0.72, 0.17], [0.5, 0.64, 0.21], [0.68, 0.73, 0.16], [0.42, 0.8, 0.15], [0.6, 0.82, 0.14]];
+    g.beginPath();
+    blobs.forEach(([x, y, r]) => {
+      g.moveTo(s * (x + r), s * y);
+      g.arc(s * x, s * y, s * r, 0, Math.PI * 2);
+    });
+    if (outline) return g.stroke();
+    g.fillStyle = '#79a65a';
+    g.fill();
+    g.fillStyle = '#93bd70';
+    g.beginPath();
+    g.arc(s * 0.46, s * 0.58, s * 0.09, 0, Math.PI * 2);
+    g.arc(s * 0.66, s * 0.68, s * 0.06, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#e0684b'; // quelques fleurs corail
+    [[0.36, 0.7], [0.56, 0.76], [0.7, 0.66]].forEach(([x, y]) => {
+      g.beginPath();
+      g.arc(s * x, s * y, s * 0.018, 0, Math.PI * 2);
+      g.fill();
+    });
+  },
   hut(g, s, outline) {
     g.beginPath();
     g.moveTo(s * 0.2, s * 0.5);
@@ -414,12 +478,22 @@ const DRAWINGS = {
 };
 
 // Une découpe qui se relève, articulée sur son bord bas (rotation.x : -π/2 à plat, 0 debout).
+const footGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+const footMaterial = new THREE.MeshStandardMaterial({ color: 0x6a9150, roughness: 0.95 });
 export function createCutout(kind, size) {
   const hinge = new THREE.Group();
   const card = new THREE.Mesh(new THREE.PlaneGeometry(size, size), cutoutMaterial(kind).clone());
-  card.position.y = size / 2;
+  // Le dessin s'arrête un peu avant le bas de l'image (marge du contour) : on enfonce la carte d'autant, pour que
+  // le pied du palmier, de la cabane ou du phare touche le sol au lieu de flotter.
+  card.position.y = size / 2 - size * 0.06;
   card.castShadow = true;
   hinge.add(card);
+  // Une petite motte de terre et d'herbe en papier au pied : la découpe a l'air plantée, pas posée.
+  const foot = new THREE.Mesh(footGeometry, footMaterial);
+  foot.scale.set(size * 0.22, size * 0.05, size * 0.12);
+  foot.castShadow = true;
+  foot.receiveShadow = true;
+  hinge.add(foot);
   return { hinge, card };
 }
 

@@ -616,3 +616,19 @@ summary:focus-visible {
     transition: none;
   }
 }
+
+/* Vue de l'archipel : les plaques des coffres s'effacent, seuls les noms des îles restent. */
+.plate--bloc {
+  transition: opacity 0.5s;
+}
+.is-far .plate--bloc {
+  opacity: 0;
+}
+
+/* Traversée des nuages : les étiquettes s'effacent, puis reviennent à l'arrivée. */
+.labels {
+  transition: opacity 0.6s;
+}
+.is-transit .labels {
+  opacity: 0;
+}

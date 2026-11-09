@@ -5,11 +5,12 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { buildChain, shortHash, sha256, blockContent, DIFFICULTY } from './chain.js';
 import { createCoffre, COFFRE_SIZE, setLeaderResolution } from './coffre.js';
 import { SEQUENCES } from './sequences.js';
-import { createArchipel, setRouteResolution, SENDER } from './archipel.js';
+import { createArchipel, setRouteResolution, SENDER, ISLANDS, ARCHIPEL_SCALE, CHAIN_SPACING, CHAIN_SPOT, TOP_Y } from './archipel.js';
 import { createMiner, DIFFICULTIES } from './minage.js';
 import { createConsensus, METHODS } from './consensus.js';
 import { createRace, ATTACKS } from './race.js';
 import { createRope } from './papier.js';
+import { createNuages } from './nuages.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -34,7 +35,7 @@ const scene = new THREE.Scene();
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.5;
 
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
 camera.position.set(0.5, 3.4, 11);
 
 // Caméra mixte : chaque séquence impose un point de vue, l'utilisateur peut ensuite tourner autour.
@@ -54,25 +55,50 @@ light.castShadow = true;
 light.shadow.mapSize.set(2048, 2048);
 light.shadow.radius = 8;
 light.shadow.bias = -0.0005;
-// Le cadre des ombres va jusqu'à la course de la notion 7, à droite de la chaîne.
-Object.assign(light.shadow.camera, { left: -8, right: 16, top: 6, bottom: -5, near: 1, far: 34 });
-scene.add(light);
+scene.add(light, light.target);
+// Le cadre des ombres suit ce que regarde la caméra, et grandit quand elle recule : ombres fines sur les coffres,
+// et tout l'archipel ombré quand on le voit en entier.
+const LIGHT_DIRECTION = new THREE.Vector3(-5, 9, 6).normalize();
+function fitShadows() {
+  const size = THREE.MathUtils.clamp(camera.position.distanceTo(controls.target) * 0.9, 12, 170);
+  light.target.position.copy(controls.target);
+  light.position.copy(controls.target).addScaledVector(LIGHT_DIRECTION, size * 1.5);
+  const box = light.shadow.camera;
+  if (box.right === size) return;
+  // Biais proportionnel à la taille d'un texel : sans lui, des rayures sombres (acné d'ombre) zèbrent la scène
+  // quand le cadre grandit pendant le trajet vers l'archipel.
+  light.shadow.normalBias = (size / 2048) * 3;
+  Object.assign(box, { left: -size, right: size, top: size, bottom: -size, near: 0.5, far: size * 3.5 });
+  box.updateProjectionMatrix();
+}
 
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.22, color: 0x5a3e22 }));
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.22, color: 0x5a3e22 }));
 ground.rotation.x = -Math.PI / 2;
-ground.position.y = -COFFRE_SIZE.h / 2;
+ground.position.y = -COFFRE_SIZE.h / 2 - 7; // sous la mer et les îles, qui reçoivent elles-mêmes les ombres
 ground.receiveShadow = true;
 scene.add(ground);
 
 // --- Chaîne de coffres ---
-const SPACING = 2.8;
+const SPACING = CHAIN_SPACING;
 const coffres = [];
 const links = []; // une corde par lien, qu'on peut couper quand un bloc est falsifié
 const LINK_COLOR = 0xe0684b;
 const BROKEN_COLOR = 0xb3261e;
 
-// L'archipel (notion 4) est construit à l'écart de la chaîne : la caméra s'y rend.
-const ARCHIPEL_POSITION = new THREE.Vector3(0, 0, -22);
+// La chaîne est posée sur l'île de Dylan, une île de l'archipel comme les autres. L'archipel est agrandi
+// (ARCHIPEL_SCALE) et placé pour que la chaîne (centrée en x = 0, z = 0) tombe à sa place sur cette île, et que
+// le dessus des îles soit sous les coffres. Pour passer de la chaîne au réseau, la caméra n'a qu'à reculer.
+const DYLAN_AT = ISLANDS[SENDER].at;
+const ARCHIPEL_POSITION = new THREE.Vector3(
+  -ARCHIPEL_SCALE * (DYLAN_AT[0] + CHAIN_SPOT[0]),
+  -COFFRE_SIZE.h / 2 - ARCHIPEL_SCALE * TOP_Y,
+  -ARCHIPEL_SCALE * (DYLAN_AT[1] + CHAIN_SPOT[1]),
+);
+// Le milieu de l'archipel (entre l'île de Dylan, devant, et celle de Maxens, au fond) : la caméra le vise
+// quand on regarde tout le réseau.
+const zs = ISLANDS.map(({ at }) => at[1]);
+const ARCHIPEL_CENTER = ARCHIPEL_POSITION.clone().add(new THREE.Vector3(0, -ARCHIPEL_POSITION.y - COFFRE_SIZE.h / 2, ((Math.max(...zs) + Math.min(...zs)) / 2) * ARCHIPEL_SCALE));
+let nuages = null;
 let archipel = null;
 
 // Le coffre à miner (notion 5) : la transaction de Dylan, accrochée au bout de la chaîne, mais pas encore scellée.
@@ -120,7 +146,8 @@ async function buildScene() {
     if (SEQUENCES[current].network) renderText();
   };
   scene.add(archipel.group);
-  addPop('archipel', [archipel.group], { toward: true });
+  nuages = createNuages();
+  scene.add(nuages.group);
   addPop('newCoffre', [newCoffre.group, link]);
 
   consensus = createConsensus();
@@ -170,49 +197,111 @@ function updatePops(dt) {
 
 // --- Transitions de caméra ---
 let visibleAspect = camera.aspect; // proportions de la zone non couverte par le panneau
-const tween = { active: false, t: 0, duration: 1.4, fromPos: new THREE.Vector3(), toPos: new THREE.Vector3(), fromTarget: new THREE.Vector3(), toTarget: new THREE.Vector3() };
+const tween = { active: false, t: 0, duration: 1.4, maxDistance: 18, fromPos: new THREE.Vector3(), toPos: new THREE.Vector3(), fromTarget: new THREE.Vector3(), toTarget: new THREE.Vector3() };
 const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
 function cameraGoal(sequence) {
   const anchorIndex = sequence.cameraOn ?? sequence.focus;
   let origin = anchorIndex === null ? new THREE.Vector3() : coffres[anchorIndex].group.position.clone();
-  if (onArchipel(sequence)) origin = ARCHIPEL_POSITION.clone();
+  if (onArchipel(sequence) || sequence.overview) origin = ARCHIPEL_CENTER.clone();
   if (sequence.race) origin = race.center.clone();
   const target = origin.clone().add(new THREE.Vector3(...sequence.camera.target));
   const offset = new THREE.Vector3(...sequence.camera.position).sub(new THREE.Vector3(...sequence.camera.target));
   // Écran étroit (téléphone) : on recule pour garder les étiquettes dans le cadre.
   offset.multiplyScalar(Math.max(1, (window.innerWidth > 760 ? 1.35 : 2) / (visibleAspect || 1)));
   // L'archipel est plus large que la chaîne : en écran étroit, on recule encore pour voir Dylan et Maxens.
-  if ((onArchipel(sequence) || sequence.race) && window.innerWidth <= 760) offset.multiplyScalar(1.4);
+  if ((onArchipel(sequence) || sequence.race || sequence.overview) && window.innerWidth <= 760) offset.multiplyScalar(1.4);
   return { position: target.clone().add(offset), target };
+}
+
+// Depuis la chaîne, on ne voit que l'île de Dylan. Quand la caméra recule vers tout l'archipel (ou revient),
+// elle traverse des nuages, en trois temps : elle y monte vite, passe environ 1 s dedans (des nuages en papier
+// défilent tout autour d'elle, et une brume couleur papier efface tout le reste), puis en sort vite. C'est pendant cette seconde que les autres îles apparaissent (ou disparaissent) :
+// on les découvre en sortant des nuages.
+const CLOUDS = { rise: 0.6, hold: 1, exit: 0.7 }; // secondes
+const CLOUD_PATH = [0.36, 0.6]; // part du trajet faite à l'entrée et à la sortie des nuages
+const smoothstep = (a, b, x) => {
+  const t = THREE.MathUtils.clamp((x - a) / (b - a), 0, 1);
+  return t * t * (3 - 2 * t);
+};
+// La brume des nuages : sans effet hors traversée (elle commence au-delà de ce que montre la caméra).
+const FOG_CLEAR = [400, 800];
+const FOG_THICK = [4, 46];
+scene.fog = new THREE.Fog(0xddd0b8, ...FOG_CLEAR); // plus sombre que les nuages, pour qu'ils se détachent
+function setCloudiness(c) {
+  scene.fog.near = THREE.MathUtils.lerp(FOG_CLEAR[0], FOG_THICK[0], c);
+  scene.fog.far = THREE.MathUtils.lerp(FOG_CLEAR[1], FOG_THICK[1], c);
+  nuages.setThickness(c);
+}
+let cloudTransit = false;
+let wasFar = null;
+let pendingFar = null; // l'état à appliquer au milieu du trajet
+const isFar = (sequence) => onArchipel(sequence) || Boolean(sequence.overview);
+function applyFar(far) {
+  archipel.setOthersVisible(far);
+  archipel.setOpen(far);
+  archipel.setLabels(far);
+  pendingFar = null;
 }
 
 function moveCamera(sequence) {
   // L'archipel est plus large que la chaîne : on autorise à reculer davantage.
-  controls.maxDistance = onArchipel(sequence) || sequence.race ? 32 : 18;
+  const far = isFar(sequence);
+  // Appliquée à la fin du trajet : avant, OrbitControls ramènerait la caméra en cours de route (au retour de
+  // l'archipel, elle sauterait d'un coup près de la chaîne au lieu de redescendre à travers les nuages).
+  tween.maxDistance = far ? 280 : sequence.race ? 32 : 18;
+  controls.maxDistance = Math.max(controls.maxDistance, tween.maxDistance);
   const goal = cameraGoal(sequence);
+  cloudTransit = wasFar !== null && far !== wasFar;
+  wasFar = far;
+  if (reducedMotion || !cloudTransit) applyFar(far);
+  else pendingFar = far;
   if (reducedMotion) {
     camera.position.copy(goal.position);
     controls.target.copy(goal.target);
+    controls.maxDistance = tween.maxDistance;
+    cloudTransit = false;
     return;
   }
   tween.fromPos.copy(camera.position);
   tween.fromTarget.copy(controls.target);
   tween.toPos.copy(goal.position);
   tween.toTarget.copy(goal.target);
+  // Trajets courts et vifs ; la traversée des nuages a sa propre durée (montée, pause dedans, sortie).
+  tween.duration = cloudTransit
+    ? CLOUDS.rise + CLOUDS.hold + CLOUDS.exit
+    : THREE.MathUtils.clamp(0.3 + tween.fromPos.distanceTo(tween.toPos) * 0.05, 0.8, 1.8);
+  // Dans les nuages, ils s'éloignent quand on dézoome vers l'archipel, et arrivent sur nous quand on revient.
+  if (cloudTransit) nuages.setFlight(far ? 1 : -1);
   tween.t = 0;
   tween.active = true;
   controls.enabled = false;
+  // Dans les nuages, les étiquettes (HTML, par-dessus la 3D) se cachent : elles reviennent à l'arrivée.
+  document.body.classList.toggle('is-transit', cloudTransit);
 }
 
 function updateTween(dt) {
   if (!tween.active) return;
   tween.t = Math.min(1, tween.t + dt / tween.duration);
-  const k = easeInOut(tween.t);
+  let k = easeInOut(tween.t);
+  if (cloudTransit) {
+    const { rise, hold, exit } = CLOUDS;
+    const s = tween.t * tween.duration;
+    const [enter, leave] = CLOUD_PATH;
+    if (s < rise) k = enter * (s / rise) ** 2; // on accélère vers les nuages
+    else if (s < rise + hold) k = enter + (leave - enter) * ((s - rise) / hold); // dedans, on file à travers les nappes
+    else k = leave + (1 - leave) * (1 - (1 - (s - rise - hold) / exit) ** 2); // on freine en sortant
+    setCloudiness(smoothstep(rise - 0.25, rise, s) * (1 - smoothstep(rise + hold, rise + hold + 0.3, s)));
+    if (pendingFar !== null && s >= rise + hold / 2) applyFar(pendingFar);
+  }
   camera.position.lerpVectors(tween.fromPos, tween.toPos, k);
   controls.target.lerpVectors(tween.fromTarget, tween.toTarget, k);
   if (tween.t === 1) {
+    if (pendingFar !== null) applyFar(pendingFar);
+    setCloudiness(0);
+    controls.maxDistance = tween.maxDistance;
     tween.active = false;
+    document.body.classList.remove('is-transit');
     controls.enabled = true;
   }
 }
@@ -381,8 +470,9 @@ function goTo(index) {
   tampered = null;
   archipel.reset();
   archipel.setHint(null);
-  showing.archipel = onArchipel(sequence);
-  archipel.setOpen(showing.archipel);
+  showing.archipel = onArchipel(sequence) || Boolean(sequence.overview); // décors, liaisons et noms des îles
+  // Vu de loin, les plaques « Bloc n° » des coffres se chevauchent : on ne garde que les noms des îles.
+  document.body.classList.toggle('is-far', showing.archipel);
   showing.newCoffre = Boolean(sequence.mining || sequence.race);
   showing.race = Boolean(sequence.race);
   // Machines et jetons de la notion 6 : seulement sur l'archipel de cette notion, pas à la notion 4.
@@ -396,7 +486,7 @@ function goTo(index) {
   if (sequence.race) race.prepare();
   else race.reset();
 
-  ui.stepNumber.textContent = String(sequence.notion ?? 0);
+  ui.stepNumber.textContent = sequence.overview ? '✓' : String(sequence.notion ?? 0);
   ui.nav.style.setProperty('--progress', String(current / (SEQUENCES.length - 1)));
   ui.step.textContent = sequence.step;
   ui.title.textContent = sequence.title;
@@ -561,7 +651,7 @@ async function toggleInspect() {
 
 // Barre de progression : un point par séquence, numéroté comme la notion (0 = introduction).
 ui.dots.innerHTML = SEQUENCES.map(
-  (s, i) => `<li><button type="button" title="${s.step}" aria-label="${s.step} : ${s.title}">${s.notion ?? 0}</button></li>`,
+  (s, i) => `<li><button type="button" title="${s.step}" aria-label="${s.step} : ${s.title}">${s.overview ? '✓' : s.notion ?? 0}</button></li>`,
 ).join('');
 [...ui.dots.querySelectorAll('button')].forEach((button, i) => button.addEventListener('click', () => goTo(i)));
 ui.prev.addEventListener('click', () => goTo(current - 1));
@@ -667,24 +757,38 @@ await document.fonts.ready; // les sceaux sont dessinés avec la police mono
 await buildScene();
 setLeaderResolution(window.innerWidth, window.innerHeight);
 setRouteResolution(window.innerWidth, window.innerHeight);
+// Préchauffage : on compile les shaders et on envoie les textures des îles et des nuages au GPU dès le
+// chargement. Sinon, la première traversée vers l'archipel (notions 3 → 4 → 5) saccade le temps de les préparer.
+archipel.setOthersVisible(true);
+archipel.setLabels(true);
+consensus.group.visible = true;
+nuages.setThickness(1);
+nuages.update(camera, 0, 0, true, true);
+await renderer.compileAsync(scene, camera);
+renderer.render(scene, camera);
+nuages.setThickness(0);
+nuages.update(camera, 0, 0, false, true);
 // ?etape=2 ouvre directement la 2e séquence (tests utilisateurs, soutenance).
 goTo(Number(new URLSearchParams(location.search).get('etape') ?? 1) - 1 || 0);
 
-renderer.setAnimationLoop((time) => {
+function frame(time) {
   timer.update(time);
-  const dt = Math.min(timer.getDelta(), 0.1);
+  const dt = THREE.MathUtils.clamp(timer.getDelta(), 0, 0.1);
   updateTween(dt);
   updatePops(dt);
   coffres.forEach((c) => c.update(dt, timer.getElapsed(), reducedMotion));
   archipel.update(dt, timer.getElapsed(), reducedMotion);
+  nuages.update(camera, dt, timer.getElapsed(), cloudTransit && tween.active, reducedMotion);
   links.forEach((link) => link?.update(dt, reducedMotion));
   miner.update(dt);
   consensus.update(dt, timer.getElapsed(), reducedMotion);
   race.update(dt, timer.getElapsed(), reducedMotion);
   controls.update();
+  fitShadows();
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
-});
+}
+renderer.setAnimationLoop(frame);
 
 // Accès pour le débogage dans la console.
 window.app = { scene, camera, controls, coffres, archipel, miner, consensus, race, goTo };
