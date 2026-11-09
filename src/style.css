@@ -82,7 +82,8 @@ body {
   rotate: -2deg;
 }
 
-.plate.is-broken {
+.plate.is-broken,
+.plate.is-rejected {
   border-color: var(--broken);
   color: var(--broken);
   font-weight: 700;

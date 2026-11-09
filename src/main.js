@@ -325,6 +325,7 @@ const ui = {
 
 let current = 0;
 let linked = false; // séquences à `chain` : sceaux comparés (ou bloc falsifié)
+let forgedChoice = false; // notion 4 : Dylan envoie le bloc 1 falsifié plutôt que sa transaction
 let tampered = null; // { index, data, hash } quand le bloc est falsifié
 const focused = () => (SEQUENCES[current].focus === null ? null : coffres[SEQUENCES[current].focus]);
 
@@ -386,12 +387,13 @@ function renderText() {
   }
   const coffre = focused();
   const open = sequence.chain || sequence.network ? linked : coffre?.inspected;
-  const paragraphs = open && sequence.textInspected ? sequence.textInspected : sequence.text;
+  const forgedSent = sequence.network && linked && archipel.summary().forged;
+  const paragraphs = forgedSent ? sequence.textForged : open && sequence.textInspected ? sequence.textInspected : sequence.text;
   ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
 
   ui.inspect.hidden = !coffre && !sequence.chain && !sequence.network;
   const [labelOff, labelOn] = sequence.button ?? ['Allumer la lampe du coffre', 'Éteindre la lampe'];
-  ui.inspect.textContent = open ? labelOn : labelOff;
+  ui.inspect.textContent = sequence.network && forgedChoice ? sequence.buttonForged : open ? labelOn : labelOff;
   // Sur l'archipel, le bouton (r)envoie la transaction : ce n'est pas un interrupteur.
   if (sequence.network) ui.inspect.removeAttribute('aria-pressed');
   else ui.inspect.setAttribute('aria-pressed', String(Boolean(open)));
@@ -411,19 +413,30 @@ function renderText() {
       .map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`)
       .join('');
   } else if (sequence.network && linked) {
-    const { running, total, received, offline, unreached, bobReceived, islands } = archipel.summary();
+    const { running, total, received, offline, unreached, bobReceived, islands, forged, rejected } = archipel.summary();
+    const what = [['0', 'Sa transaction'], ['1', 'Bloc 1 falsifié']]
+      .map(([v, label]) => `<button type="button" data-forged="${v}" aria-pressed="${forgedChoice === (v === '1')}">${label}</button>`)
+      .join('');
     // Même geste que le clic sur une île, pour le clavier et les lecteurs d'écran.
     const switches = islands
       .map(({ name, offline: off }, i) => (i === SENDER ? '' : `<button type="button" data-island="${i}" aria-pressed="${off}">${name}</button>`))
       .join('');
-    const rows = [
+    const rows = forged
+      ? [
+          ['Ce que Dylan envoie', `<div class="choices">${what}</div>`],
+          ['Ont refusé le bloc', rejected.length ? `${rejected.join(', ')} : leur copie du bloc 1 a un autre sceau` : running ? 'en route…' : 'personne (aucune voisine allumée)'],
+          ['Maxens', running ? 'attend encore' : 'n’a rien reçu : le faux bloc s’arrête aux premières îles'],
+          ['Île centrale', 'aucune : chaque île vérifie elle-même'],
+        ]
+      : [
+      ['Ce que Dylan envoie', `<div class="choices">${what}</div>`],
       ['Ont reçu la transaction', `${received.length} île${received.length > 1 ? 's' : ''} sur ${total}${running ? ', et ça continue…' : ''}`],
       ['Maxens', bobReceived ? 'a reçu la transaction' : running ? 'attend encore' : 'pas joint'],
       ['Îles éteintes', offline.length ? offline.join(', ') : 'aucune'],
       ['Éteindre une île', `<div class="choices">${switches}</div>`],
     ];
-    if (!running && unreached.length) rows.push(['Pas jointes', `${unreached.join(', ')} : plus aucun chemin allumé ne mène jusqu’à elles`]);
-    rows.push(['Île centrale', 'aucune : chaque île vérifie et fait suivre']);
+    if (!forged && !running && unreached.length) rows.push(['Pas jointes', `${unreached.join(', ')} : plus aucun chemin allumé ne mène jusqu’à elles`]);
+    if (!forged) rows.push(['Île centrale', 'aucune : chaque île vérifie et fait suivre']);
     ui.fields.innerHTML = rows.map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`).join('');
   } else if (sequence.chain && linked) {
     ui.fields.innerHTML = sequence.chain
@@ -468,6 +481,7 @@ function goTo(index) {
   });
   linked = false;
   tampered = null;
+  forgedChoice = false;
   archipel.reset();
   archipel.setHint(null);
   showing.archipel = onArchipel(sequence) || Boolean(sequence.overview); // décors, liaisons et noms des îles
@@ -621,7 +635,7 @@ async function toggleInspect() {
   }
   if (sequence.network) {
     linked = true;
-    archipel.send(reducedMotion);
+    archipel.send(reducedMotion, forgedChoice);
     return; // `send` prévient via `onChange`, qui redessine le panneau
   }
   if (sequence.tamper) {
@@ -664,6 +678,12 @@ ui.fields.addEventListener('click', (event) => {
   if (choice) miner.setDifficulty(choice.dataset.difficulty);
   const method = event.target.closest('[data-method]');
   if (method) consensus.setMethod(method.dataset.method);
+  const forged = event.target.closest('[data-forged]');
+  if (forged) {
+    forgedChoice = forged.dataset.forged === '1';
+    renderText();
+    ui.fields.querySelector(`[data-forged="${forged.dataset.forged}"]`)?.focus();
+  }
   const attack = event.target.closest('[data-attack]');
   if (attack) race.setPower(Number(attack.dataset.attack));
   const island = event.target.closest('[data-island]');
