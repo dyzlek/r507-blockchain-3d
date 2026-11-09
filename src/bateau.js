@@ -153,7 +153,7 @@ export function createBateau(seaY, path) {
       if (dropClock > 0.25 || trail[0].y === -99) {
         dropClock = 0;
         trail.pop();
-        trail.unshift(new THREE.Vector3(here.x, seaY - 0.1, here.z));
+        trail.unshift(new THREE.Vector3(here.x, seaY - 0.02, here.z));
       }
       trail.forEach((p, i) => {
         const r = p.y === -99 ? 0 : 0.07 * (1 - i / WAKE) + 0.015;

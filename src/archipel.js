@@ -156,8 +156,8 @@ export function createArchipel(chain) {
   group.add(sea);
   // Bateaux en papier mâché : un tourne autour de l'île de Dylan (visible dès le début), deux autres font le tour
   // de l'archipel et n'apparaissent qu'au dézoom, avec les autres îles. La mer froissée monte jusqu'à ~0,1
-  // au-dessus de GROUND_Y et la coque descend de 0,16 sous le pont : à + 0,25, seule la quille touche l'eau.
-  const bateaux = Object.values(BOAT_PATHS).map((path) => createBateau(GROUND_Y + 0.25, path));
+  // au-dessus de GROUND_Y et la coque descend de 0,16 sous le pont : à + 0,14, la coque (fermée par le pont) est à moitié dans l'eau.
+  const bateaux = Object.values(BOAT_PATHS).map((path) => createBateau(GROUND_Y + 0.14, path));
   bateaux.forEach((b) => group.add(b.group));
 
   const islands = ISLANDS.map(({ name, at }, index) => {
