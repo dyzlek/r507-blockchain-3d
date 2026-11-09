@@ -15,8 +15,8 @@ export const SEQUENCES = [
     title: 'Une chaîne de coffres en carton',
     text: [
       'Une blockchain, c’est un cahier de comptes. Tout le monde peut le lire, personne ne peut le modifier en douce.',
-      'Chaque <strong>coffre</strong> est un bloc, fermé par un tampon : son <strong>sceau</strong>. Un ruban rouge les relie dans l’ordre.',
-      'On va suivre une transaction : <strong>Dylan envoie 5 jetons à Maxens</strong>. Elle arrivera à la notion 5.',
+      'Chaque <strong>coffre</strong> est un bloc, fermé par un tampon : son <strong>sceau</strong>. Une <strong>corde</strong> les relie dans l’ordre.',
+      'Les <strong>jetons</strong> sont une monnaie. Une <strong>transaction</strong>, c’est un paiement. On va en suivre un : <strong>Dylan paie 5 jetons à Maxens pour son vélo</strong>. Il arrivera dans un coffre à l’étape 5.',
     ],
     enVrai:
       'Les coffres ne sont qu’un dessin. En vrai, ce sont des données sur des ordinateurs. Des milliers d’ordinateurs gardent la même copie. Sur Bitcoin, un nouveau bloc s’ajoute toutes les 10 minutes environ, depuis 2009.',
@@ -33,7 +33,7 @@ export const SEQUENCES = [
       'Sa fenêtre est en <strong>papier calque</strong> : on devine l’intérieur sans l’ouvrir (l’ouvrir casserait le sceau). Allume la <strong>lampe</strong> cachée dans le coffre pour mieux voir.',
     ],
     textInspected: [
-      'Un bloc, c’est 4 choses : la <strong>transaction</strong>, un <strong>nombre</strong> (le nonce), son <strong>sceau</strong>, et le <strong>sceau du coffre d’avant</strong>.',
+      'Un bloc, c’est 4 choses : la <strong>transaction</strong>, un <strong>nombre</strong> (le nonce, la pièce numérotée, qui servira à l’étape 5), son <strong>sceau</strong>, et le <strong>sceau du coffre d’avant</strong>.',
       'Le sceau est un code unique calculé à partir de tout le contenu, un peu comme une empreinte digitale. Change une seule lettre dedans et le sceau devient complètement différent. Sa couleur et son motif viennent de ce code : autre code, autre tampon.',
     ],
     enVrai:
@@ -47,7 +47,7 @@ export const SEQUENCES = [
     step: 'Notion 2 · Chaînage',
     title: 'Chaque coffre garde le sceau du précédent',
     text: [
-      'Regarde le petit sceau dans le coin de chaque coffre : c’est une <strong>copie du sceau du coffre d’avant</strong>.',
+      'Regarde le petit sceau dans le coin de chaque coffre : c’est une <strong>copie du sceau du coffre d’avant</strong>. Chaque coffre a <strong>recopié</strong> le sceau du précédent, comme on recopie le numéro de la page d’avant en haut d’une page.',
       'C’est ça qui forme la <strong>chaîne</strong> : chaque bloc sait quel bloc le précède.',
     ],
     textInspected: [
@@ -73,7 +73,7 @@ export const SEQUENCES = [
     ],
     textInspected: [
       'Le sceau du bloc 1 a complètement changé. Le bloc 2 en gardait une copie : <strong>elles ne correspondent plus</strong>. La chaîne est cassée, et tout le monde le voit.',
-      'Pour cacher la triche, il faudrait refaire le bloc 1, puis le 2, puis le 3, jusqu’au bout. Pas impossible, mais beaucoup trop long.',
+      'Pour cacher la triche, il faudrait refaire le bloc 1, puis le 2, puis le 3, jusqu’au bout. Pas impossible, mais beaucoup trop long : tu verras à l’étape 5 que sceller un seul bloc demande des centaines d’essais.',
       'Et les autres ordinateurs ont leur propre copie : à la notion 4, tu verras qu’ils <strong>refusent</strong> le bloc trafiqué.',
     ],
     button: ['Falsifier le bloc 1', 'Remettre comme avant'],
@@ -92,13 +92,12 @@ export const SEQUENCES = [
     title: 'L’archipel',
     text: [
       'Recule : la chaîne était posée sur <strong>l’île de Dylan</strong>. Et ce n’est qu’une île parmi d’autres.',
-      'Chaque île est un ordinateur. Il a sa propre copie de la chaîne, avec les mêmes sceaux. Personne n’est le chef : <strong>tout le monde</strong> garde le cahier.',
+      'Chaque île est un participant, avec ses ordinateurs. Elle a sa propre copie de la chaîne, avec les mêmes sceaux. Personne n’est le chef : <strong>tout le monde</strong> garde le cahier.',
       'Clique sur l’île de Dylan : sa transaction part et voyage jusqu’à Maxens.',
     ],
     textInspected: [
       'Pas de chef. Chaque île vérifie la transaction, puis la transmet à ses voisines.',
       '<strong>Clique sur une île pour l’éteindre</strong>, puis renvoie la transaction : elle passe par un autre chemin. Aucune île n’est obligatoire.',
-      'La transaction attend au-dessus des îles. Elle n’est pas encore dans un bloc. Le minage la rangera (notion 5).',
       'Et si Dylan envoyait le <strong>bloc trafiqué</strong> de la notion 3 ? Choisis « Bloc 1 falsifié » plus bas, puis envoie-le.',
     ],
     textForged: [
@@ -121,7 +120,8 @@ export const SEQUENCES = [
     title: 'La course au sceau',
     text: [
       'La transaction de Dylan va dans un <strong>nouveau coffre</strong>, au bout de la chaîne. Il manque son sceau.',
-      'La règle : le sceau doit commencer par <strong>00</strong>. On ne peut pas le choisir. On change seulement le <strong>nonce</strong> (la pièce), et on recalcule. Lance le minage !',
+      'La règle : le sceau doit commencer par <strong>00</strong>. On ne peut pas le choisir. On change seulement le <strong>nonce</strong> (le nombre sur la pièce), et on recalcule.',
+      'Pourquoi rendre ça difficile exprès ? Pour qu’un tricheur ne puisse pas refaire les blocs en vitesse (étape 3) : chaque bloc coûte du travail. Lance le minage !',
     ],
     textRunning: [
       'Chaque essai change le nonce, donc le sceau. On ne peut pas deviner : on essaie, encore et encore.',
@@ -144,15 +144,15 @@ export const SEQUENCES = [
     step: 'Notion 6 · Consensus',
     title: 'Qui scelle le bloc ?',
     text: [
-      'Toutes les îles peuvent proposer le prochain bloc. Il en faut <strong>un seul</strong>. Sans chef, comment choisir ?',
-      'Méthode 1, la <strong>course</strong> (preuve de travail) : la première île qui trouve un bon sceau gagne.',
+      'Toutes les îles peuvent proposer le prochain bloc. Il en faut <strong>un seul</strong>. Sans chef, comment se mettre d’accord ? C’est le <strong>consensus</strong>.',
+      'Méthode 1, la <strong>course</strong> (preuve de travail) : la première île qui trouve un bon sceau gagne. Une île peut avoir plusieurs ordinateurs : plus elle en a, plus elle fait d’essais.',
       'Méthode 2, le <strong>tirage au sort</strong> (preuve d’enjeu) : chaque île mise des jetons. Plus elle mise, plus elle a de chances.',
       'Essaie les deux.',
     ],
     textDone: {
       pow: [
         'Une seule île gagne. Les autres ont calculé pour rien : <strong>beaucoup d’électricité perdue</strong>.',
-        'L’île qui a le plus de machines gagne plus souvent. Essaie maintenant le tirage au sort.',
+        'L’île qui a le plus d’ordinateurs gagne plus souvent. Essaie maintenant le tirage au sort.',
         '<strong>À retenir :</strong> la course est très sûre, mais elle consomme beaucoup d’énergie.',
       ],
       pos: [
@@ -177,18 +177,18 @@ export const SEQUENCES = [
     step: 'Notion 7 · Transaction et attaque',
     title: 'La double dépense',
     text: [
-      'La transaction de Dylan est dans le <strong>bloc 4</strong>. Maxens a reçu ses 5 jetons.',
-      'Mais Dylan triche. En secret, il fabrique <strong>un autre bloc 4</strong>, où il garde ses 5 jetons. Il veut payer deux fois avec les mêmes jetons : c’est la <strong>double dépense</strong>.',
-      'Les îles suivent toujours <strong>la chaîne la plus longue</strong>. Pour gagner, Dylan doit aller plus vite que toutes les autres îles réunies. Lance la course.',
+      'Le paiement de Dylan est dans le <strong>bloc 4</strong>. Maxens a reçu ses 5 jetons et a donné <strong>le vélo</strong> à Dylan.',
+      'Mais Dylan triche. En secret, il fabrique <strong>un autre bloc 4</strong> où les 5 jetons lui reviennent. S’il réussit, il garde le vélo <strong>et</strong> ses jetons, qu’il peut dépenser une deuxième fois : c’est la <strong>double dépense</strong>.',
+      'Les îles suivent toujours <strong>la chaîne la plus longue</strong>, car c’est celle qui a demandé le plus de travail. Pour gagner, Dylan doit ajouter des blocs plus vite que toutes les autres îles réunies. Sa <strong>puissance</strong>, c’est le nombre d’ordinateurs qui calculent pour lui. Lance la course.',
     ],
     textRunning: [
       'Les autres îles ajoutent des blocs après celui de Maxens. Dylan, seul, ajoute des blocs à sa chaîne secrète.',
       'Chaque bloc ajouté après celui de Maxens est une <strong>confirmation</strong> : le paiement devient de plus en plus sûr.',
     ],
     textInspected: [
-      'Raté : la chaîne de Dylan est <strong>plus courte</strong>. Les îles l’ignorent. Maxens garde ses jetons.',
+      'Raté : la chaîne de Dylan est <strong>plus courte</strong>. Les îles l’ignorent. Maxens garde ses jetons, Dylan a payé le vélo.',
       'Seul contre tous, Dylan est trop lent. Rejoue plusieurs fois, puis essaie avec <strong>60 %</strong> de la puissance.',
-      '<strong>À retenir :</strong> la double dépense, c’est payer deux fois avec les mêmes jetons. Avec moins de la moitié de la puissance, le tricheur perd presque toujours.',
+      '<strong>À retenir :</strong> la double dépense, c’est payer avec des jetons puis les récupérer pour les dépenser encore. Avec moins de la moitié de la puissance, le tricheur perd presque toujours.',
     ],
     // Ajouté après le premier paragraphe quand le hasard contredit la règle.
     textLucky:
@@ -196,7 +196,7 @@ export const SEQUENCES = [
     textUnlucky:
       'Pas de chance pour Dylan : même avec 60 %, il a perdu cette course. Mais rejoue : il gagne environ 2 fois sur 3, et sur une longue course presque toujours. C’est l’<strong>attaque des 51 %</strong>.',
     textAttack: [
-      'Dylan a gagné : sa chaîne est <strong>plus longue</strong>, les îles la suivent. Le bloc de Maxens disparaît, et ses 5 jetons avec.',
+      'Dylan a gagné : sa chaîne est <strong>plus longue</strong>, les îles la suivent. Le bloc de Maxens disparaît, et ses 5 jetons avec. Maxens a perdu son vélo pour rien.',
       '<strong>À retenir :</strong> pour tricher à coup sûr, il faut plus de la moitié de la puissance du réseau. C’est l’<strong>attaque des 51 %</strong>. Sur Bitcoin, ça coûterait des milliards.',
     ],
     button: ['Lancer la course', 'Rejouer la course'],
