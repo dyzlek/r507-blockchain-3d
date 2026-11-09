@@ -485,6 +485,8 @@ function goTo(index) {
   // Après `miner.reset`, qui retire le sceau du bloc 4 : la notion 7 l'affiche scellé.
   if (sequence.race) race.prepare();
   else race.reset();
+  // `race.reset` remet la plaque « Bloc n°4 · scellé » de la notion 7 : à la notion 5, le bloc n'est pas encore miné.
+  if (sequence.mining) showMining();
 
   ui.stepNumber.textContent = sequence.overview ? '✓' : String(sequence.notion ?? 0);
   ui.nav.style.setProperty('--progress', String(current / (SEQUENCES.length - 1)));
@@ -519,7 +521,7 @@ function renderMining(sequence) {
   ui.fields.hidden = false; // la difficulté se choisit avant de lancer
   renderMiningFields();
   coffres.forEach((c) => {
-    c.setHint(c === newCoffre && state === 'idle');
+    c.setHint(c === newCoffre && state === 'idle', 'Clique pour lancer le minage');
     if (c !== newCoffre) c.setGlow(false);
   });
 }
