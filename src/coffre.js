@@ -347,8 +347,10 @@ export function createCoffre(block) {
         dot.element.classList.toggle('is-visible', value);
       });
     },
-    setHint(value) {
+    // `text` : la consigne de la bulle (par défaut, celle de la notion 1).
+    setHint(value, text = 'Clique pour allumer la lampe') {
       hint.visible = value;
+      if (value && hint.element.textContent !== text) hint.element.textContent = text;
     },
     // `own` / `parent` choisissent les anneaux allumés : le sceau du coffre, sa copie du sceau d'avant, ou les deux.
     setGlow(value, color = 0xe0684b, { own = true, parent = true } = {}) {
