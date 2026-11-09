@@ -155,7 +155,7 @@ export function createArchipel(chain) {
   sea.receiveShadow = true;
   group.add(sea);
   // Un bateau en papier mâché fait le tour de l'archipel, sans jamais toucher une île.
-  const bateau = createBateau(GROUND_Y + 0.01);
+  const bateau = createBateau(GROUND_Y + 0.15); // la mer froissée monte jusqu'à ~0,1 au-dessus de GROUND_Y
   group.add(bateau.group);
 
   const islands = ISLANDS.map(({ name, at }, index) => {
