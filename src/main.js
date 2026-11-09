@@ -8,7 +8,7 @@ import { SEQUENCES } from './sequences.js';
 import { createArchipel, setRouteResolution, SENDER, ISLANDS, ARCHIPEL_SCALE, CHAIN_SPACING, CHAIN_SPOT, TOP_Y } from './archipel.js';
 import { createMiner, DIFFICULTIES } from './minage.js';
 import { createConsensus, METHODS } from './consensus.js';
-import { createRace, ATTACKS } from './race.js';
+import { createRace, ATTACKS, ATTACK_DATA } from './race.js';
 import { createRope } from './papier.js';
 import { createNuages } from './nuages.js';
 
@@ -451,7 +451,7 @@ function renderText() {
     ui.fields.innerHTML = [
       ['Transaction', block.data, 'ce que le coffre garde en mémoire.'],
       ['Nonce', block.nonce, 'un nombre qu’on change pour obtenir un sceau valide (notion 5).'],
-      ['Sceau', shortHash(block.hash), 'code unique calculé à partir de tout le contenu du coffre.'],
+      ['Sceau de ce coffre', shortHash(block.hash), 'code unique calculé à partir de tout le contenu du coffre.'],
       ['Sceau du coffre d’avant', shortHash(block.parentHash), 'recopié en petit dans le coin gauche.'],
     ]
       .map(([key, value, help]) => `<div><dt>${key}</dt><dd><code>${value}</code> — ${help}</dd></div>`)
@@ -580,8 +580,11 @@ function renderConsensus(sequence) {
 
 // Notion 7 : cycle de vie de la transaction, puis course entre la chaîne honnête et la branche secrète de Dylan.
 function renderRace(sequence) {
-  const { state, power, winner, honestLength, attackLength, goal, confirmations } = race.summary();
-  const paragraphs = state === 'done' ? (winner === 'attack' ? sequence.textAttack : sequence.textInspected) : state === 'running' ? sequence.textRunning : sequence.text;
+  const { state, power, winner, honestLength, attackLength, goal, confirmations, tally } = race.summary();
+  let paragraphs = state === 'done' ? (winner === 'attack' ? sequence.textAttack : sequence.textInspected) : state === 'running' ? sequence.textRunning : sequence.text;
+  // Le hasard peut contredire la règle : on le dit au lieu de laisser croire à une erreur.
+  if (state === 'done' && winner === 'attack' && power < 0.5) paragraphs = [paragraphs[0], sequence.textLucky, ...paragraphs.slice(1)];
+  if (state === 'done' && winner === 'honest' && power > 0.5) paragraphs = [paragraphs[0], sequence.textUnlucky, ...paragraphs.slice(2)];
   ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
   ui.inspect.hidden = false;
   ui.inspect.disabled = state === 'running';
@@ -590,26 +593,35 @@ function renderRace(sequence) {
   ui.panel.setAttribute('aria-busy', String(state === 'running'));
 
   const lost = winner === 'attack';
+  // Étapes 1 à 4 : déjà vues aux notions 4 et 5. L'étape 5 avance pendant la course.
+  const confirm =
+    lost ? ['Annulée : le bloc 4 est abandonné', 'is-lost']
+    : state === 'done' ? [`Confirmée ${confirmations} fois : Maxens peut compter sur ses jetons`, 'is-done']
+    : state === 'running' ? [`Confirmations : ${confirmations} sur ${goal}…`, 'is-pending']
+    : [`Confirmée 1 fois (le bloc 4 lui-même), en attente des suivantes`, 'is-pending'];
   const steps = [
-    ['Signée par Dylan', true],
-    ['Envoyée à toutes les îles (notion 4)', true],
-    ['En attente dans la mempool', true],
-    ['Rangée dans le bloc 4 (notion 5)', !lost],
-    [lost ? 'Annulée : le bloc 4 est abandonné' : `Confirmée ${confirmations} fois`, !lost],
+    ['Signée par Dylan (notion 4)', 'is-done'],
+    ['Envoyée à toutes les îles (notion 4)', 'is-done'],
+    ['En attente dans la mempool', 'is-done'],
+    ['Rangée dans le bloc 4 (notion 5)', lost ? 'is-lost' : 'is-done'],
+    confirm,
   ];
-  const lifecycle = `<ol class="lifecycle">${steps.map(([label, ok]) => `<li class="${ok ? 'is-done' : 'is-lost'}">${label}</li>`).join('')}</ol>`;
+  const lifecycle = `<ol class="lifecycle">${steps.map(([label, cls]) => `<li class="${cls}">${label}</li>`).join('')}</ol>`;
+  const conflict = `<span class="conflict">Bloc 4 public : ${race.sealed.data}</span><span class="conflict is-secret">Bloc 4 secret : ${ATTACK_DATA[0]}</span>`;
   const choices = ATTACKS.map(
     (a) => `<button type="button" data-attack="${a}" aria-pressed="${a === power}"${state === 'running' ? ' disabled' : ''}>${Math.round(a * 100)} %</button>`,
   ).join('');
   const blocks = (n) => `${n} bloc${n > 1 ? 's' : ''}`;
   const rows = [
     ['Cycle de vie', lifecycle],
+    ['Les mêmes 5 jetons', conflict],
     ['Puissance de Dylan', `${Math.round(power * 100)} % du réseau, contre ${Math.round((1 - power) * 100)} % pour les îles honnêtes<div class="choices">${choices}</div>`],
   ];
   if (state !== 'idle') {
     rows.push(['Branche honnête', `${blocks(honestLength)} après le bloc 3`]);
     rows.push(['Branche de Dylan', `${blocks(attackLength)} après le bloc 3`]);
   }
+  if (tally.races) rows.push(['Résultats à ' + Math.round(power * 100) + ' %', `Dylan a gagné ${tally.attackWins} course${tally.attackWins > 1 ? 's' : ''} sur ${tally.races}`]);
   rows.push(['Règle des îles', `garder la chaîne la plus longue (course arrêtée à ${goal} blocs)`]);
   ui.fields.hidden = false;
   ui.fields.innerHTML = rows.map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`).join('');

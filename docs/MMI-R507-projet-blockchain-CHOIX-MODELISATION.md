@@ -15,7 +15,7 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
 | Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
-| Version et date de mise à jour | v0.10 — 27/10/2026 (accessibilité, protocole de test) |
+| Version et date de mise à jour | v0.11 — 09/11/2026 (tests de la session 1 reportés, notion 7 au hasard, §5 à 7) |
 
 ## 2. Univers visuel et métaphore principale
 
@@ -81,6 +81,7 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 | Organisation spatiale et signification des positions | La chaîne est alignée de gauche à droite, dans l'ordre d'ajout des blocs (sens de lecture). L'archipel (notion 4) est placé à l'écart de la chaîne, et la caméra s'y rend : le placer autour de la chaîne aurait fait de celle-ci un centre, l'inverse de l'idée à transmettre. Les îles sont dispersées irrégulièrement, sans île au milieu |
 | Représentation du temps | Gauche = plus ancien, droite = plus récent. Le bloc n°0 (genèse) est le premier à gauche |
 | Passage d'une notion à l'autre | Panneau fixe avec boutons « Précédent / Suivant », points d'étape cliquables et flèches du clavier. Le lien `?etape=N` ouvre directement une séquence (tests utilisateurs, soutenance). Sur téléphone, le panneau passe en bas de l'écran |
+| Fluidité (FPS) | Plus de 60 images par seconde sur tout le parcours, mesuré le 09/11/2026 par Dylan dans les outils de développement de Chrome, y compris avec le processeur ralenti 6 fois pour simuler un PC faible (#19). Ce qui a permis d'y arriver : nuages dessinés en 2 appels (`InstancedMesh`), scène préparée au chargement (`compileAsync`), moins d'objets dessinés pendant les transitions. Pas encore mesuré sur un vrai téléphone |
 
 ## 4. Fiches des 7 notions obligatoires
 
@@ -139,7 +140,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 1 (T1, T2) : T1 nomme les 4 éléments (transaction, sceau d'avant, sceau, nonce) ; T2 répond « les deux sceaux » sans savoir lequel est lequel. Critère atteint par T1 seulement | Fiche du coffre : « Sceau » renommé « Sceau de ce coffre », à côté de « Sceau du coffre d'avant », pour distinguer les deux sans lire l'explication | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
@@ -195,7 +196,7 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 1 (T1, T2) : aucun des deux ne dit que le sceau du coffre d'avant est **recopié** dans le suivant (« les sceaux », « le sceau sert à relier »). Notion la moins bien retenue. Critère non atteint | Pas encore corrigé (manque de temps avant la session 2). Piste retenue : animer la copie du sceau d'un coffre vers le suivant. À mesurer de nouveau en session 2 | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
@@ -371,7 +372,7 @@ Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend envi
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : à faire, aucun test extérieur à ce jour (27/10/2026) | | #17 |
+| Session 1 (T1, T2) : T1 répond « générer un sceau » (partiel, sans les essais) ; T2 juge l'étape incompréhensible et ne sait pas définir « miner ». Critère non atteint | Consigne corrigée (« Clique pour lancer le minage » au lieu de la lampe), le bloc 4 n'est plus affiché scellé avant le minage, transitions plus fluides entre les étapes 3, 4 et 5 | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
@@ -434,7 +435,7 @@ Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un 
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
-La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montrée, ni la vérification du bloc par les autres îles après la victoire (vue à la notion 5). Les poids sont fixes et les îles toutes honnêtes. La preuve d'enjeu est réduite à un tirage pondéré, sans comités ni attestations. Ces simplifications sont signalées dans l'encart « En vrai… ».
+La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montrée, ni la vérification du bloc par les autres îles après la victoire (vue à la notion 5). Les poids sont fixes et les îles toutes honnêtes. La preuve d'enjeu est réduite à un tirage pondéré, sans comités ni attestations. La course de la preuve de travail est une simulation : l'île gagnante est tirée au sort selon sa puissance avant l'animation, et les compteurs d'essais sont très ralentis ; c'est dit dans l'encart « En vrai… ». La perte de mise (slashing) est expliquée dans le texte, pas jouée. Ces simplifications sont signalées dans l'encart « En vrai… ».
 
 ### 4.7 — Cycle de vie d'une transaction et scénario d'attaque illustré
 
@@ -459,7 +460,7 @@ La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montr
 | Mouvement / animation | Les blocs apparaissent au rythme de chaque camp (plus vite pour celui qui a le plus de puissance) ; à la fin, la branche perdante s'enfonce dans le sol | La course rend visible le rapport de puissance ; l'enfoncement montre ce que les îles abandonnent |
 | Interaction et retour visuel | Choix de la puissance de Dylan (30 % ou 60 %), bouton « Lancer la course ». Le panneau affiche le cycle de vie coché étape par étape, le nombre de confirmations, la longueur de chaque branche et la règle des îles. Si Dylan gagne, les deux dernières étapes passent en rouge (« Annulée ») | En essayant les deux puissances, l'utilisateur découvre lui-même le seuil de la moitié : c'est l'attaque des 51 % |
 | Son, si utilisé | Aucun | — |
-| Texte d'accompagnement | Avant : le chemin parcouru par la transaction, puis le plan de Dylan et la règle de la chaîne la plus longue. Pendant : ce qu'est une confirmation. Après : un texte selon le résultat. Encart « En vrai… » : 6 confirmations, vitesse moyenne et hasard, attaques réelles sur Ethereum Classic | Le cycle de vie relie les notions 4 et 5 ; le texte d'issue explique pourquoi on a gagné ou perdu |
+| Texte d'accompagnement | Avant : le chemin parcouru par la transaction, puis le plan de Dylan et la règle de la chaîne la plus longue. Pendant : ce qu'est une confirmation. Après : un texte selon le résultat. Encart « En vrai… » : 6 confirmations, hasard du minage, attaques réelles sur Ethereum Classic. Les deux transactions en conflit (« Dylan → Maxens » et « Dylan → Dylan ») sont affichées dès le départ, et le cycle de vie avance pendant la course | Le cycle de vie relie les notions 4 et 5 ; le texte d'issue explique pourquoi on a gagné ou perdu |
 
 #### d) Correspondance avec la réalité technique
 | Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
@@ -468,13 +469,13 @@ La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montr
 | Branche secrète accrochée au bloc 3 | Fork : chaîne concurrente minée en privé | Exacte dans le principe |
 | « Dylan → Dylan : 5 jetons » | Transaction concurrente qui dépense les mêmes jetons | Exacte dans le principe |
 | Règle de la chaîne la plus longue | Les nœuds suivent la chaîne qui a demandé le plus de travail | Simplifiée (« la plus longue » au lieu de « le plus de travail cumulé ») |
-| Course à vitesse fixe | Minage : tirage au sort dont la vitesse moyenne dépend de la puissance | Approximative (pas de hasard ici) |
+| Course au hasard : chaque bloc arrive après un temps tiré au sort, plus court pour le camp le plus puissant | Minage : tirage au sort dont la vitesse moyenne dépend de la puissance | Simplifiée (accélérée, 3 blocs au lieu de 6 confirmations) |
 | 3 blocs pour finir la course | Nombre de confirmations attendu par le destinataire (6 chez Bitcoin) | Simplifiée |
 
 #### e) Alternative écartée
 | Alternative | Raison du rejet |
 |:---|:---|
-| Course au hasard (comme le vrai minage) | Avec quelques blocs seulement, un tricheur à 30 % gagnait parfois et un tricheur à 60 % perdait souvent : le message principal (le seuil de la moitié) devenait illisible. La course montre la vitesse moyenne, et le hasard est expliqué dans l'encart « En vrai… » |
+| Course à vitesse fixe (première version, jusqu'au 09/11/2026) | Le seuil de la moitié se lisait bien, mais la démo disait « sous 50 %, Dylan perd toujours », ce qui est faux, et les confirmations ne servaient à rien. Remplacée par une course au hasard : à 30 %, Dylan gagne environ 1 course sur 5 ; à 60 %, environ 2 sur 3 (mesuré sur 300 courses : 23 % et 69 %). Le panneau cumule les résultats et le texte explique un coup de chance ou de malchance |
 | Jouer l'attaque sur l'archipel (îles qui changent de chaîne) | Plus proche du réseau, mais la comparaison des deux branches demandait de dessiner une fourche sur chacune des 7 îles : illisible. La fourche est montrée une seule fois sur la grande chaîne, et le texte dit que toutes les îles l'adoptent |
 | Un voleur extérieur qui prend les jetons de Maxens | Faux : l'attaque des 51 % ne permet pas de dépenser les jetons des autres, seulement de réécrire ses propres transactions. Le tricheur est donc l'émetteur, Dylan |
 
@@ -493,66 +494,68 @@ La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montr
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
-La signature de la transaction n'est pas montrée (pas de clés publiques ni privées). La course n'a pas de hasard et s'arrête à 3 blocs au lieu de 6 confirmations. L'adoption de la branche gagnante par les îles est dite dans le texte, mais n'est pas animée sur l'archipel. Ces simplifications sont signalées dans l'encart « En vrai… ».
-
-### 4.X — [intitulé exact de la notion]
-
-**Issues liées :**  
-**Séquence(s) concernée(s) :**
-
-#### a) Objectif pédagogique
-> L'utilisateur doit comprendre que…
-
-#### b) Risque de mauvaise compréhension
-> L'utilisateur ne doit pas comprendre que…
-
-#### c) Représentation choisie
-| Dimension | Choix | Pourquoi ce choix sert la compréhension |
-|:---|:---|:---|
-| Forme / géométrie | | |
-| Taille et échelle | | |
-| Couleur / matériau / texture | | |
-| Position | | |
-| Mouvement / animation | | |
-| Interaction et retour visuel | | |
-| Son, si utilisé | | |
-| Texte d'accompagnement | | |
-
-#### d) Correspondance avec la réalité technique
-| Élément visuel | Élément réel | Fidélité (exacte / simplifiée / approximative) |
-|:---|:---|:---|
-| | | |
-| | | |
-
-#### e) Alternative écartée
-| Alternative | Raison du rejet |
-|:---|:---|
-| | |
-
-#### f) Tests utilisateurs
-| Observation | Modification | Issue |
-|:---|:---|:---|
-| | | |
-
-Le test doit concerner **au moins** 2 personnes extérieures au groupe à l'échelle du projet. Précisez les incompréhensions et les corrections réalisées.
-
-#### g) Limites assumées
-Expliquez ce qui est simplifié et pourquoi cette simplification reste acceptable.
+La signature de la transaction n'est pas montrée (pas de clés publiques ni privées). La course est au hasard comme le vrai minage, mais accélérée et arrêtée à 3 blocs au lieu de 6 confirmations : sur une course aussi courte, la chance compte plus qu'en vrai. L'adoption de la branche gagnante par les îles est dite dans le texte, mais n'est pas animée sur l'archipel. Ces simplifications sont signalées dans l'encart « En vrai… ».
 
 ## 5. Cohérence globale
 
 | Question | Réponse |
 |:---|:---|
-| Les codes visuels sont-ils constants ? | |
-| Un même élément est-il représenté de la même façon partout ? | |
-| L'ordre des séquences est-il progressif ? | |
-| Quelle notion est la moins bien représentée ? | |
-| Quelle décision reverriez-vous avec une semaine de plus ? | |
+| Les codes visuels sont-ils constants ? | Oui. Un bloc est toujours un coffre en carton avec une fenêtre en calque. Un sceau est toujours un coup de tampon, dont la couleur et le motif viennent du code. Un lien est toujours une corde corail. Le rouge est réservé à la fraude partout : corde coupée (notion 3), avion rouge et îles qui refusent (notion 4), branche secrète de Dylan (notion 7). Un essai raté laisse un tampon pâle (notions 5 et 6) |
+| Un même élément est-il représenté de la même façon partout ? | Oui pour le bloc, le sceau, la chaîne et les îles. Une exception est assumée : à partir de la notion 4, un bloc qui voyage entre les îles devient un avion en papier. Un coffre qui vole aurait brouillé l'idée de copie, puisque chaque île garde sa propre chaîne de coffres. La chaîne de Dylan reste la même de la notion 1 à la notion 7 : le bloc 4 miné à la notion 5 est celui qu'on retrouve dans la course de la notion 7 |
+| L'ordre des séquences est-il progressif ? | Oui. On voit d'abord un bloc (1), puis deux blocs reliés (2), puis ce qui casse si on triche (3). Vient ensuite la chaîne copiée sur plusieurs îles (4), puis la façon d'ajouter un bloc (5) et celle de décider qui a le droit de l'ajouter (6). La notion 7 suit tout le trajet d'une transaction et montre une attaque qui réunit ces notions. Chaque notion réutilise la précédente. Les tests de la session 1 montrent que la difficulté monte trop vite à partir de l'étape 4 : les textes des notions 6 et 7 ont été réécrits en mots simples |
+| Quelle notion est la moins bien représentée ? | D'après les tests, c'est le chaînage (notion 2). La corde se voit, mais aucun testeur ne dit que le sceau est recopié : la corde porte l'idée de lien, pas celle de copie. Viennent ensuite le consensus et la double dépense, sans aucune bonne réponse en session 1 (avant la réécriture des textes) |
+| Quelle décision reverriez-vous avec une semaine de plus ? | Tester plus tôt. La session 1 a eu lieu après le développement des 7 notions, et ses retours sont arrivés trop tard pour tout corriger. Côté contenu, on animerait la copie du sceau à la notion 2 et on brancherait le vrai calcul de minage dans la course de la notion 6, au lieu d'une simulation. Le passage par le neumorphisme (v0.4 à v0.7) a aussi coûté du temps avant la direction papier |
 
 ## 6. Rôle de l'IA générative
 
-Indiquez les idées retenues ou rejetées, les erreurs détectées et les décisions qui restent celles du groupe. Toute utilisation doit être signalée dans les issues, commits ou README.
+L'IA générative (Claude, assistant de code) a été utilisée tout au long du projet. Le détail daté de chaque usage se trouve dans le tableau « Usage de l'IA générative » du `README.md`. Les commits et les fiches de suivi signalent aussi ces usages.
+
+| Domaine | Ce que l'IA a fait | Ce qui reste au groupe |
+|:---|:---|:---|
+| Code Three.js | Écriture, à partir de nos consignes, d'une grande partie du code : séquences, coffres, archipel, minage, course et décors. Corrections de bugs et optimisations (transitions, ombres, nuages) | Choix de la métaphore, de ce que montre chaque notion et de l'ordre. Validation à l'écran de chaque rendu (bateaux, avion rouge, transitions). Refus des propositions qui ne convenaient pas |
+| Textes et documents | Premières versions des fiches de CHOIX, des fiches de suivi (à partir de `git log`, des issues et du board) et du protocole de test. Réécriture des notions 6 et 7 après la session 1 | Relecture, corrections, notation des réponses des testeurs, décisions écrites dans les fiches |
+| Revue | Relecture du projet au regard du sujet : exigences manquantes, points faibles | Choix de ce qu'on corrige avant le rendu et de ce qu'on assume comme limite |
+
+**Idées retenues** :
+- la direction « maquette en papier découpé », proposée par Maxens et réalisée avec l'IA ;
+- le tampon encreur, les décors pop-up et les bateaux ;
+- le refus du bloc falsifié par les autres îles ;
+- la course au hasard à la notion 7.
+
+**Idées rejetées** :
+- le neumorphisme (froid, contraste trop faible) ;
+- le thème sombre du bureau ;
+- une caméra qui suit le bateau ;
+- des fondus 2D pendant les transitions, remplacés par des nuages en volume.
+
+**Erreurs de l'IA détectées par le groupe** :
+- les bateaux étaient d'abord cachés sous la mer, puis ils « volaient » au-dessus ;
+- la bulle « Clique pour allumer la lampe » s'affichait à la notion 5 ;
+- le bloc 4 était affiché « scellé » avant d'être miné ;
+- la première course de la notion 7, sans hasard, faisait dire au parcours quelque chose de faux ;
+- le premier minage partait toujours du nonce 0, ce qui contredisait le « 16 fois plus d'essais ».
+
+**Décisions qui restent celles du groupe** : le public, la métaphore, l'ordre et le contenu des 7 notions, la notation des tests et les limites assumées. Chaque membre doit pouvoir expliquer tout le code et tous les choix en soutenance.
 
 ## 7. Sources
 
-Références techniques, cours, documentation, sources d'inspiration visuelle et comptes rendus de tests.
+**Sujet et cours**
+- Sujet R507, BUT MMI 3e année : `MMI-R507-projet-blockchain.pdf` (consignes, 7 notions, critères).
+
+**Documentation technique**
+- Three.js : documentation et exemples (`InstancedMesh`, `Line2` / `LineMaterial`, `CSS2DRenderer`, ombres, `compileAsync`), https://threejs.org/docs/
+- Vite : https://vite.dev/guide/
+- Web Crypto API (`crypto.subtle.digest('SHA-256')`), MDN : https://developer.mozilla.org/fr/docs/Web/API/SubtleCrypto/digest
+- WCAG 2.2 (contrastes, mouvement réduit) : https://www.w3.org/TR/WCAG22/ ; `prefers-reduced-motion` sur MDN.
+
+**Blockchain**
+- S. Nakamoto, *Bitcoin: A Peer-to-Peer Electronic Cash System*, 2008. Y sont décrits le chaînage, la preuve de travail, la chaîne la plus longue et, en section 11, la probabilité de réussite d'un attaquant : https://bitcoin.org/bitcoin.pdf
+- Ethereum, *The Merge* et la preuve d'enjeu (consommation réduite de plus de 99 %) : https://ethereum.org/fr/roadmap/merge/
+- Attaques des 51 % sur Ethereum Classic (2019, 2020) : articles de presse spécialisée, cités dans l'encart « En vrai… » de la notion 7.
+
+**Inspiration visuelle**
+- Livres pop-up et maquettes en papier découpé ; page d'aperçu `apercu-papier.html` du dépôt.
+- Polices : Alegreya Sans et Courier Prime (Google Fonts).
+
+**Tests**
+- Protocole : `docs/TEST-UTILISATEUR.md`. Résultats : `docs/TEST-UTILISATEUR-RESULTATS.md` (session 1, #17 ; session 2, #18).

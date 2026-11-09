@@ -27,9 +27,16 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | #15 Nuages en volume (boules de papier mâché) au lieu de disques plats, dessinés en 2 appels (InstancedMesh) ; scène préparée au chargement (`compileAsync`) pour supprimer la saccade de la première traversée | 4 | Fonctionnel | Plus de 60 images/s sur tout le parcours, PC ralenti (CPU 6x) compris, mesuré le 09/11 par Dylan ; issue #19 fermée |
 | #15 Traits sombres dans les nuages : brume appliquée aux pointillés des routes, biais d'ombre adapté au recul de la caméra | 4 | En cours | Cause supposée, à confirmer à l'écran |
 | #16 Décors des îles : repère par île (cabane, arbre, phare), palmiers et buissons, plantés dans le sol (motte au pied) et relevés à l'arrivée sur l'archipel | 4 | Fonctionnel | `src/archipel.js` (`decorFor`), `src/papier.js` (`createCutout`) |
-| #16 Mer agrandie (60 × 50) : son bord ne se voit plus en vue d'ensemble ; bateau en papier mâché qui fait le tour de l'archipel sans traverser d'île | 4 | En cours | `src/bateau.js` ; trajet calculé à ≥ 0,6 rayon d'île des rivages |
+| #16 Mer agrandie (60 × 50) : son bord ne se voit plus en vue d'ensemble ; trois bateaux en papier mâché (un autour de l'île de Dylan, deux au large) qui ne traversent aucune île | 4 | Fonctionnel | `src/bateau.js` ; trajet calculé à ≥ 0,6 rayon d'île des rivages |
 | #7 Lampe placée dans le coffre, flèche au pochoir sur le couvercle (sens de la chaîne) | 1, 2 | Fonctionnel | `src/coffre.js` |
 | Étape finale « Vue d'ensemble » : toute la chaîne et tout l'archipel d'un regard | Toutes | Fonctionnel | `src/sequences.js` (`overview`) |
+| #9 #10 Bloc 1 falsifié envoyé aux autres îles : avion rouge, les voisines comparent et refusent (« refuse le bloc ✗ »), sans faire suivre | 3, 4 | Fonctionnel | `src/archipel.js` (`send(instant, asForged)`), PR #40 ; rendu validé à l'écran par Dylan |
+| #12 #13 Textes des notions 6 et 7 réécrits en mots simples, avec un « À retenir » (retours de la session 1) | 6, 7 | Fonctionnel | `src/sequences.js`, PR #40 |
+| #13 Course de la notion 7 au hasard (temps de bloc tiré au sort) : à 30 %, Dylan gagne parfois ; résultats cumulés dans le panneau ; les deux transactions en conflit sont affichées dès le départ ; le cycle de vie avance pendant la course | 7 | Fonctionnel | `src/race.js`, `src/main.js` ; 300 courses simulées : 23 % de victoires à 30 %, 69 % à 60 % |
+| #12 Encart « En vrai… » de la notion 6 : la course est dite simulée (gagnante tirée au sort, essais ralentis) | 6 | Fonctionnel | `src/sequences.js` |
+| #7 « Sceau » renommé « Sceau de ce coffre » dans la fiche du coffre (T2 confondait les deux sceaux) | 1 | Fonctionnel | `src/main.js` |
+| #20 CHOIX v0.11 : session 1 reportée dans les 7 fiches, §3 fluidité (FPS), §5 cohérence, §6 IA, §7 sources, gabarit 4.X retiré | Toutes | Fonctionnel | `docs/MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` |
+| #22 Grille d'auto-évaluation pré-remplie (parties 1 à 4 avec preuves) ; #18 protocole de la session 2 ; #23 plan de soutenance | — | En cours | `docs/…GRILLE-AUTOEVAL.md`, `docs/TEST-UTILISATEUR.md`, `docs/SOUTENANCE.md` ; à relire ensemble |
 
 ### 1.2 Prévu mais non réalisé
 | Tâche | Cause | Report |
@@ -77,34 +84,34 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Question | Réponse |
 |:---|:---|
-| Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | |
-| Choix important et justification | |
-| Choix remis en question | |
+| Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | v0.11 : les 7 fiches f) ont leur ligne « Session 1 » (observation et modification) ; §3 fluidité ; §5, §6 et §7 rédigés ; gabarit 4.X retiré |
+| Choix important et justification | La triche est détectée par les autres îles (notion 4), comme le demande le sujet : l'archipel n'existe pas encore à la notion 3, donc on renvoie le bloc falsifié depuis la notion 4 |
+| Choix remis en question | La course à vitesse fixe de la notion 7 : elle faisait dire « sous 50 %, Dylan perd toujours », ce qui est faux. Remplacée par une course au hasard |
 
 ## 5. Tests utilisateurs
 
 | Question | Réponse |
 |:---|:---|
-| Nombre de testeurs extérieurs cette semaine | |
-| Compréhension ou problème observé | |
-| Issue corrective | |
+| Nombre de testeurs extérieurs cette semaine | 0 (session 2 préparée, à faire) |
+| Compréhension ou problème observé | Retours de la session 1 traités : notions 6 et 7 réécrites, falsification refusée par les îles, deux sceaux mieux nommés. Non traité : la copie du sceau (notion 2) |
+| Issue corrective | #18 (session 2), #7, #9, #10, #12, #13 |
 
 ## 6. IA, difficultés et besoins
 
 | Question | Réponse |
 |:---|:---|
-| Usage de l'IA et vérifications effectuées | |
-| Blocage technique | |
-| Blocage pédagogique ou organisationnel | |
-| Besoin d'un point enseignant | |
+| Usage de l'IA et vérifications effectuées | Claude : code des transitions, bateaux, avion rouge, course au hasard ; textes 6 et 7 ; premières versions de CHOIX §5 à 7, de la grille et du plan de soutenance. Vérifié : rendus validés à l'écran par Dylan, course simulée 300 fois, 0 erreur console ; documents à relire par le groupe |
+| Blocage technique | Aucun |
+| Blocage pédagogique ou organisationnel | Trouver 2 testeurs qui n'ont jamais vu le projet avant le 15/11 |
+| Besoin d'un point enseignant | Non |
 
 ## 7. Objectifs de la semaine suivante
 
 | Objectif | Responsable | Issue |
 |:---|:---|:---|
-| | | |
-| | | |
-| | | |
+| Session 2 de tests, résultats reportés dans CHOIX et la grille | Maxens et Dylan | #18 |
+| Board à jour : fermer les issues terminées avec la preuve ; relire CHOIX, README et la grille | Dylan, Maxens | #20 #21 #22 |
+| Support, vidéo de secours, répétition chronométrée | Maxens et Dylan | #23 #24 #25 |
 
 ## 8. Signaux d'alerte
 

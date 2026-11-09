@@ -6,8 +6,9 @@ import { createRope } from './papier.js';
 // Notion 7 : cycle de vie de la transaction de Dylan, puis tentative de double dépense.
 // La transaction est dans le bloc 4 (notion 5). En secret, Dylan fabrique un autre bloc 4, à partir du bloc 3,
 // où les mêmes jetons lui reviennent. Les deux branches font la course ; les îles gardent la plus longue.
-// La course montre la vitesse moyenne de chaque camp (pas de hasard ici, voir l'encart « En vrai… ») :
-// avec moins de la moitié de la puissance, Dylan perd toujours ; avec plus, il gagne : l'attaque des 51 %.
+// Comme le vrai minage, chaque bloc arrive après un temps tiré au hasard (loi exponentielle), d'autant plus court
+// que le camp a de puissance. Avec 30 %, Dylan gagne environ 1 course sur 5 (coup de chance) ; avec 60 %, environ
+// 2 sur 3. Plus la course est longue (plus on attend de confirmations), moins la chance compte.
 export const ATTACKS = [0.3, 0.6]; // part de la puissance de calcul du réseau détenue par Dylan
 const BLOCK_TIME = 1.3; // secondes pour trouver un bloc avec toute la puissance du réseau
 const GOAL = 3; // la course s'arrête quand une branche compte 3 blocs après le bloc 3
@@ -17,6 +18,12 @@ const BROKEN_COLOR = 0xb3261e;
 
 const HONEST_DATA = ['Pierre → Thomas : 4 jetons', 'Julien → Lucas : 2 jetons'];
 export const ATTACK_DATA = ['Dylan → Dylan : 5 jetons', 'Bloc vide (Dylan)', 'Bloc vide (Dylan)'];
+
+// Temps avant le prochain bloc d'un camp qui a la part `share` de la puissance : tiré au hasard, en moyenne
+// BLOCK_TIME / share. Borné pour qu'une course ne dure jamais trop longtemps à l'écran.
+function blockDelay(share) {
+  return Math.min((-Math.log(1 - Math.random()) * BLOCK_TIME) / share, 8);
+}
 
 // Corde entre deux coffres, comme dans la chaîne principale (en biais pour la fourche).
 function makeLink(from, to, color) {
@@ -66,7 +73,9 @@ export async function createRace({ fork, tip, data, spacing }) {
   let state = 'idle'; // 'idle' | 'running' | 'done'
   let honestLength = 1; // le bloc 4 de Maxens est déjà là
   let attackLength = 1; // Dylan a préparé son bloc 4 en secret
-  let progress = { honest: 0, attack: 0 };
+  let clock = 0; // temps écoulé dans la course
+  let next = { honest: 0, attack: 0 }; // moment où chaque camp trouvera son prochain bloc
+  const tally = Object.fromEntries(ATTACKS.map((a) => [a, { races: 0, attackWins: 0 }])); // résultats par puissance
   let winner = null; // 'honest' | 'attack'
   let tipSink = 0;
   const api = { group, center, onChange: () => {} };
@@ -100,7 +109,8 @@ export async function createRace({ fork, tip, data, spacing }) {
       if (state === 'running') return;
       honestLength = 1;
       attackLength = 1;
-      progress = { honest: 0, attack: 0 };
+      clock = 0;
+      next = { honest: blockDelay(1 - power), attack: blockDelay(power) };
       winner = null;
       state = 'running';
       if (instant) while (state === 'running') api.update(0.1, 0, true);
@@ -125,29 +135,28 @@ export async function createRace({ fork, tip, data, spacing }) {
         goal: GOAL,
         // Le bloc qui contient la transaction compte comme première confirmation.
         confirmations: winner === 'attack' ? 0 : honestLength,
+        tally: tally[power],
       };
     },
     update(dt, time, instant) {
       if (state === 'running') {
-        // Chaque camp avance au rythme de sa part de la puissance de calcul.
-        progress.honest += (dt * (1 - power)) / BLOCK_TIME;
-        progress.attack += (dt * power) / BLOCK_TIME;
+        // Chaque camp trouve un bloc quand son temps tiré au hasard est écoulé, un bloc à la fois.
+        clock += dt;
         let changed = false;
-        if (progress.honest >= 1) {
-          progress.honest -= 1;
-          honestLength += 1;
+        while (state === 'running' && Math.min(next.honest, next.attack) <= clock) {
+          const side = next.honest <= next.attack ? 'honest' : 'attack';
+          if (side === 'honest') honestLength += 1;
+          else attackLength += 1;
+          next[side] += blockDelay(side === 'honest' ? 1 - power : power);
           changed = true;
-        }
-        if (progress.attack >= 1) {
-          progress.attack -= 1;
-          attackLength += 1;
-          changed = true;
-        }
-        if (honestLength >= GOAL || attackLength >= GOAL) {
-          // Les îles gardent la branche la plus longue ; à égalité, celle qu'elles avaient déjà.
-          winner = attackLength > honestLength ? 'attack' : 'honest';
-          state = 'done';
-          updatePlates();
+          if (honestLength >= GOAL || attackLength >= GOAL) {
+            // Les îles gardent la branche la plus longue (à ce moment, l'autre est forcément plus courte).
+            winner = attackLength > honestLength ? 'attack' : 'honest';
+            state = 'done';
+            tally[power].races += 1;
+            if (winner === 'attack') tally[power].attackWins += 1;
+            updatePlates();
+          }
         }
         if (changed) api.onChange();
       }

@@ -165,6 +165,19 @@ body {
   color: var(--broken);
 }
 
+.lifecycle li.is-pending::before {
+  content: '… ';
+}
+
+/* Notion 7 : les deux transactions en conflit, côte à côte dès le départ. */
+.conflict {
+  display: block;
+}
+
+.conflict.is-secret {
+  color: var(--broken);
+}
+
 /* Bulle « Clique sur… » : un post-it qui se balance. */
 .hint {
   display: flex;
