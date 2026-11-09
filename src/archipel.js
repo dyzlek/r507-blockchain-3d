@@ -4,7 +4,7 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { COFFRE_SIZE, sealTexture } from './coffre.js';
-import { createBateau } from './bateau.js';
+import { createBateau, BOAT_PATHS } from './bateau.js';
 import { COLORS, cardboard, createCutout, crumpledSheet, noisyDisc, paperMaterial, paperPlaneGeometry } from './papier.js';
 
 // Le réseau = un archipel en papier découpé, posé sur une mer de papier froissé.
@@ -154,9 +154,11 @@ export function createArchipel(chain) {
   sea.rotation.y = 0.02;
   sea.receiveShadow = true;
   group.add(sea);
-  // Un bateau en papier mâché fait le tour de l'archipel, sans jamais toucher une île.
-  const bateau = createBateau(GROUND_Y + 0.15); // la mer froissée monte jusqu'à ~0,1 au-dessus de GROUND_Y
-  group.add(bateau.group);
+  // Bateaux en papier mâché : un tourne autour de l'île de Dylan (visible dès le début), deux autres font le tour
+  // de l'archipel et n'apparaissent qu'au dézoom, avec les autres îles. La mer froissée monte jusqu'à ~0,1
+  // au-dessus de GROUND_Y et la coque descend de 0,16 sous le pont : à + 0,25, seule la quille touche l'eau.
+  const bateaux = Object.values(BOAT_PATHS).map((path) => createBateau(GROUND_Y + 0.25, path));
+  bateaux.forEach((b) => group.add(b.group));
 
   const islands = ISLANDS.map(({ name, at }, index) => {
     const island = new THREE.Group();
@@ -374,6 +376,7 @@ export function createArchipel(chain) {
       islands.forEach((island) => {
         if (island.index !== SENDER) island.group.visible = visible;
       });
+      bateaux.slice(1).forEach((b) => (b.group.visible = visible));
     },
     // Les plaques « Île de… » ne s'affichent que sur les étapes de l'archipel : de loin, derrière la chaîne, elles gêneraient.
     setLabels(visible) {
@@ -381,7 +384,7 @@ export function createArchipel(chain) {
     },
     update(dt, elapsed, instant) {
       clock += dt;
-      bateau.update(dt, elapsed, instant);
+      bateaux.forEach((b) => b.update(dt, elapsed, instant));
       unfold = instant ? unfoldTarget : THREE.MathUtils.clamp(unfold + Math.sign(unfoldTarget - unfold) * dt * 0.8, 0, 1);
       const ready = relays.filter((r) => r.at <= clock);
       relays = relays.filter((r) => r.at > clock);
