@@ -14,6 +14,19 @@ Issue #17 (session 1) et #18 (session 2). À reporter ensuite dans les sections 
 
 **Durée :** 15 à 20 minutes par testeur. **Testeurs :** 2 personnes extérieures au groupe, idéalement non initiées à la blockchain (session 1), puis 2 autres ou les mêmes après corrections (session 2).
 
+## Session 2 (#18) : ce qui a changé, ce qu'on vérifie
+
+Testeurs : **2 personnes qui n'ont jamais vu le projet**, dont au moins une qui ne connaît rien à la blockchain. Même déroulé et même formulaire que la session 1, pour pouvoir comparer.
+
+| Changement depuis la session 1 | Ce qu'on vérifie (question ou observation) | Comparaison session 1 |
+|:---|:---|:---|
+| Notions 6 et 7 réécrites en mots simples, avec un « À retenir » | C7 et C8 notées au moins 1 ; étapes 6 et 7 jugées « claires » ou « un peu confuses » | C7 = 0 et C8 = 0 pour T1 et T2 ; T2 : « incompréhensible » |
+| Notion 4 : le bloc falsifié est refusé par les autres îles (avion rouge) | Étape 4, Q3 : le testeur dit que les autres îles refusent un bloc truqué | Non mesuré |
+| Notion 7 : course au hasard, résultats cumulés, deux transactions en conflit affichées | Étape 7, Q2 et Q4 ; C8 : définit la double dépense | C8 = 0 pour les deux |
+| Transitions plus fluides, FPS mesurés (plus de 60 FPS, #19) | F : « FPS ressentis » | T2 : rythme 1/5 |
+
+Critère : au moins 6 questions C sur 8 notées 2 par testeur (inchangé). Si le critère n'est pas atteint, on le dit tel quel dans CHOIX et en soutenance, avec les notes obtenues.
+
 ## Consignes pour l'animateur
 
 - Ne rien expliquer pendant le parcours. Si le testeur est bloqué plus de 30 secondes, noter le blocage, puis donner un indice minimal.
@@ -69,7 +82,7 @@ Poser chaque question **à la fin de l'étape**, avant de passer à la suivante.
 ### Étape 4 — Notion 4 : Réseau et décentralisation (« L'archipel »)
 1. Que représentent les îles ? Que représentent les avions en papier ?
 2. Pourquoi y a-t-il plusieurs copies de la chaîne et non une seule ?
-3. Que se passe-t-il si une île tombe en panne ou triche ?
+3. Que se passe-t-il si une île tombe en panne ou triche ? (après « Envoyer le bloc 1 falsifié » : que font les autres îles ?)
 4. Qui contrôle l'archipel, d'après vous ?
 
 ### Étape 5 — Notion 5 : Validation et minage (« La course au sceau »)
@@ -88,6 +101,7 @@ Poser chaque question **à la fin de l'étape**, avant de passer à la suivante.
 2. Que cherche à faire l'attaquant ?
 3. Pourquoi la branche la plus longue gagne-t-elle ?
 4. Pourquoi une attaque est-elle très difficile en pratique ?
+5. (Si le testeur a rejoué la course) Avec 30 %, Dylan gagne-t-il toujours, jamais, ou parfois ? Pourquoi attend-on plusieurs confirmations ?
 
 ## C. Questions de compréhension globale (après le parcours)
 
@@ -140,6 +154,11 @@ Poser chaque question **à la fin de l'étape**, avant de passer à la suivante.
 | Étapes passées sans lire le texte | |
 | Problèmes techniques (lenteur, bug, affichage) | |
 | FPS ressentis (fluide / saccadé) | |
+| A trouvé seul la lampe du coffre (étape 1) | oui / non / après indice |
+| A éteint une île sans consigne (étape 4) | oui / non |
+| A envoyé le bloc falsifié (étape 4) | oui / non |
+| A rejoué la course ou essayé 60 % (étape 7) | nombre de courses : |
+| A ouvert « En vrai… » (à quelles étapes) | |
 | Citations marquantes | |
 
 ## G. Synthèse à reporter dans CHOIX (par testeur)

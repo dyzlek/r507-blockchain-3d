@@ -1,4 +1,9 @@
-# Résultats du test utilisateur — session 1
+# Résultats des tests utilisateurs
+
+- Session 1 (#17) : ci-dessous.
+- Session 2 (#18) : en fin de fichier, à remplir (déroulé et changements à vérifier dans `TEST-UTILISATEUR.md`).
+
+# Session 1
 
 Synthèse des réponses du formulaire (`docs/creer-formulaire-test.gs`). Les testeurs sont désignés par code (T1, T2) ; les noms et les horodatages ne sont pas reportés ici. Les réponses brutes restent dans le tableur du formulaire, hors dépôt.
 
@@ -97,3 +102,52 @@ Ce qui a été compris et ce qui ne l'a pas été :
 - 2 testeurs seulement, dont un seul sans aucune connaissance préalable.
 - Le critère du protocole (« 6 réponses sur 8 notées 2 ») n'est pas atteint : T1 a 2 réponses notées 2 sur 8, T2 n'en a aucune. La notation est à valider par le groupe.
 - Les observations de l'animateur (temps, clics, blocages) ne figurent pas dans le formulaire ; elles sont à compléter dans `docs/TEST-UTILISATEUR.md`.
+
+# Session 2 (#18) — à remplir
+
+Date : … · Version testée : … (lien de la démo ou commit) · Animateur : …
+
+## Profils
+
+| Testeur | Tranche d'âge | Métier | Appareil / navigateur | Connaît la blockchain | Cryptomonnaies | Aisance numérique |
+|:---|:---|:---|:---|:---|:---|:---:|
+| T3 | | | | | | |
+| T4 | | | | | | |
+
+## Compréhension (0 / 1 / 2), comparée à la session 1
+
+| Question | T1 (s1) | T2 (s1) | T3 | T4 |
+|:---|:-:|:-:|:-:|:-:|
+| C1 Blockchain | 1 | 0 | | |
+| C2 Contenu d'un bloc | 2 | 1 | | |
+| C3 Lien entre blocs | 1 | 1 | | |
+| C4 Modification d'un ancien bloc | 2 | 1 | | |
+| C5 Copies chez plusieurs participants | 1 | 0 | | |
+| C6 Miner | 1 | 0 | | |
+| C7 Deux manières de se mettre d'accord | 0 | 0 | | |
+| C8 Double dépense | 0 | 0 | | |
+| **Réponses notées 2** | 2 / 8 | 0 / 8 | | |
+
+## Par étape (Claire / Un peu confuse / Incompréhensible)
+
+| Étape | T3 | T4 |
+|:---|:---|:---|
+| 1 à 3 | | |
+| 4 Réseau | | |
+| 5 Minage | | |
+| 6 Consensus | | |
+| 7 Attaque | | |
+
+## Observations de l'animateur (partie F du protocole)
+
+| Élément | T3 | T4 |
+|:---|:---|:---|
+| Durée totale | | |
+| Blocages de plus de 30 s | | |
+| Lampe trouvée seul / île éteinte seul / bloc falsifié envoyé | | |
+| Courses jouées à l'étape 7 | | |
+| FPS ressentis | | |
+
+## Ce que ça change
+
+1. …

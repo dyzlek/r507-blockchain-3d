@@ -166,7 +166,7 @@ export const SEQUENCES = [
       pos: ['Faire le tirage', 'Tirage en cours…', 'Refaire le tirage'],
     },
     enVrai:
-      'Le <strong>consensus</strong> est la règle qui fait que des milliers d’ordinateurs se mettent d’accord sur le bloc suivant. Bitcoin utilise la <strong>preuve de travail</strong> (<em>Proof of Work</em>) : elle consomme autant d’électricité qu’un pays entier. Ethereum est passé à la <strong>preuve d’enjeu</strong> (<em>Proof of Stake</em>) en 2022 et a réduit sa consommation de plus de 99 %. Limite : en PoW, les plus grosses machines gagnent plus souvent ; en PoS, les plus riches. Ici, la récompense du gagnant n’est pas montrée.',
+      'Le <strong>consensus</strong> est la règle qui fait que des milliers d’ordinateurs se mettent d’accord sur le bloc suivant. Bitcoin utilise la <strong>preuve de travail</strong> (<em>Proof of Work</em>) : elle consomme autant d’électricité qu’un pays entier. Ethereum est passé à la <strong>preuve d’enjeu</strong> (<em>Proof of Stake</em>) en 2022 et a réduit sa consommation de plus de 99 %. Limite : en PoW, les plus grosses machines gagnent plus souvent ; en PoS, les plus riches. Ici, c’est une simulation : la gagnante est tirée au sort selon ses chances, puis la course est jouée, et les compteurs d’essais sont très ralentis (une vraie machine fait des milliards d’essais par seconde). La récompense du gagnant n’est pas montrée.',
     camera: { position: [0, 94, 88], target: [0, 0, 22] },
     focus: null,
     consensus: true,
@@ -187,16 +187,21 @@ export const SEQUENCES = [
     ],
     textInspected: [
       'Raté : la chaîne de Dylan est <strong>plus courte</strong>. Les îles l’ignorent. Maxens garde ses jetons.',
-      'Seul contre tous, Dylan est trop lent. Essaie avec <strong>60 %</strong> de la puissance.',
-      '<strong>À retenir :</strong> la double dépense, c’est payer deux fois avec les mêmes jetons. Elle échoue tant que le tricheur a moins de la moitié de la puissance.',
+      'Seul contre tous, Dylan est trop lent. Rejoue plusieurs fois, puis essaie avec <strong>60 %</strong> de la puissance.',
+      '<strong>À retenir :</strong> la double dépense, c’est payer deux fois avec les mêmes jetons. Avec moins de la moitié de la puissance, le tricheur perd presque toujours.',
     ],
+    // Ajouté après le premier paragraphe quand le hasard contredit la règle.
+    textLucky:
+      'Coup de chance : avec 30 %, Dylan a trouvé ses blocs plus vite cette fois. Sur une course courte, ça arrive (environ 1 fois sur 5). Plus on attend de <strong>confirmations</strong>, plus la chance devient rare : c’est pour ça que Bitcoin en attend 6.',
+    textUnlucky:
+      'Pas de chance pour Dylan : même avec 60 %, il a perdu cette course. Mais rejoue : il gagne environ 2 fois sur 3, et sur une longue course presque toujours. C’est l’<strong>attaque des 51 %</strong>.',
     textAttack: [
       'Dylan a gagné : sa chaîne est <strong>plus longue</strong>, les îles la suivent. Le bloc de Maxens disparaît, et ses 5 jetons avec.',
-      '<strong>À retenir :</strong> pour tricher, il faut plus de la moitié de la puissance du réseau. C’est l’<strong>attaque des 51 %</strong>. Sur Bitcoin, ça coûterait des milliards.',
+      '<strong>À retenir :</strong> pour tricher à coup sûr, il faut plus de la moitié de la puissance du réseau. C’est l’<strong>attaque des 51 %</strong>. Sur Bitcoin, ça coûterait des milliards.',
     ],
     button: ['Lancer la course', 'Rejouer la course'],
     enVrai:
-      'Sur Bitcoin, on considère une transaction sûre après environ <strong>6 confirmations</strong>, soit une heure. Ici, la course montre la vitesse moyenne de chaque camp. En vrai, le minage est un tirage au sort : un tricheur peut avoir de la chance sur un bloc ou deux. C’est pour ça qu’on attend plusieurs confirmations. L’attaque des 51 % est déjà arrivée sur de petites blockchains, comme Ethereum Classic en 2019 et 2020.',
+      'Sur Bitcoin, on considère une transaction sûre après environ <strong>6 confirmations</strong>, soit une heure. Ici, comme en vrai, chaque bloc arrive au hasard : un tricheur peut avoir de la chance sur un bloc ou deux, jamais sur six. La course est seulement accélérée (une seconde au lieu de 10 minutes). L’attaque des 51 % est déjà arrivée sur de petites blockchains, comme Ethereum Classic en 2019 et 2020.',
     camera: { position: [0.3, 7, 8.8], target: [0.3, -0.2, 0] },
     focus: null,
     race: true,
