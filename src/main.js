@@ -462,7 +462,7 @@ function renderText() {
     const broken = sequence.tamper && tampered && (i === tampered.index || i === tampered.index + 1);
     // Bloc falsifié : seuls son nouveau sceau et la copie gardée par le suivant passent en rouge.
     const rings = broken ? { own: i === tampered.index, parent: i === tampered.index + 1 } : undefined;
-    c.setGlow(Boolean(sequence.chain?.includes(i)) && linked && (!sequence.tamper || broken), broken ? BROKEN_COLOR : LINK_COLOR, rings);
+    c.setGlow(Boolean(sequence.chain?.includes(i)) && linked && (!sequence.tamper || broken), broken ? BROKEN_COLOR : null, rings);
   });
   links.forEach((link, i) => link?.setBroken(Boolean(tampered && i === tampered.index + 1), BROKEN_COLOR));
   if (sequence.network) {
