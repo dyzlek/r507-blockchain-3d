@@ -673,6 +673,7 @@ async function toggleInspect() {
   }
   if (sequence.chain) {
     linked = !linked;
+    if (linked && !reducedMotion) launchSealCopies(sequence.chain);
     renderText();
     return;
   }
@@ -810,11 +811,48 @@ nuages.update(camera, 0, 0, false, true);
 // ?etape=2 ouvre directement la 2e séquence (tests utilisateurs, soutenance).
 goTo(Number(new URLSearchParams(location.search).get('etape') ?? 1) - 1 || 0);
 
+// Notion 2 : la copie du sceau d'un coffre s'envole vers le coin du coffre suivant (issue #47).
+const sealCopies = []; // { mesh, from, to, t, delay }
+const sealCopyGeometry = new THREE.PlaneGeometry(0.34, 0.34);
+function launchSealCopies(indices) {
+  sealCopies.splice(0).forEach(({ mesh }) => scene.remove(mesh));
+  indices.slice(0, -1).forEach((index, n) => {
+    const from = coffres[index].sealMesh.getWorldPosition(new THREE.Vector3());
+    const to = coffres[indices[n + 1]].parentSealMesh.getWorldPosition(new THREE.Vector3());
+    const mesh = new THREE.Mesh(sealCopyGeometry, coffres[index].sealMesh.material);
+    mesh.renderOrder = 10;
+    mesh.visible = false;
+    scene.add(mesh);
+    sealCopies.push({ mesh, from, to: to.add(new THREE.Vector3(0, 0, 0.02)), t: 0, delay: n * 0.6 });
+  });
+}
+function updateSealCopies(dt) {
+  for (let i = sealCopies.length - 1; i >= 0; i--) {
+    const copy = sealCopies[i];
+    if (copy.delay > 0) {
+      copy.delay -= dt;
+      continue;
+    }
+    copy.t = Math.min(1, copy.t + dt / 1.1);
+    const k = copy.t * copy.t * (3 - 2 * copy.t);
+    copy.mesh.visible = true;
+    copy.mesh.position.lerpVectors(copy.from, copy.to, k);
+    copy.mesh.position.y += Math.sin(Math.PI * k) * 0.9;
+    copy.mesh.position.z += Math.sin(Math.PI * k) * 0.35;
+    copy.mesh.scale.setScalar(1 - 0.35 * k);
+    if (copy.t >= 1) {
+      scene.remove(copy.mesh);
+      sealCopies.splice(i, 1);
+    }
+  }
+}
+
 function frame(time) {
   timer.update(time);
   const dt = THREE.MathUtils.clamp(timer.getDelta(), 0, 0.1);
   updateTween(dt);
   updatePops(dt);
+  updateSealCopies(dt);
   coffres.forEach((c) => c.update(dt, timer.getElapsed(), reducedMotion));
   archipel.update(dt, timer.getElapsed(), reducedMotion);
   nuages.update(camera, dt, timer.getElapsed(), cloudTransit && tween.active, reducedMotion);
