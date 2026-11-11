@@ -317,6 +317,8 @@ const ui = {
   fields: document.querySelector('#fields'),
   enVrai: document.querySelector('#en-vrai'),
   enVraiText: document.querySelector('#en-vrai-text'),
+  words: document.querySelector('#mots'),
+  wordsList: document.querySelector('#mots-liste'),
   prev: document.querySelector('#prev'),
   next: document.querySelector('#next'),
   dots: document.querySelector('#dots'),
@@ -508,6 +510,9 @@ function goTo(index) {
   ui.title.textContent = sequence.title;
   ui.enVraiText.innerHTML = sequence.enVrai;
   ui.enVrai.open = false;
+  ui.words.hidden = !sequence.words;
+  ui.words.open = false;
+  ui.wordsList.innerHTML = (sequence.words ?? []).map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join('');
   ui.prev.disabled = current === 0;
   ui.next.disabled = current === SEQUENCES.length - 1;
   [...ui.dots.children].forEach((dot, i) => {

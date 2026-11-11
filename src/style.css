@@ -451,6 +451,43 @@ summary:focus-visible {
   font-size: 0.86rem;
 }
 
+/* « Les mots de cette étape » : un lexique replié, sur la fiche. */
+#mots {
+  padding: 10px 0;
+  border-top: 1px dashed var(--muted);
+}
+
+#mots summary {
+  color: var(--accent);
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+#mots summary::before {
+  content: '+ ';
+}
+
+#mots[open] summary::before {
+  content: '− ';
+}
+
+#mots dl {
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+#mots dt {
+  color: var(--text);
+  font-weight: 800;
+}
+
+#mots dd {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 /* « En vrai… » : un post-it collé sur la fiche. */
 #en-vrai {
   padding: 12px 18px;
