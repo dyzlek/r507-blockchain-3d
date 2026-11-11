@@ -40,6 +40,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | #10 Notion 4 : explication des avions en double (une île ne sait pas ce que ses voisines ont reçu, elle ignore le doublon) | 4 | En cours | `src/sequences.js` ; texte non revu à l'écran, pas encore commité |
 | #8 Sceaux colorés selon leur bloc (deux blocs voisins n'ont jamais la même couleur), copie du sceau et cercles de comparaison de la même couleur | 1, 2 | En cours | `src/coffre.js`, `src/papier.js`, `src/main.js` ; PR #43 ouverte, rendu à confirmer à l'écran |
 | #14 Storyboard réécrit en texte seul, aligné sur le parcours actuel (9 étapes, plan par plan, transitions, navigation) | Toutes | Fonctionnel | `docs/STORYBOARD.md` ; pas encore commité ; issue à fermer par le groupe |
+| #45 #46 #47 Lexique replié « Les mots de cette étape » à chaque étape, textes des notions 4 et 6 raccourcis | 2, 4, 5, 6, 7 | Fonctionnel | `src/sequences.js` (`words`), `src/main.js`, `index.html`, `src/style.css` ; PR #48, à retester en session 2 (#18) |
 | #17 Retours ouverts de T1 attribués depuis le formulaire (« termes techniques », bouton « En vrai… » : « Aidé » pour T1 et T2) ; commentaire de synthèse sur l'issue avec lien vers la PR #42 | Toutes | Fonctionnel | `docs/TEST-UTILISATEUR-RESULTATS.md`, commit `d80e5d6` (PR #42) ; commentaire sur #17 le 11/11 |
 | #22 Grille d'auto-évaluation pré-remplie (parties 1 à 4 avec preuves) ; #18 protocole de la session 2 ; #23 plan de soutenance | — | En cours | `docs/…GRILLE-AUTOEVAL.md`, `docs/TEST-UTILISATEUR.md`, `docs/SOUTENANCE.md` ; à relire ensemble |
 
@@ -80,7 +81,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Question | Réponse |
 |:---|:---|
-| Issues créées | 0 cette semaine (dernière issue numérotée : #25) ; les PR #42 et #43 sont ouvertes |
+| Issues créées | 3 le 11/11 : #45 (rythme des étapes 4 à 7), #46 (vocabulaire), #47 (rôle des sceaux), issues par problème relevé de la session 1, assignées à Dylan ; PR #42, #43, #44 et #48 ouvertes |
 | Issues fermées | #19 (fermée le 09/11). #17 commentée le 11/11, non fermée (observations de l'animateur et issues par problème manquantes) |
 | Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | Non relevé le 11/11 : à relever sur le board avant l'envoi (#17 est encore en `Backlog`) |
 | Board mis à jour pendant la semaine ? | Partiellement : #19 fermée, #17 commentée ; les autres issues à déplacer avec la preuve (PR #42, #43) |
