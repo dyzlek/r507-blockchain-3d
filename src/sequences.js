@@ -6,6 +6,7 @@
 // `mining` : un nouveau coffre au bout de la chaîne, le bouton lance la recherche du nonce (textRunning pendant les essais).
 // `consensus` : sur l'archipel, une course (preuve de travail) ou un tirage (preuve d'enjeu) désigne l'île qui scelle.
 // `race` : la branche secrète de Dylan fait la course contre la chaîne honnête (double dépense).
+// `words` : « Les mots de cette étape », courte définition de chaque terme nouveau (issue #46).
 // `overview` : dézoom final, on voit toutes les îles (la chaîne et l'archipel) d'un seul regard.
 
 export const SEQUENCES = [
@@ -17,6 +18,11 @@ export const SEQUENCES = [
       'Une blockchain, c’est un cahier de comptes. Tout le monde peut le lire, personne ne peut le modifier en douce.',
       'Chaque <strong>coffre</strong> est un bloc, fermé par un tampon : son <strong>sceau</strong>. Une <strong>corde</strong> les relie dans l’ordre.',
       'Les <strong>jetons</strong> sont une monnaie. Une <strong>transaction</strong>, c’est un paiement. On va en suivre un : <strong>Dylan paie 5 jetons à Maxens pour son vélo</strong>. Il arrivera dans un coffre à l’étape 5.',
+    ],
+    words: [
+      ['Bloc', 'une page du cahier : un coffre qui contient une transaction.'],
+      ['Sceau', 'le tampon qui ferme un coffre. Il change si on touche au contenu.'],
+      ['Jeton', 'l’unité qu’on s’envoie, comme une pièce.'],
     ],
     enVrai:
       'Les coffres ne sont qu’un dessin. En vrai, ce sont des données sur des ordinateurs. Des milliers d’ordinateurs gardent la même copie. Sur Bitcoin, un nouveau bloc s’ajoute toutes les 10 minutes environ, depuis 2009.',
@@ -35,6 +41,11 @@ export const SEQUENCES = [
     textInspected: [
       'Un bloc, c’est 4 choses : la <strong>transaction</strong>, un <strong>nombre</strong> (le nonce, la pièce numérotée, qui servira à l’étape 5), son <strong>sceau</strong>, et le <strong>sceau du coffre d’avant</strong>.',
       'Le sceau est un code unique calculé à partir de tout le contenu, un peu comme une empreinte digitale. Change une seule lettre dedans et le sceau devient complètement différent. Sa couleur et son motif viennent de ce code : autre code, autre tampon.',
+    ],
+    words: [
+      ['Transaction', 'un envoi de jetons : qui donne, qui reçoit, combien.'],
+      ['Nonce', 'un nombre qu’on ajoute dans le coffre. On le change pour obtenir un autre sceau.'],
+      ['Sceau', 'l’empreinte du coffre, calculée à partir de tout son contenu.'],
     ],
     enVrai:
       'Le « sceau » s’appelle un <strong>hash</strong>. C’est un code de 64 caractères, calculé par ton navigateur avec une formule (SHA-256). L’étiquette « Sceau » n’en montre que le début et la fin. Chez Bitcoin, un bloc contient des milliers de transactions et une date. Ici, une seule, pour rester simple.',
@@ -55,6 +66,10 @@ export const SEQUENCES = [
       'Si on change un vieux bloc, son sceau change, et la copie dans le suivant ne correspond plus. C’est l’idée de la notion 3.',
     ],
     button: ['Comparer les sceaux', 'C’est bon, j’ai vu'],
+    words: [
+      ['Chaîne', 'les coffres reliés dans l’ordre, du plus ancien au plus récent.'],
+      ['Sceau du coffre d’avant', 'la copie, dans un coffre, du sceau du coffre précédent. C’est elle qui les relie.'],
+    ],
     enVrai:
       'Dans une vraie blockchain, l’en-tête d’un bloc contient le hash du bloc précédent. Le tout premier bloc (genèse) n’a pas de parent : on y met des zéros.',
     camera: { position: [0, 1.5, 6.4], target: [0, 0, 0] },
@@ -77,6 +92,10 @@ export const SEQUENCES = [
       'Et les autres ordinateurs ont leur propre copie : à la notion 4, tu verras qu’ils <strong>refusent</strong> le bloc trafiqué.',
     ],
     button: ['Falsifier le bloc 1', 'Remettre comme avant'],
+    words: [
+      ['Falsifier', 'changer le contenu d’un coffre déjà fermé pour tricher.'],
+      ['Immuable', 'qu’on ne peut pas modifier sans que ça se voie.'],
+    ],
     enVrai:
       'Sur Bitcoin, refaire un vieux bloc oblige à refaire tout le travail des suivants, pendant que le réseau en ajoute de nouveaux. Seul un attaquant avec plus de la moitié de la puissance de calcul pourrait y arriver : l’attaque des 51 % (notion 7).',
     camera: { position: [0, 1.5, 6.4], target: [0, 0, 0] },
@@ -96,8 +115,7 @@ export const SEQUENCES = [
       'Clique sur l’île de Dylan : sa transaction part et voyage jusqu’à Maxens.',
     ],
     textInspected: [
-      'Pas de chef. Chaque île vérifie la transaction, puis la transmet à ses voisines.',
-      'Une île ne sait pas ce que ses voisines ont déjà reçu : elle leur envoie quand même. Si l’avion arrive chez une île qui a déjà la transaction, elle <strong>ignore le doublon</strong> et ne la fait pas suivre. C’est ce qui arrête la propagation.',
+      'Pas de chef. Chaque île vérifie la transaction, puis la transmet à ses voisines. Une île ne sait pas ce qu’elles ont déjà reçu : si l’avion arrive chez une île qui l’a déjà, elle <strong>ignore le doublon</strong>. C’est ce qui arrête la propagation.',
       '<strong>Clique sur une île pour l’éteindre</strong>, puis renvoie la transaction : elle passe par un autre chemin. Aucune île n’est obligatoire.',
       'Et si Dylan envoyait le <strong>bloc trafiqué</strong> de la notion 3 ? Choisis « Bloc 1 falsifié » plus bas, puis envoie-le.',
     ],
@@ -108,6 +126,11 @@ export const SEQUENCES = [
     ],
     button: ['Envoyer la transaction de Dylan', 'Renvoyer la transaction'],
     buttonForged: 'Envoyer le bloc 1 falsifié',
+    words: [
+      ['Nœud', 'une île : un ordinateur qui garde toute la chaîne.'],
+      ['Doublon', 'la même transaction reçue une deuxième fois. L’île l’ignore.'],
+      ['Mempool', 'la salle d’attente des transactions qui ne sont pas encore dans un bloc.'],
+    ],
     enVrai:
       'Une île s’appelle un <strong>nœud</strong> : un ordinateur qui garde toute la chaîne. Bitcoin en a des dizaines de milliers. La transaction qui attend s’appelle la <strong>mempool</strong> : une salle d’attente.',
     camera: { position: [0, 94, 88], target: [0, 0, 22] },
@@ -133,6 +156,11 @@ export const SEQUENCES = [
       'Essaie <strong>000</strong> : un zéro de plus, environ 16 fois plus d’essais. « Environ », car c’est du hasard.',
     ],
     button: ['Lancer le minage', 'Miner à nouveau'],
+    words: [
+      ['Miner', 'essayer des nonces, encore et encore, jusqu’à trouver un sceau qui respecte la règle.'],
+      ['Règle du 00', 'le sceau doit commencer par deux zéros. Plus de zéros, plus d’essais.'],
+      ['Vérifier', 'un seul calcul : on regarde si le sceau respecte la règle.'],
+    ],
     enVrai:
       'Chez Bitcoin, le sceau doit commencer par une vingtaine de zéros, et il faut en moyenne 10 minutes pour trouver le bon. Le gagnant reçoit des bitcoins neufs : d’où le mot « minage ». Ici, passer à 000 durcit la règle pour les blocs suivants, comme Bitcoin le fait.',
     camera: { position: [-0.4, 1.3, 5.6], target: [-0.4, -0.05, 0] },
@@ -147,8 +175,7 @@ export const SEQUENCES = [
     text: [
       'Toutes les îles peuvent proposer le prochain bloc. Il en faut <strong>un seul</strong>. Sans chef, comment se mettre d’accord ? C’est le <strong>consensus</strong>.',
       'Méthode 1, la <strong>course</strong> (preuve de travail) : la première île qui trouve un bon sceau gagne. Une île peut avoir plusieurs ordinateurs : plus elle en a, plus elle fait d’essais.',
-      'Méthode 2, le <strong>tirage au sort</strong> (preuve d’enjeu) : chaque île mise des jetons. Plus elle mise, plus elle a de chances.',
-      'Essaie les deux.',
+      'Méthode 2, le <strong>tirage au sort</strong> (preuve d’enjeu) : chaque île mise des jetons. Plus elle mise, plus elle a de chances. <strong>Essaie les deux.</strong>',
     ],
     textDone: {
       pow: [
@@ -166,6 +193,11 @@ export const SEQUENCES = [
       pow: ['Lancer la course', 'Course en cours…', 'Relancer la course'],
       pos: ['Faire le tirage', 'Tirage en cours…', 'Refaire le tirage'],
     },
+    words: [
+      ['Consensus', 'la règle qui fait que tout le monde se met d’accord sur le prochain bloc.'],
+      ['Preuve de travail', 'la course : la première île qui trouve un bon sceau gagne.'],
+      ['Preuve d’enjeu', 'le tirage au sort : on mise des jetons, plus on mise, plus on a de chances.'],
+    ],
     enVrai:
       'Le <strong>consensus</strong> est la règle qui fait que des milliers d’ordinateurs se mettent d’accord sur le bloc suivant. Bitcoin utilise la <strong>preuve de travail</strong> (<em>Proof of Work</em>) : elle consomme autant d’électricité qu’un pays entier. Ethereum est passé à la <strong>preuve d’enjeu</strong> (<em>Proof of Stake</em>) en 2022 et a réduit sa consommation de plus de 99 %. Limite : en PoW, les plus grosses machines gagnent plus souvent ; en PoS, les plus riches. Ici, c’est une simulation : la gagnante est tirée au sort selon ses chances, puis la course est jouée, et les compteurs d’essais sont très ralentis (une vraie machine fait des milliards d’essais par seconde). La récompense du gagnant n’est pas montrée.',
     camera: { position: [0, 94, 88], target: [0, 0, 22] },
@@ -201,6 +233,11 @@ export const SEQUENCES = [
       '<strong>À retenir :</strong> pour tricher à coup sûr, il faut plus de la moitié de la puissance du réseau. C’est l’<strong>attaque des 51 %</strong>. Sur Bitcoin, ça coûterait des milliards.',
     ],
     button: ['Lancer la course', 'Rejouer la course'],
+    words: [
+      ['Double dépense', 'payer deux fois avec les mêmes jetons.'],
+      ['Confirmation', 'un bloc ajouté après le tien. Plus il y en a, plus le paiement est sûr.'],
+      ['Attaque des 51 %', 'tricher à coup sûr en ayant plus de la moitié de la puissance du réseau.'],
+    ],
     enVrai:
       'Sur Bitcoin, on considère une transaction sûre après environ <strong>6 confirmations</strong>, soit une heure. Ici, comme en vrai, chaque bloc arrive au hasard : un tricheur peut avoir de la chance sur un bloc ou deux, jamais sur six. La course est seulement accélérée (une seconde au lieu de 10 minutes). L’attaque des 51 % est déjà arrivée sur de petites blockchains, comme Ethereum Classic en 2019 et 2020.',
     camera: { position: [0.3, 7, 8.8], target: [0.3, -0.2, 0] },
