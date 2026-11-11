@@ -97,6 +97,7 @@ export const SEQUENCES = [
     ],
     textInspected: [
       'Pas de chef. Chaque île vérifie la transaction, puis la transmet à ses voisines.',
+      'Une île ne sait pas ce que ses voisines ont déjà reçu : elle leur envoie quand même. Si l’avion arrive chez une île qui a déjà la transaction, elle <strong>ignore le doublon</strong> et ne la fait pas suivre. C’est ce qui arrête la propagation.',
       '<strong>Clique sur une île pour l’éteindre</strong>, puis renvoie la transaction : elle passe par un autre chemin. Aucune île n’est obligatoire.',
       'Et si Dylan envoyait le <strong>bloc trafiqué</strong> de la notion 3 ? Choisis « Bloc 1 falsifié » plus bas, puis envoie-le.',
     ],
