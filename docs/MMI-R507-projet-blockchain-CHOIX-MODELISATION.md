@@ -196,7 +196,7 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : aucun des deux ne dit que le sceau du coffre d'avant est **recopié** dans le suivant (« les sceaux », « le sceau sert à relier »). Notion la moins bien retenue. Critère non atteint | Sceaux colorés selon leur bloc (deux blocs voisins n'ont jamais la même couleur), copie du sceau de la même couleur que l'original, cercles de comparaison de cette couleur (PR #43) ; mot « Sceau du coffre d'avant » défini dans « Les mots de cette étape » (#47). La copie n'est pas animée. À mesurer de nouveau en session 2 | #17, #47 |
+| Session 1 (T1, T2) : aucun des deux ne dit que le sceau du coffre d'avant est **recopié** dans le suivant (« les sceaux », « le sceau sert à relier »). Notion la moins bien retenue. Critère non atteint | Sceaux colorés selon leur bloc (deux blocs voisins n'ont jamais la même couleur), copie du sceau de la même couleur que l'original, cercles de comparaison de cette couleur (PR #43) ; mot « Sceau du coffre d'avant » défini dans « Les mots de cette étape » (#47). La copie du sceau s'envole vers le coffre suivant à « Comparer les sceaux » (animation, PR #51). À mesurer de nouveau en session 2 | #17, #47 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
