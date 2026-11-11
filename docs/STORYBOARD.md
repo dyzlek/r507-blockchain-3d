@@ -1,140 +1,164 @@
 # Storyboard écrit — Blockchain 3D (R507)
 
-Issue #14 : storyboard du parcours complet. Ce document décrit, plan par plan, ce que voit et fait l'utilisateur. Il est écrit pour être donné tel quel à une IA qui génère les images : chaque plan a une description de scène et un **prompt image** (en anglais, qui marche mieux avec les générateurs). Les textes affichés sont ceux de `src/sequences.js` au 27/10/2026.
+Issue #14 : storyboard du parcours complet. Ce document décrit, étape par étape, ce que voit et fait l'utilisateur, de l'arrivée sur la page jusqu'à la vue d'ensemble finale. Il est **écrit, sans dessins** : chaque plan dit ce qu'on voit, ce qu'on lit, ce qu'on fait, ce qui change et comment on passe au plan suivant. Les textes affichés sont ceux de `src/sequences.js` au 11/11/2026 (ils y sont repris en version courte ; le texte complet est dans le fichier).
 
-- **Public :** 16–25 ans, hors informatique. **Durée visée :** 10 à 15 minutes, 8 étapes.
-- **Fil rouge :** une transaction, « Dylan envoie 5 jetons à Maxens », de sa création jusqu'à une tentative de double dépense.
-- **Métaphore :** un registre de coffres en carton scellés par des tampons, recopié dans un archipel d'îles en papier (CHOIX §2.2).
+- **Public :** 16–25 ans, hors informatique. **Durée visée :** 10 à 15 minutes.
+- **Parcours :** 9 étapes = une introduction, les 7 notions, une vue d'ensemble.
+- **Fil rouge :** une transaction, « Dylan envoie 5 jetons à Maxens ». Elle est annoncée dès l'introduction, voyage dans le réseau (notion 4), est rangée dans un bloc (notion 5), puis Dylan essaie de la défaire par une double dépense (notion 7).
+- **Métaphore :** un registre de coffres en carton scellés par des tampons (les sceaux), recopié sur un archipel d'îles en papier (CHOIX §2.2).
 
-## 0. Direction visuelle commune (à coller en tête de chaque prompt)
+## 1. Principes de l'ordre
 
-**Style prompt :** `paper-cut diorama on a warm cream desk, soft lamp light from the top left, handmade cardboard and tracing paper, matte textures, subtle paper grain, hard offset drop shadows, one coral accent color (#a8442c), no text, no logo, 3D isometric three-quarter view, clean and playful, educational`
+1. **Du petit au grand.** On commence par un seul coffre (notions 1 à 3, sur l'île de Dylan), puis on recule pour voir le réseau (notions 4 à 7). Chaque notion s'appuie sur la précédente et n'utilise aucun mot que la précédente n'a pas défini.
+2. **Chaque étape répond à une question** posée par la précédente :
+
+| Étape | Question à laquelle elle répond | Question qu'elle laisse ouverte |
+|:---|:---|:---|
+| 0 Intro | C'est quoi, l'idée ? | Qu'y a-t-il dans un coffre ? |
+| 1 Structure | Que contient un bloc ? | Comment les blocs tiennent-ils ensemble ? |
+| 2 Chaînage | Qu'est-ce qui relie deux blocs ? | Et si quelqu'un modifie un vieux bloc ? |
+| 3 Immutabilité | Pourquoi on ne peut pas tricher ? | Qui garde cette chaîne ? |
+| 4 Réseau | Pourquoi plusieurs copies ? | Qui crée le prochain bloc ? |
+| 5 Minage | Comment un bloc est-il scellé ? | Qui scelle, quand tout le monde peut ? |
+| 6 Consensus | Comment se mettre d'accord sans chef ? | Peut-on quand même tricher ? |
+| 7 Attaque | Que faut-il pour tricher à coup sûr ? | Qu'a-t-on vu au total ? |
+| 8 Ensemble | Tout le chemin, d'un seul regard | — |
+
+3. **Une action par étape.** À chaque étape, un bouton ou un clic fait « jouer » la notion. On comprend en le faisant, pas en lisant. Le panneau change après l'action (texte « inspecté »).
+4. **Chaque notion finit par un « À retenir »** (notions 4, 6, 7), une phrase à garder.
+5. **Un post-it « En vrai… »** donne, sur demande, la version technique (hash, nœud, mempool, Bitcoin). Il n'est jamais nécessaire pour comprendre.
+
+## 2. Direction visuelle
 
 | Élément | Description |
 |:---|:---|
-| Bureau | Crème `#e9dfcc`, grain de papier, lumière de lampe chaude en haut à gauche, vignette douce |
-| Coffre (bloc) | Boîte en carton kraft à nervures, une **fenêtre en papier calque** sur la face avant, une lampe à l'intérieur qui s'allume à l'inspection |
-| Sceau | **Tampon encreur rond**, couleur et motif propres à chaque bloc (jamais deux pareils) ; le sceau du parent est un tampon deux fois plus petit, dans le coin avant gauche |
-| Corde | Corde corail nouée au flanc de deux coffres, un peu détendue ; elle devient rouge et se coupe en cas de falsification |
-| Île | Feuilles de papier découpées empilées, avec un décor pop-up (phare, arbres, cabane) qui se relève à l'arrivée |
-| Avion | Avion en papier plié, messages qui voyagent d'île en île |
-| Interface | Fiche cartonnée **lignée** à gauche (ou en bas sur téléphone), tenue par deux bouts de ruban corail ; boutons en carton à ombre découpée ; post-it jaune pour « En vrai… » ; barre de 8 pastilles numérotées |
-| Palette | Encre `#3a2f26`, fiche `#f7f1e6`, post-it `#fff1b0`, corail `#a8442c` (liens, titres de champs, boutons), rouge `#b3261e` réservé à la fraude |
-| Typo | Alegreya Sans (texte), Courier Prime (valeurs, hashes, étiquettes) |
+| Bureau | Crème, grain de papier, lumière de lampe chaude en haut à gauche |
+| Coffre (bloc) | Boîte en carton kraft, une **fenêtre en papier calque** devant, une lampe à l'intérieur qui s'allume à l'inspection |
+| Sceau | **Tampon encreur rond**, couleur et motif propres à chaque bloc ; le sceau du parent est un tampon plus petit dans le coin avant gauche |
+| Corde | Corde corail qui relie deux coffres ; elle devient rouge et se coupe en cas de falsification |
+| Île | Feuilles de papier découpées empilées, décor pop-up qui se relève |
+| Avion | Avion en papier plié : les messages voyagent d'île en île (rouge pour un bloc falsifié) |
+| Interface | Fiche cartonnée lignée (à gauche, en bas sur téléphone), boutons en carton, post-it jaune « En vrai… », barre de 9 pastilles numérotées |
+| Couleurs | Encre sombre, fiche crème, post-it jaune, **corail** = ce qui relie ou demande l'attention, **rouge réservé à la fraude** |
 
-**Règles de cohérence entre plans :** la chaîne va toujours de gauche (ancien) à droite (récent) ; corail = ce qui relie ou demande l'attention ; rouge = fraude seulement ; un même coffre garde le même tampon d'un plan à l'autre.
+**Règles de cohérence :** la chaîne va toujours de gauche (ancien) à droite (récent) ; un même coffre garde le même tampon d'une étape à l'autre ; le rouge ne sert qu'à la triche.
 
-## 1. Vue d'ensemble du parcours
+## 3. Vue d'ensemble du parcours
 
-| # | Notion | Titre à l'écran | Caméra | Action de l'utilisateur | Ce qui change |
+| # | Étape | Titre à l'écran | Où est la caméra | Action de l'utilisateur | Ce qui change |
 |:-:|:---|:---|:---|:---|:---|
-| 1 | Introduction | Une chaîne de coffres en carton | Large, un peu en hauteur | Lire, passer à la suite | Rien : on découvre la chaîne |
-| 2 | 1 · Structure d'un bloc | Le coffre | Face au coffre n°2 | Clic sur le coffre ou « Allumer la lampe du coffre » | Le calque s'éclaire, 4 étiquettes apparaissent |
-| 3 | 2 · Chaînage | Chaque coffre garde le sceau du précédent | Les 3 coffres de face | « Comparer les sceaux » | Anneaux corail autour des sceaux jumeaux |
-| 4 | 3 · Immutabilité | Trafiquer un coffre, ça se voit | Idem | « Falsifier le bloc 1 » | Nouveau tampon, corde coupée, anneaux rouges |
-| 5 | 4 · Réseau | L'archipel | Plongée sur l'archipel | « Envoyer la transaction de Dylan », éteindre des îles | Avions de papier d'île en île |
-| 6 | 5 · Minage | La course au sceau | Gros plan sur un nouveau coffre au bout de la chaîne | « Lancer le minage », choix de difficulté | Tampons pâles qui défilent, puis un tampon net |
-| 7 | 6 · Consensus | Qui scelle le bloc ? | Plongée sur l'archipel | Course (preuve de travail) puis tirage (preuve d'enjeu) | Une île gagne |
-| 8 | 7 · Transaction et attaque | La double dépense | Plongée, deux branches | Choix de la puissance, « Lancer la course » | Deux branches avancent, une l'emporte |
+| 1 | Avant de commencer | Une chaîne de coffres en carton | Large, face à la chaîne | Lire, « Suivant » | Rien, on découvre la chaîne |
+| 2 | Notion 1 · Structure | Le coffre | Gros plan sur le coffre n°2 | Clic sur le coffre ou sur la lampe | Le calque s'éclaire, 4 étiquettes apparaissent |
+| 3 | Notion 2 · Chaînage | Chaque coffre garde le sceau du précédent | Les 3 coffres de face | « Comparer les sceaux » | Anneaux corail autour des sceaux jumeaux |
+| 4 | Notion 3 · Immutabilité | Trafiquer un coffre, ça se voit | Idem | « Falsifier le bloc 1 » | Nouveau sceau, corde coupée, anneaux rouges |
+| 5 | Notion 4 · Réseau | L'archipel | Plongée sur l'archipel | Envoyer la transaction, éteindre une île, envoyer le bloc falsifié | Avions de papier d'île en île |
+| 6 | Notion 5 · Minage | La course au sceau | Gros plan sur un nouveau coffre (bloc 4) | « Lancer le minage », difficulté 00 / 000 | Sceaux pâles qui défilent, puis un sceau net |
+| 7 | Notion 6 · Consensus | Qui scelle le bloc ? | Plongée sur l'archipel | Course (preuve de travail), puis tirage (preuve d'enjeu) | Une île gagne |
+| 8 | Notion 7 · Attaque | La double dépense | Vue au-dessus de deux branches | Choix de la puissance, « Lancer la course » | Deux branches avancent, une l'emporte |
+| 9 | Vue d'ensemble | Tout l'archipel | Dézoom total | Tourner autour de la scène | Rien, on revoit tout |
 
-## 2. Plans détaillés
+## 4. Plans détaillés
 
-Chaque plan donne : **Cadre** (ce qu'on voit), **Panneau** (texte affiché), **Action**, **Transition** vers le plan suivant, **Prompt image**. Les textes sont raccourcis ; le texte complet est dans `src/sequences.js`.
+Pour chaque plan : **Cadre**, **Panneau**, **Action**, **Après l'action**, **Transition**, **Objectif de compréhension**.
 
 ### Plan 1 — Avant de commencer : « Une chaîne de coffres en carton »
-- **Cadre :** vue large, légèrement en plongée. Trois coffres en carton alignés sur le bureau, reliés par une corde corail, chacun avec son tampon. Aucun coffre mis en avant. Étiquettes « Bloc n°1, n°2, n°3 » sur de petits papiers un peu de travers.
-- **Panneau :** badge rond « 0 » (introduction), titre, trois paragraphes : le cahier de comptes que personne ne peut modifier en douce ; chaque page est un coffre fermé par un tampon ; on suit « Dylan envoie 5 jetons à Maxens ». Post-it « En vrai… » fermé.
-- **Action :** aucune, bouton « Suivant → ».
-- **Transition :** la caméra glisse (1,4 s) vers le coffre du milieu.
-- **Prompt image :** `[style] wide three-quarter view of three cardboard chests in a row on a cream desk, each with a round colorful ink stamp on a tracing-paper window, connected by a loose coral rope, small paper tags above them, soft lamp light`
+- **Cadre :** vue large. Trois coffres en carton alignés, reliés par une corde, chacun avec son tampon. Aucun n'est mis en avant.
+- **Panneau :** « Une blockchain, c'est un cahier de comptes. Tout le monde peut le lire, personne ne peut le modifier en douce. » Chaque coffre est un bloc fermé par un sceau. On va suivre « Dylan envoie 5 jetons à Maxens ».
+- **Action :** aucune. Bouton « Suivant ».
+- **Transition :** la caméra glisse jusqu'au coffre du milieu.
+- **Objectif :** l'utilisateur a l'image de départ et sait quelle histoire on va suivre.
 
 ### Plan 2 — Notion 1 : « Le coffre »
-- **Cadre :** gros plan sur un coffre. Une bulle post-it « Clique sur le coffre » se balance dessous. Au survol, le verre du coffre prend une teinte.
-- **Panneau :** « Ce coffre, c'est un bloc. Il contient une transaction : Thomas envoie 3 jetons à Julien. » Il a une fenêtre en papier calque ; l'ouvrir casserait le sceau. Bouton « Allumer la lampe du coffre ».
-- **Action :** clic sur le coffre ou sur le bouton.
-- **Après l'action :** la lampe s'allume, le calque devient lisible. Quatre étiquettes de papier (tenues par du ruban corail) pointent chaque champ par un trait corail : **transaction**, **nonce** (une pièce), **sceau**, **sceau du coffre d'avant**. Le panneau liste ces champs et les 64 caractères du vrai hash. Légende : la couleur et le motif du tampon viennent du code.
-- **Transition :** la caméra recule pour montrer 3 coffres.
-- **Prompts image :**
-  - Avant : `[style] close-up of one cardboard chest with a tracing-paper window, dark inside, a small yellow sticky note bouncing above it`
-  - Après : `[style] same chest, lamp lit inside, the tracing paper glows warm, four paper labels taped around it with thin coral leader lines pointing to a small gold coin, a large round ink stamp, and a smaller stamp in the front left corner`
+- **Cadre :** gros plan sur un coffre. Une bulle « Clique sur le coffre » flotte dessous.
+- **Panneau :** ce coffre est un bloc, il contient « Thomas envoie 3 jetons à Julien ». Sa fenêtre est en papier calque (l'ouvrir casserait le sceau). On peut allumer la lampe pour mieux voir.
+- **Action :** clic sur le coffre, ou bouton « Allumer la lampe ».
+- **Après l'action :** la lampe s'allume, quatre étiquettes pointent chaque champ : **la transaction**, **le nombre (nonce)**, **le sceau**, **le sceau du coffre d'avant**. Le panneau explique que le sceau est une empreinte : une lettre changée, un sceau totalement différent.
+- **Transition :** la caméra recule pour montrer les trois coffres.
+- **Objectif :** retenir que le bloc a 4 éléments et que le sceau dépend de tout le contenu.
 
 ### Plan 3 — Notion 2 : « Chaque coffre garde le sceau du précédent »
-- **Cadre :** les trois coffres de face (blocs 1, 2, 3), corde corail entre eux. Dans le coin avant gauche de chaque coffre, un petit tampon : copie du grand tampon du coffre précédent.
-- **Panneau :** « Regarde le petit sceau dans le coin de chaque coffre : c'est une copie du sceau du coffre d'avant. » Bouton « Comparer les sceaux ».
-- **Action :** clic sur le bouton.
-- **Après l'action :** des anneaux corail entourent les sceaux jumeaux (grand sceau du bloc 1 et petit sceau du bloc 2, etc.). Le panneau écrit « parent du bloc N = sceau du bloc N−1 ». Bouton devient « C'est bon, j'ai vu ».
-- **Transition :** même cadre, pour que la falsification se fasse sur la même image.
-- **Prompt image :** `[style] three cardboard chests in a row, each with a big round stamp and a small identical copy of the previous chest's stamp in its front-left corner, glowing coral rings around each pair of identical stamps, coral rope between chests`
+- **Cadre :** les trois coffres de face. Dans le coin de chaque coffre, un petit sceau : la copie du sceau du coffre d'avant.
+- **Panneau :** « C'est une copie du sceau du coffre d'avant. C'est ça qui forme la chaîne. »
+- **Action :** bouton « Comparer les sceaux ».
+- **Après l'action :** des anneaux corail entourent les sceaux jumeaux (le grand du bloc 1 et le petit du bloc 2, puis 2 et 3).
+- **Transition :** même cadre, pour que la falsification se joue sur la même image.
+- **Objectif :** comprendre que « chaîne » veut dire « chaque bloc contient le sceau du précédent ».
 
 ### Plan 4 — Notion 3 : « Trafiquer un coffre, ça se voit »
 - **Cadre :** mêmes trois coffres.
-- **Panneau :** « Quelqu'un veut tricher : il change la transaction du bloc 1 […]. Essaie. » Bouton « Falsifier le bloc 1 ».
-- **Action :** clic sur le bouton.
-- **Après l'action :** un nouveau tampon, totalement différent, s'imprime sur le bloc 1 (le coffre s'écrase légèrement, des gouttes d'encre giclent puis s'effacent). Plaque « falsifié » rouge. La corde entre le bloc 1 et le bloc 2 devient rouge, **se coupe** et ses deux moitiés retombent en se balançant. Le sceau copié dans le bloc 2 ne correspond plus (anneaux rouges). Le panneau liste les écarts. Bouton « Remettre comme avant » : la corde se renoue et se retend.
-- **Transition :** la caméra monte vers l'archipel, les îles se déplient.
-- **Prompts image :**
-  - `[style] a cardboard chest being hit by a big round ink stamp from above, ink droplets flying, the new stamp is a completely different color, a small red paper tag reading nothing, three-quarter view`
-  - `[style] two cardboard chests side by side, the coral rope between them is cut and red, both halves hanging down and swinging, red rings around two stamps that no longer match`
+- **Panneau :** « Quelqu'un veut tricher : il change la transaction du bloc 1, pour que Nicolas envoie 200 jetons au lieu de 2. Essaie. »
+- **Action :** « Falsifier le bloc 1 ».
+- **Après l'action :** le bloc 1 reçoit un nouveau sceau, très différent ; la corde vers le bloc 2 devient rouge et se coupe ; les anneaux rouges montrent que la copie dans le bloc 2 ne correspond plus. Le panneau explique qu'il faudrait refaire tous les blocs suivants pour cacher la triche, et annonce que les autres ordinateurs refuseront le bloc trafiqué. Le bouton devient « Remettre comme avant ».
+- **Transition :** la caméra monte, traverse des nuages et arrive sur l'archipel (la chaîne n'était qu'une île).
+- **Objectif :** la falsification se voit tout de suite, parce que les sceaux ne correspondent plus.
 
 ### Plan 5 — Notion 4 : « L'archipel »
-- **Cadre :** plongée sur sept îles en papier découpé dispersées, sans île au centre. Dylan à gauche, Maxens à droite. Décors pop-up qui se relèvent (phare, arbres, cabane). Étiquette « Île de Dylan », etc. Bulle post-it sur l'île de Dylan.
-- **Panneau :** « Qui garde cette chaîne ? Personne en particulier : tout le monde. Chaque île est un ordinateur du réseau, avec sa propre copie. » Bouton « Envoyer la transaction de Dylan ».
-- **Action :** envoyer, puis cliquer une île pour l'éteindre (ou bouton « Éteindre une île »), puis renvoyer.
-- **Après l'action :** des avions en papier partent de l'île de Dylan et passent d'île en île ; chaque île touchée s'illumine. Une île éteinte s'affaisse, grisée, étiquette « · éteinte », ses routes pâlissent ; la transaction trouve un autre chemin.
-- **Transition :** la transaction attend au-dessus des îles ; le plan suivant la range dans un coffre.
-- **Prompts image :**
-  - `[style] top-down three-quarter view of seven small paper islands scattered on a blue paper sea, pop-up lighthouse, trees and a hut standing up on each island, dotted paths between neighbors, no central island`
-  - `[style] same archipelago, small paper airplanes flying along the dotted paths from the left island to the right island, touched islands glow coral, one island dimmed and sunken (switched off)`
+- **Cadre :** plongée sur un archipel d'îles en papier, sans île au centre. Dylan à gauche, Maxens à droite. Les décors se relèvent à l'arrivée.
+- **Panneau :** « Chaque île est un ordinateur. Il a sa propre copie de la chaîne. Personne n'est le chef. » Consigne : cliquer sur l'île de Dylan.
+- **Action :** envoyer la transaction de Dylan. Puis, au choix : éteindre une île (clic) et renvoyer, ou choisir « Bloc 1 falsifié » et l'envoyer.
+- **Après l'action :**
+  - Transaction normale : des avions en papier partent de l'île de Dylan et passent d'île en île, chacune vérifie puis la transmet. Une île qui a déjà la transaction ignore le doublon, c'est ce qui arrête la propagation. Une île éteinte est contournée.
+  - Bloc falsifié : l'avion est rouge, les voisines de Dylan comparent avec leur copie, **refusent** (anneau rouge, « refuse le bloc ✗ ») et ne le transmettent pas. Maxens ne le reçoit jamais.
+- **Transition :** la transaction attend au-dessus des îles (la « salle d'attente »). La caméra redescend à travers les nuages vers la chaîne, au bout de laquelle apparaît un nouveau coffre.
+- **Objectif :** comprendre pourquoi il y a plusieurs copies (pas de chef, pas de point faible) et que chaque île vérifie ce qu'elle reçoit.
 
 ### Plan 6 — Notion 5 : « La course au sceau »
-- **Cadre :** gros plan sur un **nouveau coffre au bout de la chaîne** (bloc 4), sans sceau. Un bandeau de petites étiquettes : « Bloc n°4 · sans sceau ».
-- **Panneau :** « La transaction de Dylan est rangée dans un nouveau coffre. Il lui manque un sceau. Règle : le sceau doit commencer par 00. » Bouton « Lancer le minage », choix de difficulté `00` / `000`.
-- **Action :** lancer le minage.
-- **Pendant :** le nonce (pièce) change à chaque essai, un tampon **pâle** se pose et s'efface sans cesse, compteur d'essais qui grimpe.
-- **Après :** un tampon **net et plein** s'imprime, étiquette « Bloc n°4 · scellé », anneaux corail ; le panneau donne le nonce trouvé et le nombre d'essais. Essayer `000` : environ 16 fois plus d'essais.
-- **Transition :** retour sur l'archipel.
-- **Prompts image :**
-  - `[style] close-up of a new cardboard chest at the end of a chain, empty tracing paper window, a gold coin floating above it, many faint pale stamp ghosts overlapping on the window`
-  - `[style] same chest after success: a crisp bold round ink stamp printed on the window, coral rings around it, ink droplets, a small tag saying sealed`
+- **Cadre :** gros plan sur un **nouveau coffre au bout de la chaîne** (bloc 4), sans sceau. Plaque « Bloc n°4 · sans sceau ».
+- **Panneau :** la transaction de Dylan est rangée dans un nouveau coffre. Règle : le sceau doit commencer par **00**. On ne le choisit pas, on change le nonce et on recalcule.
+- **Action :** « Lancer le minage ». Option de difficulté : `000`.
+- **Pendant :** le nonce change à chaque essai, un sceau pâle se pose et s'efface, un compteur d'essais grimpe.
+- **Après :** un sceau net s'imprime, plaque « Bloc n°4 · scellé ». Le panneau donne le nombre d'essais : beaucoup pour trouver, un seul calcul pour vérifier. Avec `000`, environ 16 fois plus d'essais.
+- **Transition :** la caméra remonte, à travers les nuages, vers l'archipel.
+- **Objectif :** « miner », c'est faire beaucoup d'essais ; trouver est difficile, vérifier est facile.
 
 ### Plan 7 — Notion 6 : « Qui scelle le bloc ? »
-- **Cadre :** plongée sur l'archipel, avec des **machines** posées sur chaque île (nombre différent selon l'île) pour la preuve de travail, et des **jetons** pour la preuve d'enjeu.
-- **Panneau :** deux choix : « Preuve de travail » (course au sceau, plus de machines = plus vite) et « Preuve d'enjeu » (tirage au sort, chaque jeton misé est un ticket). Boutons « Lancer la course » / « Faire le tirage ».
-- **Action :** choisir la méthode, lancer, relancer plusieurs fois.
-- **Après :** en PoW, toutes les îles calculent, **une seule** gagne (étiquette gagnante corail), le travail des autres est perdu. En PoS, un seul tirage, presque aucun calcul, l'île la plus dotée gagne plus souvent mais pas toujours.
-- **Prompts image :**
-  - PoW : `[style] archipel of paper islands each with a different number of small cardboard calculating machines, tiny sparks, one island on the left is crowned with a coral winner tag`
-  - PoS : `[style] archipel of paper islands each holding a different pile of paper tokens, one big ticket drawer above, a single island highlighted by a spotlight`
+- **Cadre :** plongée sur l'archipel, avec des ordinateurs sur chaque île (en nombre différent) pour la course, et des jetons pour le tirage au sort.
+- **Panneau :** toutes les îles peuvent proposer le prochain bloc, il en faut un seul. Méthode 1 : la **course** (preuve de travail). Méthode 2 : le **tirage au sort** (preuve d'enjeu). « Essaie les deux. »
+- **Action :** lancer la course, puis le tirage, rejouer à volonté.
+- **Après :**
+  - Course : une seule île gagne, les autres ont calculé pour rien (beaucoup d'électricité). L'île qui a le plus d'ordinateurs gagne plus souvent.
+  - Tirage : un seul tirage, presque aucun calcul. Une île qui triche perd sa mise. Les plus riches gagnent plus souvent.
+- **Transition :** la caméra redescend, à travers les nuages, vers la chaîne.
+- **Objectif :** il existe plusieurs façons de se mettre d'accord sans chef, chacune avec ses avantages et ses limites.
 
 ### Plan 8 — Notion 7 : « La double dépense »
-- **Cadre :** plongée sur deux branches de coffres qui partent du même bloc 3 : la chaîne honnête (blocs 4, 5, 6…) et la **branche secrète de Dylan** (un autre bloc 4). Une jauge de puissance.
-- **Panneau :** « Dylan veut tricher. En secret, il fabrique un autre bloc 4, où les mêmes jetons lui reviennent. […] On garde toujours la chaîne la plus longue. » Choix de la puissance (30 % par défaut, 60 %), bouton « Lancer la course ». Liste du cycle de vie de la transaction : ✓ signée, ✓ envoyée, ✓ en attente, ✓ dans un bloc.
-- **Action :** choisir la puissance, lancer.
-- **Après (30 %) :** la branche de Dylan reste plus courte, les îles la **rejettent** : elle bascule en arrière, et la transaction de Maxens reste. Les confirmations s'ajoutent.
-- **Après (60 %) :** la branche de Dylan devient la plus longue, les îles l'adoptent, le bloc 4 de Maxens est abandonné (✗, barré) : « C'est l'attaque des 51 % ».
-- **Fin :** le parcours s'arrête là ; bouton « Suivant » désactivé, on peut tout rejouer avec les pastilles.
-- **Prompts image :**
-  - `[style] two chains of cardboard chests splitting from the same block, a long honest chain on top with four chests, a short secret chain below with two chests, a paper gauge showing 30 percent`
-  - `[style] attack succeeds: the lower secret chain is now longer, the upper honest chest crossed out and tilted, coral and red tags, confetti-free, serious tone`
+- **Cadre :** vue au-dessus de deux branches de coffres : la chaîne honnête (la transaction de Maxens dans le bloc 4) et la **branche secrète de Dylan**, un autre bloc 4. Lignes « Résultats » et deux transactions en conflit.
+- **Panneau :** « Dylan triche : en secret, il fabrique un autre bloc 4 où il garde ses 5 jetons. » Les îles suivent la chaîne la plus longue. Choix de la puissance de Dylan (30 % ou 60 %).
+- **Action :** « Lancer la course » (temps de bloc tirés au hasard). Rejouer plusieurs fois.
+- **Après :**
+  - Dylan perd (cas habituel à 30 %) : sa chaîne est plus courte, les îles l'ignorent, Maxens garde ses jetons. Les confirmations s'ajoutent.
+  - Dylan gagne (cas habituel à 60 %) : sa chaîne est plus longue, les îles la suivent, le bloc de Maxens disparaît. C'est l'**attaque des 51 %**.
+  - Coup de chance ou de malchance : un texte explique que le hasard peut contredire la règle sur une course courte, et pourquoi Bitcoin attend 6 confirmations.
+- **Transition :** la caméra remonte, à travers les nuages, pour le dézoom final.
+- **Objectif :** définir la double dépense et comprendre qu'il faut plus de la moitié de la puissance pour tricher à coup sûr.
 
-## 3. Transitions et rythme
+### Plan 9 — Vue d'ensemble : « Tout l'archipel »
+- **Cadre :** dézoom total. On voit l'île de Dylan avec sa chaîne et tout l'archipel.
+- **Panneau :** « Une blockchain, c'est un cahier de comptes recopié partout, où chaque page est scellée à la précédente. » On peut tourner autour de la scène pour tout revoir.
+- **Action :** aucune obligatoire (le bouton « Suivant » est désactivé, c'est la fin).
+- **Objectif :** boucler le parcours en une phrase, et laisser l'utilisateur explorer.
 
-| Passage | Durée | Effet |
-|:---|:---|:---|
-| Toutes les étapes | 1,4 s | La caméra glisse vers le nouveau point de vue |
-| Étape 4 → 5 | 1,4 s | La caméra quitte la chaîne ; l'archipel grandit vers le centre de l'écran, les décors se relèvent un à un |
-| Étape 5 → 6 | 1,4 s | L'archipel rétrécit, le coffre à miner grandit au bout de la chaîne |
-| Étiquettes | 250 ms | Apparaissent après l'objet qu'elles décrivent et disparaissent avant lui |
+## 5. Transitions et rythme
 
-**Interactions de secours :** boutons « Précédent / Suivant », pastilles numérotées, flèches ← → du clavier, `?etape=N` pour ouvrir directement une étape. Avec `prefers-reduced-motion`, les transitions sont instantanées.
+| Passage | Effet de caméra |
+|:---|:---|
+| Entre deux étapes proches (chaîne ↔ chaîne) | La caméra glisse, 0,8 à 1,8 s selon la distance |
+| Chaîne ↔ archipel (étapes 4→5, 5→6, 6→7, 7→8, 8→9) | Traversée d'une nappe de nuages (environ 2,3 s) : montée, passage dans les nuages, sortie. Les étiquettes se cachent pendant la traversée et reviennent à l'arrivée |
+| Étiquettes et bulles | Elles apparaissent après l'objet qu'elles décrivent |
 
-## 4. Variante téléphone (≤ 760 px)
+**Rythme visé :** 1 à 2 minutes par étape. Les étapes 5 à 8 (réseau, minage, consensus, attaque) sont les plus denses : c'est là que les tests utilisateurs ont signalé un rythme trop rapide (TEST-UTILISATEUR-RESULTATS.md), d'où les textes raccourcis, les « À retenir » et les exemples du quotidien.
 
-La fiche cartonnée passe **en bas de l'écran** (52 % de la hauteur au plus, elle défile), sans rubans ni inclinaison. La scène occupe le haut, le centre de la vue est décalé pour que l'objet concerné ne soit pas caché. Mêmes plans, cadrés plus serrés.
+**Navigation :** boutons « Précédent / Suivant », pastilles numérotées (9), flèches ← → du clavier, `?etape=N` dans l'adresse pour ouvrir directement une étape. Avec `prefers-reduced-motion`, la caméra saute directement au point de vue suivant.
 
-## 5. Ce qu'il faut demander à l'IA
+## 6. Variante téléphone (≤ 760 px)
 
-1. **Une planche par plan** (8 images, ou 12 avec les états avant/après des plans 2, 4, 5, 6, 8), même style, même caméra par plan.
-2. **Une planche d'interface** : la fiche cartonnée lignée avec le badge rond, le titre, le texte, un bouton en carton, un post-it « En vrai… » et la barre de 8 pastilles.
-3. **Garder les mêmes tampons** d'un plan à l'autre (donner à l'IA les couleurs des trois premiers coffres : par exemple rouge, bleu, vert).
-4. **Ne pas faire écrire de texte** par l'IA : les textes viennent du panneau, les images ne contiennent pas de lettres lisibles.
+La fiche passe **en bas de l'écran** (elle défile), la scène occupe le haut, la caméra est un peu plus reculée sur l'archipel, la course et la vue d'ensemble pour que l'objet concerné ne soit pas caché par la fiche. Mêmes étapes, mêmes textes.
+
+## 7. Ce qui a changé depuis la première version (27/10/2026)
+
+- Une étape en plus : la **vue d'ensemble** (9 étapes au lieu de 8).
+- **Notion 4** : l'avion rouge et le refus du bloc falsifié par les autres îles ; l'explication des doublons.
+- **Notion 7** : course au hasard avec résultats cumulés, deux transactions en conflit, textes de chance et de malchance.
+- **Notion 6** : course simulée (la gagnante est tirée au sort selon ses chances).
+- **Textes** relus pour des non-initiés (jetons et transaction définis, « corde » au lieu de « ruban », exemple du vélo).
+- Les **prompts d'images** de la première version ont été retirés : le storyboard est maintenant purement écrit, la référence visuelle est la démo elle-même.
