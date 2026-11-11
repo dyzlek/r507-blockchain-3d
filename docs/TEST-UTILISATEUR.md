@@ -16,7 +16,7 @@ Issue #17 (session 1) et #18 (session 2). À reporter ensuite dans les sections 
 
 ## Session 2 (#18) : ce qui a changé, ce qu'on vérifie
 
-Testeurs : **2 personnes qui n'ont jamais vu le projet**, dont au moins une qui ne connaît rien à la blockchain. Même déroulé et même formulaire que la session 1, pour pouvoir comparer.
+Testeurs : **2 personnes qui n'ont jamais vu le projet**, dont au moins une qui ne connaît rien à la blockchain. Même déroulé que la session 1. Le formulaire est refait de façon plus claire (`docs/creer-formulaire-session-2.gs`, à lancer dans Google Apps Script) : mêmes 8 questions de compréhension et mêmes 8 affirmations de ressenti que la session 1, pour pouvoir comparer ; étapes nommées comme à l'écran (9 étapes) ; « moment le plus perdu » et « mieux compris » en listes d'étapes ; « ce qui manque » et « ce qui est en trop » séparés ; questions clés obligatoires ; partie « Qu'avez-vous fait » (lampe, île éteinte, bloc falsifié, 60 %…) qui reprend une partie de la grille F. Après création, reporter les nouveaux liens dans la section « Liens » ci-dessus.
 
 | Changement depuis la session 1 | Ce qu'on vérifie (question ou observation) | Comparaison session 1 |
 |:---|:---|:---|
