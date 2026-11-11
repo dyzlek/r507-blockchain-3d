@@ -62,7 +62,7 @@ export const SEQUENCES = [
       'C’est ça qui forme la <strong>chaîne</strong> : chaque bloc sait quel bloc le précède.',
     ],
     textInspected: [
-      'Les sceaux allumés sont jumeaux : le sceau du bloc 1 est recopié dans le bloc 2, celui du bloc 2 dans le bloc 3.',
+      'Regarde : la copie du sceau part du coffre d’avant et <strong>se pose dans le coin du coffre suivant</strong>. Les sceaux allumés sont jumeaux : le sceau du bloc 1 est recopié dans le bloc 2, celui du bloc 2 dans le bloc 3.',
       'Si on change un vieux bloc, son sceau change, et la copie dans le suivant ne correspond plus. C’est l’idée de la notion 3.',
     ],
     button: ['Comparer les sceaux', 'C’est bon, j’ai vu'],

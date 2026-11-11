@@ -338,6 +338,8 @@ export function createCoffre(block) {
   return {
     block,
     group,
+    sealMesh: seal,
+    parentSealMesh: parentSeal,
     hitMesh: body,
     get inspected() {
       return inspected;
