@@ -12,7 +12,7 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 |:---|:---|
 | Groupe | Maxens, Dylan |
 | Semaine | 6 |
-| Dates couvertes | 07/11 – 13/11/2026 (rédigée le 09/11, à compléter avant l'envoi) |
+| Dates couvertes | 07/11 – 13/11/2026 (mise à jour le 11/11, à compléter avant l'envoi) |
 | Membres présents | |
 | Lien dépôt / GitHub Projects | https://github.com/dyzlek/r507-blockchain-3d |
 | Lien démo (si disponible) | https://dyzlek.github.io/r507-blockchain-3d/ |
@@ -36,24 +36,31 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | #12 Encart « En vrai… » de la notion 6 : la course est dite simulée (gagnante tirée au sort, essais ralentis) | 6 | Fonctionnel | `src/sequences.js` |
 | #7 « Sceau » renommé « Sceau de ce coffre » dans la fiche du coffre (T2 confondait les deux sceaux) | 1 | Fonctionnel | `src/main.js` |
 | #20 CHOIX v0.11 : session 1 reportée dans les 7 fiches, §3 fluidité (FPS), §5 cohérence, §6 IA, §7 sources, gabarit 4.X retiré | Toutes | Fonctionnel | `docs/MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` |
+| #13 #12 #11 #10 #9 #8 #7 Textes de toutes les notions relus pour des non-initiés : jetons et transaction définis dès l'étape 0, « corde » au lieu de « ruban rouge », nonce = nombre sur la pièce, pourquoi le minage est difficile, îles = participants avec plusieurs ordinateurs, exemple du vélo pour la double dépense (retours de T1 et T2) | Toutes | Fonctionnel | `src/sequences.js`, `src/main.js`, `src/consensus.js`, CHOIX §4.7 f) ; PR #42 ouverte, non fusionnée |
+| #10 Notion 4 : explication des avions en double (une île ne sait pas ce que ses voisines ont reçu, elle ignore le doublon) | 4 | En cours | `src/sequences.js` ; texte non revu à l'écran, pas encore commité |
+| #8 Sceaux colorés selon leur bloc (deux blocs voisins n'ont jamais la même couleur), copie du sceau et cercles de comparaison de la même couleur | 1, 2 | En cours | `src/coffre.js`, `src/papier.js`, `src/main.js` ; PR #43 ouverte, rendu à confirmer à l'écran |
+| #14 Storyboard réécrit en texte seul, aligné sur le parcours actuel (9 étapes, plan par plan, transitions, navigation) | Toutes | Fonctionnel | `docs/STORYBOARD.md` ; pas encore commité ; issue à fermer par le groupe |
+| #17 Retours ouverts de T1 attribués depuis le formulaire (« termes techniques », bouton « En vrai… » : « Aidé » pour T1 et T2) ; commentaire de synthèse sur l'issue avec lien vers la PR #42 | Toutes | Fonctionnel | `docs/TEST-UTILISATEUR-RESULTATS.md`, commit `d80e5d6` (PR #42) ; commentaire sur #17 le 11/11 |
 | #22 Grille d'auto-évaluation pré-remplie (parties 1 à 4 avec preuves) ; #18 protocole de la session 2 ; #23 plan de soutenance | — | En cours | `docs/…GRILLE-AUTOEVAL.md`, `docs/TEST-UTILISATEUR.md`, `docs/SOUTENANCE.md` ; à relire ensemble |
 
 ### 1.2 Prévu mais non réalisé
 | Tâche | Cause | Report |
 |:---|:---|:---|
 | Session 2 de tests utilisateurs (#18) | Corrections de la session 1 en cours | Semaine 7 |
+| Observations de l'animateur de la session 1 (#17), issues par problème relevé (rythme des étapes 4 à 7, vocabulaire, rôle des sceaux) | Non saisies, issues non créées au 11/11 | Avant la fermeture de #17 |
+| Fusion des PR #42 (textes) et #43 (sceaux colorés) | Rendu de #43 à confirmer ; #43 n'a pas les textes de #42 | À faire avant le 15/11 |
 
 ### 1.3 État des 7 notions
 
 | Notion obligatoire | État | Remarque / preuve |
 |:---|:---|:---|
-| Structure d'un bloc | | |
-| Chaînage cryptographique | | |
-| Immutabilité et détection de falsification | | |
-| Réseau et décentralisation | Fonctionnel | Archipel retravaillé (une seule scène, traversée des nuages, décors, bateau) ; à retester (#18) |
-| Validation et minage | | |
-| Comparaison d'au moins deux mécanismes de consensus | | |
-| Cycle de vie d'une transaction et scénario d'attaque illustré | | |
+| Structure d'un bloc | Testé | Session 1 : T1 nomme les 4 éléments, T2 les deux sceaux ; sceaux colorés par bloc en cours (PR #43) |
+| Chaînage cryptographique | Testé | Session 1 : personne ne dit que le sceau est recopié ; texte réécrit (PR #42), à retester (#18) |
+| Immutabilité et détection de falsification | Testé | Session 1 : T1 explique la détection, T2 dit « chaîne cassée » sans raison ; refus par les autres îles ajouté à la notion 4 |
+| Réseau et décentralisation | Testé | Archipel retravaillé (une seule scène, traversée des nuages, décors, bateau, avion rouge) ; explication des doublons ajoutée ; session 1 : T2 jugeait l'étape incompréhensible, à retester (#18) |
+| Validation et minage | Testé | Session 1 : T1 « générer un sceau », T2 « je ne sais pas » ; texte sur la difficulté du minage ajouté (PR #42), à retester (#18) |
+| Comparaison d'au moins deux mécanismes de consensus | Testé | Session 1 : étape jugée incompréhensible par T2 ; textes simplifiés, course dite simulée, à retester (#18) |
+| Cycle de vie d'une transaction et scénario d'attaque illustré | Testé | Session 1 : double dépense non définie par T1 et T2 ; course au hasard, exemple du vélo, « À retenir », à retester (#18) |
 
 **Définitions des états :**
 
@@ -66,26 +73,25 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 
 | Membre | Tâches / issues | Issues traitées | Commits |
 |:---|:---|:---:|:---:|
-| | | | |
-| | | | |
-| | | | |
+| Dylan (compte Moxolote) | Archipel, nuages, bateaux, notions 4, 6 et 7, textes relus, documents (CHOIX, grille, soutenance, storyboard, résultats) | #7 #9 #10 #12 #13 #14 #15 #16 #17 #19 #20 #22 #23 | 10 (hors fusions, relevé git du 07 au 11/11) |
+| Maxens (compte MaxX-J) | Sceaux colorés par paire (PR #43) | #8 | 1 (`d7a0eed`, 10/11) |
 
 ## 3. GitHub Projects
 
 | Question | Réponse |
 |:---|:---|
-| Issues créées | |
-| Issues fermées | |
-| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | |
-| Board mis à jour pendant la semaine ? | |
-| Milestone concerné et état | |
+| Issues créées | 0 cette semaine (dernière issue numérotée : #25) ; les PR #42 et #43 sont ouvertes |
+| Issues fermées | #19 (fermée le 09/11). #17 commentée le 11/11, non fermée (observations de l'animateur et issues par problème manquantes) |
+| Nombre dans `Backlog` / `À faire` / `En cours` / `À vérifier` / `Terminé` | Non relevé le 11/11 : à relever sur le board avant l'envoi (#17 est encore en `Backlog`) |
+| Board mis à jour pendant la semaine ? | Partiellement : #19 fermée, #17 commentée ; les autres issues à déplacer avec la preuve (PR #42, #43) |
+| Milestone concerné et état | M2 — Livraison (15/11) : ouvert |
 
 ## 4. Choix de modélisation
 
 | Question | Réponse |
 |:---|:---|
 | Fiches de `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` complétées | v0.11 : les 7 fiches f) ont leur ligne « Session 1 » (observation et modification) ; §3 fluidité ; §5, §6 et §7 rédigés ; gabarit 4.X retiré |
-| Choix important et justification | La triche est détectée par les autres îles (notion 4), comme le demande le sujet : l'archipel n'existe pas encore à la notion 3, donc on renvoie le bloc falsifié depuis la notion 4 |
+| Choix important et justification | Une île envoie la transaction à toutes ses voisines sans savoir ce qu'elles ont reçu, et le doublon est ignoré à l'arrivée : gardé tel quel (réaliste) et expliqué dans le panneau plutôt que supprimé. La triche est détectée par les autres îles (notion 4), comme le demande le sujet : l'archipel n'existe pas encore à la notion 3, donc on renvoie le bloc falsifié depuis la notion 4 |
 | Choix remis en question | La course à vitesse fixe de la notion 7 : elle faisait dire « sous 50 %, Dylan perd toujours », ce qui est faux. Remplacée par une course au hasard |
 
 ## 5. Tests utilisateurs
@@ -93,14 +99,14 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | Question | Réponse |
 |:---|:---|
 | Nombre de testeurs extérieurs cette semaine | 0 (session 2 préparée, à faire) |
-| Compréhension ou problème observé | Retours de la session 1 traités : notions 6 et 7 réécrites, falsification refusée par les îles, deux sceaux mieux nommés. Non traité : la copie du sceau (notion 2) |
+| Compréhension ou problème observé | Retours de la session 1 traités : notions 6 et 7 réécrites, falsification refusée par les îles, deux sceaux mieux nommés. Textes de toutes les notions relus (PR #42). Retours ouverts de T1 attribués. Non traité : la copie du sceau (notion 2), partiellement reprise par les sceaux colorés (PR #43) |
 | Issue corrective | #18 (session 2), #7, #9, #10, #12, #13 |
 
 ## 6. IA, difficultés et besoins
 
 | Question | Réponse |
 |:---|:---|
-| Usage de l'IA et vérifications effectuées | Claude : code des transitions, bateaux, avion rouge, course au hasard ; textes 6 et 7 ; premières versions de CHOIX §5 à 7, de la grille et du plan de soutenance. Vérifié : rendus validés à l'écran par Dylan, course simulée 300 fois, 0 erreur console ; documents à relire par le groupe |
+| Usage de l'IA et vérifications effectuées | Claude : code des transitions, bateaux, avion rouge, course au hasard ; textes 6 et 7, relecture des textes pour non-initiés, storyboard écrit, mise à jour des fiches ; premières versions de CHOIX §5 à 7, de la grille et du plan de soutenance. Vérifié : rendus validés à l'écran par Dylan, course simulée 300 fois, 0 erreur console ; documents à relire par le groupe |
 | Blocage technique | Aucun |
 | Blocage pédagogique ou organisationnel | Trouver 2 testeurs qui n'ont jamais vu le projet avant le 15/11 |
 | Besoin d'un point enseignant | Non |
@@ -110,7 +116,8 @@ Dupliquez ce modèle en `docs/suivi/SEMAINE-01.md` à `SEMAINE-08.md`. Déposez 
 | Objectif | Responsable | Issue |
 |:---|:---|:---|
 | Session 2 de tests, résultats reportés dans CHOIX et la grille | Maxens et Dylan | #18 |
-| Board à jour : fermer les issues terminées avec la preuve ; relire CHOIX, README et la grille | Dylan, Maxens | #20 #21 #22 |
+| Board à jour : fermer les issues terminées avec la preuve ; relire CHOIX, README et la grille ; fusionner les PR #42 et #43 | Dylan, Maxens | #20 #21 #22 |
+| Saisir les observations de l'animateur de la session 1 et créer une issue par problème relevé | Maxens et Dylan | #17 |
 | Support, vidéo de secours, répétition chronométrée | Maxens et Dylan | #23 #24 #25 |
 
 ## 8. Signaux d'alerte
