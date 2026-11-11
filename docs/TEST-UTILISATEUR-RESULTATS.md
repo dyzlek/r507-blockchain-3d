@@ -86,9 +86,14 @@ Ce qui a été compris et ce qui ne l'a pas été :
 
 ## Retours ouverts
 
-- **T1** : « les termes techniques » ont gêné la compréhension.
+- **T1** : sur les 8 questions ouvertes de fin, T1 n'en a rempli que 3 ; le PDF supprime les cellules vides, donc la colonne exacte de chacune reste à confirmer dans le tableur :
+  - « les termes techniques » : réponse placée avant le bouton « En vrai… », donc une des questions sur ce qui a perdu ou manqué (mot ou phrase non compris, ce qui manque) ; elle indique que le vocabulaire a gêné ;
+  - bouton « En vrai… » (explication technique) : **« Aidé »** ;
+  - « bon tuto sur la blockchain » : dernière réponse, donc « ce que vous retenez, en une phrase » (ou « changer une seule chose » si la question de fin est vide).
+  - Pas de réponse à « moment le plus perdu », « mieux compris », « en trop » : à ne pas interpréter comme « rien ».
 - **T2** : les sceaux sont « trop lourds, trop compacts » ; il faudrait des animations plus détaillées qui servent davantage ; « trouver un autre exemple » ; les sceaux montrent mal la liaison entre blocs (« l'exemple que les sceaux font la liaison » pour la retenue).
 - **T2, « que retenez-vous »** : « les sceaux font la liaison ».
+- **Bouton « En vrai… »** : T1 et T2 répondent tous deux « Aidé ». À conserver tel quel.
 
 ## Ce que ça change pour le projet
 
