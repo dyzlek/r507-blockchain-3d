@@ -4,7 +4,7 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { shortHash } from './chain.js';
-import { COLORS, cardboard, cardboardDark, coinTexture, createStampTool, paperMaterial, stampTexture } from './papier.js';
+import { COLORS, cardboard, cardboardDark, coinTexture, createStampTool, pairColor, paperMaterial, stampTexture } from './papier.js';
 
 // Un bloc = un coffre en carton avec une fenêtre en papier calque : on devine son contenu sans l'ouvrir
 // (l'ouvrir briserait le sceau). Inspecter le coffre, c'est allumer sa lampe : le calque devient lisible.
@@ -79,8 +79,8 @@ const lidArrowGeometry = new THREE.PlaneGeometry(1.0, 0.5);
 // Le sceau est un coup de tampon encreur, tiré du vrai hash (voir papier.js).
 export const sealTexture = stampTexture;
 
-const stampMaterial = (hash) =>
-  new THREE.MeshStandardMaterial({ map: stampTexture(hash), transparent: true, roughness: 0.95, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+const stampMaterial = (hash, options) =>
+  new THREE.MeshStandardMaterial({ map: stampTexture(hash, options), transparent: true, roughness: 0.95, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
 
 // Lueur de la lampe : un halo rond qui s'efface sur les bords, créé une fois pour tous les coffres.
 let lampLightTextures = null;
@@ -183,22 +183,24 @@ export function createCoffre(block) {
 
   // Sceau du coffre (sa propre empreinte), sur la face avant.
   // Tamponné sur le calque, un peu de travers comme un vrai coup de tampon.
-  const seal = new THREE.Mesh(sealGeometry, stampMaterial(block.hash));
+  const seal = new THREE.Mesh(sealGeometry, stampMaterial(block.hash, { color: pairColor(block.index) }));
   seal.position.set(0.18, 0.16, d / 2 + 0.003);
   seal.rotation.z = -0.08 + ((block.index * 37) % 10) / 60;
   seal.renderOrder = 2; // toujours après le calque transparent, sinon il le recouvre et le sceau paraît pâle
   group.add(seal);
 
   // Sceau du parent, recopié en petit dans le coin gauche (côté du coffre précédent).
-  const parentSeal = new THREE.Mesh(parentSealGeometry, stampMaterial(block.parentHash));
+  const parentSeal = new THREE.Mesh(parentSealGeometry, stampMaterial(block.parentHash, { small: true, color: pairColor(block.index - 1) }));
   parentSeal.position.set(-w / 2 + 0.26, h / 2 - 0.24, d / 2 + 0.003);
   parentSeal.rotation.z = 0.1;
   parentSeal.renderOrder = 2;
   group.add(parentSeal);
 
-  // Cercles de surligneur corail autour des sceaux, allumés quand on compare un sceau à sa copie chez le suivant.
-  const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xe0684b, transparent: true, opacity: 0, depthTest: false });
-  const makeRing = (inner, outer, at) => {
+  // Cercles autour des sceaux, allumés quand on compare un sceau à sa copie chez le suivant.
+  // Chaque cercle prend la couleur de son sceau (la paire reste reconnaissable), sauf bloc falsifié : rouge.
+  const ownRingMaterial = new THREE.MeshBasicMaterial({ color: pairColor(block.index), transparent: true, opacity: 0, depthTest: false });
+  const parentRingMaterial = new THREE.MeshBasicMaterial({ color: pairColor(block.index - 1), transparent: true, opacity: 0, depthTest: false });
+  const makeRing = (inner, outer, at, ringMaterial) => {
     const ring = new THREE.Mesh(new THREE.RingGeometry(inner, outer, 48), ringMaterial);
     ring.position.copy(at);
     ring.position.z += 0.01;
@@ -206,8 +208,8 @@ export function createCoffre(block) {
     group.add(ring);
     return ring;
   };
-  const sealRing = makeRing(0.34, 0.4, seal.position);
-  const parentRing = makeRing(0.19, 0.23, parentSeal.position);
+  const sealRing = makeRing(0.34, 0.4, seal.position, ownRingMaterial);
+  const parentRing = makeRing(0.19, 0.23, parentSeal.position, parentRingMaterial);
   let glow = 0;
   let glowTarget = 0;
   let stampPop = 1; // repart de 0 à chaque coup de tampon (petit écrasement du coffre)
@@ -353,9 +355,11 @@ export function createCoffre(block) {
       if (value && hint.element.textContent !== text) hint.element.textContent = text;
     },
     // `own` / `parent` choisissent les anneaux allumés : le sceau du coffre, sa copie du sceau d'avant, ou les deux.
-    setGlow(value, color = 0xe0684b, { own = true, parent = true } = {}) {
+    // `color` : couleur forcée (bloc falsifié) ; sans, chaque cercle garde la couleur de son sceau.
+    setGlow(value, color = null, { own = true, parent = true } = {}) {
       glowTarget = value ? 1 : 0;
-      ringMaterial.color.set(color);
+      ownRingMaterial.color.set(color ?? pairColor(block.index));
+      parentRingMaterial.color.set(color ?? pairColor(block.index - 1));
       sealRing.visible = own;
       parentRing.visible = parent;
     },
@@ -367,7 +371,7 @@ export function createCoffre(block) {
       text(0, data);
       text(2, shortHash(hash));
       seal.material.map.dispose();
-      seal.material.map = stampTexture(hash);
+      seal.material.map = stampTexture(hash, { color: pairColor(block.index) });
       seal.material.needsUpdate = true;
       if (stamp) startStamp(); // nouveau coup de tampon
       plate.element.classList.toggle('is-broken', Boolean(shown));
@@ -388,7 +392,7 @@ export function createCoffre(block) {
       text(1, trial.nonce);
       text(2, shortHash(trial.hash));
       seal.material.map.dispose();
-      seal.material.map = stampTexture(trial.hash);
+      seal.material.map = stampTexture(trial.hash, { color: pairColor(block.index) });
       // Un essai raté laisse un tampon pâle (pas assez d'encre) ; le bon nonce, un vrai coup de tampon.
       seal.material.opacity = valid ? 1 : 0.35;
       seal.material.needsUpdate = true;
@@ -430,7 +434,7 @@ export function createCoffre(block) {
       seal.scale.setScalar(1 + 0.25 * (1 - stampPop) ** 2);
       leaderMaterial.opacity = reveal;
       glow = instant ? glowTarget : THREE.MathUtils.damp(glow, glowTarget, 6, dt);
-      ringMaterial.opacity = glow * (0.75 + Math.sin(elapsed * 4) * 0.2);
+      ownRingMaterial.opacity = parentRingMaterial.opacity = glow * (0.75 + Math.sin(elapsed * 4) * 0.2);
       if (reveal > 0.001) updateLeaders();
     },
   };

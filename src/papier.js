@@ -81,22 +81,32 @@ function hashBytes(hash) {
   return hash.match(/../g).map((byte) => parseInt(byte, 16));
 }
 
-// Sceau = coup de tampon encreur. La teinte, les rayons et le texte viennent des octets du vrai hash :
+// Couleur d'un sceau selon son numéro de bloc : deux blocs voisins n'ont jamais la même couleur,
+// et le sceau d'un bloc a la même couleur que sa copie dans le coffre suivant.
+const PAIR_COLORS = ['#1f4fa3', '#2e7d32', '#6a1b9a', '#b8860b', '#00768a', '#a0187a'];
+export function pairColor(index) {
+  return PAIR_COLORS[((index % PAIR_COLORS.length) + PAIR_COLORS.length) % PAIR_COLORS.length];
+}
+
+// Sceau = coup de tampon encreur. Les rayons et le texte viennent des octets du vrai hash :
 // une empreinte différente donne un tampon différent. Le bloc de genèse n'a pas de parent (encre grise).
-export function stampTexture(hash) {
+// `color` : couleur du tampon (voir pairColor). `small` : la copie réduite dans le coin du coffre,
+// avec un encrage plus franc, sinon elle se fond dans le carton.
+export function stampTexture(hash, { color = null, small = false } = {}) {
   return canvasTexture(256, (g, s) => {
     const c = s / 2;
     const bytes = hashBytes(hash);
-    // Les premiers octets valent toujours 00 (difficulté du minage) : la teinte vient du dernier.
+    // Les premiers octets valent toujours 00 (difficulté du minage) : la teinte de repli vient du dernier.
     const hue = (bytes[31] / 256) * 360;
-    const ink = hash === GENESIS_PARENT ? 'hsl(30 8% 40%)' : `hsl(${hue} 62% 38%)`;
+    const ink = hash === GENESIS_PARENT ? 'hsl(30 8% 40%)' : (color ?? `hsl(${hue} 62% 38%)`);
+    const weight = small ? 1.6 : 1;
     g.strokeStyle = g.fillStyle = ink;
     g.lineCap = 'round';
     // Double anneau tremblé, comme un tampon pas tout à fait à plat.
     for (const [r, width] of [[112, 10], [92, 4]]) {
       for (let i = 0; i < 90; i++) {
         const a0 = (i / 90) * Math.PI * 2;
-        g.lineWidth = width * (0.7 + Math.random() * 0.6);
+        g.lineWidth = width * weight * (0.7 + Math.random() * 0.6);
         g.beginPath();
         g.arc(c, c, r + (Math.random() - 0.5) * 2, a0, a0 + 0.09);
         g.stroke();
