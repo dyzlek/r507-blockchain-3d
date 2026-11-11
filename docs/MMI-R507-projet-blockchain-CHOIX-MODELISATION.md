@@ -490,7 +490,7 @@ La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montr
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : aucun des deux ne définit la double dépense ; T2 juge l'étape incompréhensible | Double dépense définie en mots simples (« payer deux fois avec les mêmes jetons ») ; textes raccourcis ; « À retenir » après la course (échec et réussite de l'attaque) | #17 |
+| Session 1 (T1, T2) : aucun des deux ne définit la double dépense ; T2 juge l'étape incompréhensible | Double dépense définie en mots simples (« payer deux fois avec les mêmes jetons ») ; textes raccourcis ; « À retenir » après la course (échec et réussite de l'attaque) ; le 09/11, exemple du vélo : Dylan paie Maxens pour un vélo puis tente de récupérer ses jetons, sinon l'arnaque ne se voit pas | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées

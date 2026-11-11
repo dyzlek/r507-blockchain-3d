@@ -558,7 +558,7 @@ function renderConsensus(sequence) {
   const pow = method === 'pow';
   const rows = [
     ['Méthode', `<div class="choices">${choices}</div>`],
-    ['Ce qui compte', pow ? 'la puissance de calcul : chaque machine fait des essais' : 'les jetons mis en jeu : un ticket par jeton'],
+    ['Ce qui compte', pow ? 'la puissance de calcul : chaque ordinateur fait des essais' : 'les jetons mis en jeu : un ticket par jeton'],
   ];
   if (state === 'done') {
     rows.push(['Gagnante', `l’île ${/^[AEIOUÉ]/.test(winner.name) ? 'd’' : 'de '}${winner.name} (${METHODS[method].unit(winner.weight)}, ${Math.round(winner.chance * 100)} % de chances)`]);
@@ -602,7 +602,7 @@ function renderRace(sequence) {
   const steps = [
     ['Signée par Dylan (notion 4)', 'is-done'],
     ['Envoyée à toutes les îles (notion 4)', 'is-done'],
-    ['En attente dans la mempool', 'is-done'],
+    ['En salle d’attente (la mempool)', 'is-done'],
     ['Rangée dans le bloc 4 (notion 5)', lost ? 'is-lost' : 'is-done'],
     confirm,
   ];

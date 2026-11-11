@@ -10,7 +10,7 @@ import { COLORS, cardboardDark, paperMaterial } from './papier.js';
 // - Preuve d'enjeu (PoS) : chaque île met des jetons en jeu ; un tirage au sort la désigne,
 //   avec autant de tickets que de jetons misés. Pas de course, presque pas de calcul.
 export const METHODS = {
-  pow: { name: 'Preuve de travail', label: 'Travail (PoW)', unit: (n) => `${n} machine${n > 1 ? 's' : ''}` },
+  pow: { name: 'Preuve de travail', label: 'Travail (PoW)', unit: (n) => `${n} ordinateur${n > 1 ? 's' : ''}` },
   pos: { name: 'Preuve d’enjeu', label: 'Enjeu (PoS)', unit: (n) => `${n} jeton${n > 1 ? 's' : ''} misé${n > 1 ? 's' : ''}` },
 };
 
