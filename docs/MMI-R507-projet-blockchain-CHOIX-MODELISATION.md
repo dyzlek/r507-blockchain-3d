@@ -15,7 +15,7 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
 | Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
-| Version et date de mise à jour | v0.11 — 09/11/2026 (tests de la session 1 reportés, notion 7 au hasard, §5 à 7) |
+| Version et date de mise à jour | v0.12 — 11/11/2026 (textes relus pour des non-initiés, lexique par étape, sceaux colorés, session 1 reportée, §5 à 7) |
 
 ## 2. Univers visuel et métaphore principale
 
@@ -89,7 +89,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 
 ### 4.1 — Structure d'un bloc
 
-> v0.5 (13/10/2026), rédigé avec l'aide de l'IA, relu par Maxens. Les tests utilisateurs restent à faire.
+> v0.5 (13/10/2026), rédigé avec l'aide de l'IA, relu par Maxens. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
 
 **Issues liées :** #7 (et #15 pour la navigation)  
 **Séquence(s) concernée(s) :** séquence 2 « Le coffre » (`?etape=2`)
@@ -148,7 +148,7 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 
 ### 4.2 — Chaînage cryptographique
 
-> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 3. Relu par Maxens, à confirmer par Dylan. Les tests utilisateurs restent à faire.
+> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 3. Relu par Maxens, à confirmer par Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
 
 **Issues liées :** #8
 **Séquence(s) concernée(s) :** séquence 3 « Chaque coffre garde le sceau du précédent » (`?etape=3`)
@@ -196,7 +196,7 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : aucun des deux ne dit que le sceau du coffre d'avant est **recopié** dans le suivant (« les sceaux », « le sceau sert à relier »). Notion la moins bien retenue. Critère non atteint | Pas encore corrigé (manque de temps avant la session 2). Piste retenue : animer la copie du sceau d'un coffre vers le suivant. À mesurer de nouveau en session 2 | #17 |
+| Session 1 (T1, T2) : aucun des deux ne dit que le sceau du coffre d'avant est **recopié** dans le suivant (« les sceaux », « le sceau sert à relier »). Notion la moins bien retenue. Critère non atteint | Sceaux colorés selon leur bloc (deux blocs voisins n'ont jamais la même couleur), copie du sceau de la même couleur que l'original, cercles de comparaison de cette couleur (PR #43) ; mot « Sceau du coffre d'avant » défini dans « Les mots de cette étape » (#47). La copie n'est pas animée. À mesurer de nouveau en session 2 | #17, #47 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
@@ -204,7 +204,7 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 
 ### 4.3 — Immutabilité et détection de falsification
 
-> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 4. Relu par Maxens, à confirmer par Dylan. Les tests utilisateurs restent à faire.
+> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 4. Relu par Maxens, à confirmer par Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
 
 **Issues liées :** #9
 **Séquence(s) concernée(s) :** séquence 4 « Trafiquer un coffre, ça se voit » (`?etape=4`)
@@ -261,7 +261,7 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 
 ### 4.4 — Réseau et décentralisation
 
-> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du cadrage, relu par Maxens. Les tests utilisateurs restent à faire.
+> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du cadrage, relu par Maxens. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
 
 **Issues liées :** #10
 **Séquence(s) concernée(s) :** séquence 5 « L'archipel » (`?etape=5`)
@@ -313,7 +313,7 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : T1 dit « pour la sécurité » sans plus, T2 ne sait pas pourquoi la chaîne est copiée | Choix « Sa transaction / Bloc 1 falsifié » : on voit à quoi sert la copie (chaque île compare et refuse la triche) ; encadré « À retenir » | #17 |
+| Session 1 (T1, T2) : T1 dit « pour la sécurité » sans plus, T2 ne sait pas pourquoi la chaîne est copiée | Choix « Sa transaction / Bloc 1 falsifié » : on voit à quoi sert la copie (chaque île compare et refuse la triche) ; encadré « À retenir ». Une île ne sait pas ce que ses voisines ont reçu : elle envoie quand même et le doublon est ignoré, ce qui est maintenant expliqué dans le panneau (#10) | #17 |
 | Session 2 (après corrections) : à faire | | #18 |
 
 #### g) Limites assumées
@@ -321,7 +321,7 @@ Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend envi
 
 ### 4.5 — Validation et minage
 
-> Brouillon v0.6 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 6. À relire par Maxens et Dylan. Les tests utilisateurs restent à faire.
+> Brouillon v0.6 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 6. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
 
 **Issues liées :** #11
 **Séquence(s) concernée(s) :** séquence 6 « La course au sceau » (`?etape=6`)
@@ -380,7 +380,7 @@ Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un 
 
 ### 4.6 — Comparaison d'au moins deux mécanismes de consensus
 
-> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 7. À relire par Maxens et Dylan. Les tests utilisateurs restent à faire.
+> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 7. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
 
 **Issues liées :** #12
 **Séquence(s) concernée(s) :** séquence 7 « Qui scelle le bloc ? » (`?etape=7`)
@@ -439,7 +439,7 @@ La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montr
 
 ### 4.7 — Cycle de vie d'une transaction et scénario d'attaque illustré
 
-> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 8. À relire par Maxens et Dylan. Les tests utilisateurs restent à faire.
+> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 8. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
 
 **Issues liées :** #13
 **Séquence(s) concernée(s) :** séquence 8 « La double dépense » (`?etape=8`)
@@ -503,7 +503,7 @@ La signature de la transaction n'est pas montrée (pas de clés publiques ni pri
 | Les codes visuels sont-ils constants ? | Oui. Un bloc est toujours un coffre en carton avec une fenêtre en calque. Un sceau est toujours un coup de tampon, dont la couleur et le motif viennent du code. Un lien est toujours une corde corail. Le rouge est réservé à la fraude partout : corde coupée (notion 3), avion rouge et îles qui refusent (notion 4), branche secrète de Dylan (notion 7). Un essai raté laisse un tampon pâle (notions 5 et 6) |
 | Un même élément est-il représenté de la même façon partout ? | Oui pour le bloc, le sceau, la chaîne et les îles. Une exception est assumée : à partir de la notion 4, un bloc qui voyage entre les îles devient un avion en papier. Un coffre qui vole aurait brouillé l'idée de copie, puisque chaque île garde sa propre chaîne de coffres. La chaîne de Dylan reste la même de la notion 1 à la notion 7 : le bloc 4 miné à la notion 5 est celui qu'on retrouve dans la course de la notion 7 |
 | L'ordre des séquences est-il progressif ? | Oui. On voit d'abord un bloc (1), puis deux blocs reliés (2), puis ce qui casse si on triche (3). Vient ensuite la chaîne copiée sur plusieurs îles (4), puis la façon d'ajouter un bloc (5) et celle de décider qui a le droit de l'ajouter (6). La notion 7 suit tout le trajet d'une transaction et montre une attaque qui réunit ces notions. Chaque notion réutilise la précédente. Les tests de la session 1 montrent que la difficulté monte trop vite à partir de l'étape 4 : les textes des notions 6 et 7 ont été réécrits en mots simples |
-| Quelle notion est la moins bien représentée ? | D'après les tests, c'est le chaînage (notion 2). La corde se voit, mais aucun testeur ne dit que le sceau est recopié : la corde porte l'idée de lien, pas celle de copie. Viennent ensuite le consensus et la double dépense, sans aucune bonne réponse en session 1 (avant la réécriture des textes) |
+| Quelle notion est la moins bien représentée ? | D'après les tests, c'est le chaînage (notion 2). La corde se voit, mais aucun testeur ne dit que le sceau est recopié : la corde porte l'idée de lien, pas celle de copie. Viennent ensuite le consensus et la double dépense, sans aucune bonne réponse en session 1 (avant la réécriture des textes). Pour le vocabulaire et le rythme relevés en session 1, un lexique « Les mots de cette étape » (#46) et des textes plus courts aux étapes 4 et 6 (#45) ont été ajoutés ; effet à mesurer en session 2 |
 | Quelle décision reverriez-vous avec une semaine de plus ? | Tester plus tôt. La session 1 a eu lieu après le développement des 7 notions, et ses retours sont arrivés trop tard pour tout corriger. Côté contenu, on animerait la copie du sceau à la notion 2 et on brancherait le vrai calcul de minage dans la course de la notion 6, au lieu d'une simulation. Le passage par le neumorphisme (v0.4 à v0.7) a aussi coûté du temps avant la direction papier |
 
 ## 6. Rôle de l'IA générative
