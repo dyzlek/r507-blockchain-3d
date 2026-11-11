@@ -15,7 +15,7 @@ Projet du module R507, BUT MMI 3e année.
 
 ## Le parcours
 
-Une maquette en papier découpé posée sur un bureau : des coffres en carton pour les blocs, des tampons encreurs pour les empreintes, des îles et des avions en papier pour le réseau. Le fil rouge suit une transaction, « Dylan envoie 5 jetons à Maxens », de sa création jusqu'à une tentative de double dépense. Chaque étape a un encart « En vrai… » qui donne le terme technique exact et la limite de l'image.
+Une maquette en papier découpé posée sur un bureau : des coffres en carton pour les blocs, des tampons encreurs pour les empreintes, des îles et des avions en papier pour le réseau. Le fil rouge suit une transaction, « Dylan envoie 5 jetons à Maxens », de sa création jusqu'à une tentative de double dépense. Chaque étape a un encart « En vrai… » qui donne le terme technique exact et la limite de l'image, et une liste repliée « Les mots de cette étape » qui définit les termes nouveaux.
 
 | Étape | Notion | Titre à l'écran |
 |:-:|:---|:---|
@@ -27,13 +27,28 @@ Une maquette en papier découpé posée sur un bureau : des coffres en carton po
 | 6 | 5. Validation et minage | La course au sceau |
 | 7 | 6. Consensus (preuve de travail et preuve d'enjeu) | Qui scelle le bloc ? |
 | 8 | 7. Cycle de vie d'une transaction et attaque | La double dépense |
+| 9 | Vue d'ensemble | Tout l'archipel |
 
 Les empreintes sont de vrais SHA-256 calculés dans le navigateur.
+
+## Captures
+
+| Étape 2 · Le coffre | Étape 4 · Trafiquer un coffre |
+|:-:|:-:|
+| ![Le coffre](docs/captures/etape-2.png) | ![Trafiquer un coffre](docs/captures/etape-4.png) |
+
+| Étape 5 · L'archipel | Étape 7 · Qui scelle le bloc ? |
+|:-:|:-:|
+| ![L'archipel](docs/captures/etape-5.png) | ![Consensus](docs/captures/etape-7.png) |
+
+| Étape 9 · Vue d'ensemble |
+|:-:|
+| ![Tout l'archipel](docs/captures/etape-9.png) |
 
 ## Utiliser l'expérience
 
 - **Changer d'étape** : boutons « Précédent / Suivant », pastilles numérotées, ou flèches ← → du clavier.
-- **Ouvrir une étape directement** : `?etape=N` (de 1 à 8), par exemple `https://dyzlek.github.io/r507-blockchain-3d/?etape=5`. Pratique pour les tests et la soutenance.
+- **Ouvrir une étape directement** : `?etape=N` (de 1 à 9), par exemple `https://dyzlek.github.io/r507-blockchain-3d/?etape=5`. Pratique pour les tests et la soutenance.
 - **Regarder la scène** : glisser pour tourner, molette ou pincement pour zoomer. Sur téléphone, la fiche passe en bas de l'écran.
 - **Agir** : cliquer sur le coffre ou sur le bouton du panneau (lampe, falsifier, envoyer, lancer le minage, lancer la course). À l'étape Réseau, les îles s'éteignent au clic ou avec les boutons « Éteindre une île ».
 
@@ -72,17 +87,21 @@ src/
   sequences.js       textes et réglages de chaque étape
   coffre.js          coffre, sceau et tampon encreur
   chain.js           blocs et calcul des SHA-256
-  papier.js          calque, ruban, corde simulée
+  papier.js          calque, ruban, corde simulée, découpes
+  nuages.js          nuages en volume entre la chaîne et l'archipel
+  bateau.js          bateaux en papier et leur sillage
   archipel.js        îles, routes, avions (notion 4)
   minage.js          essais de nonce (notion 5)
   consensus.js       preuve de travail et preuve d'enjeu (notion 6)
   race.js            course entre deux branches (notion 7)
+  apercu-papier.js   page d'aperçu de la direction papier
   style.css          charte visuelle
 docs/
   CADRAGE.md         document de cadrage
   MMI-R507-projet-blockchain-CHOIX-MODELISATION.md   livrable officiel des choix
   MMI-R507-projet-blockchain-GRILLE-AUTOEVAL.md      auto-évaluation avant soutenance
-  STORYBOARD.md      storyboard écrit du parcours complet
+  STORYBOARD.md      storyboard écrit du parcours complet (9 étapes)
+  captures/          captures d'écran du README
   TEST-UTILISATEUR.md   protocole de test utilisateur
   TEST-UTILISATEUR-RESULTATS.md   résultats des sessions de test
   SOUTENANCE.md      plan minuté et répartition de la soutenance
@@ -91,7 +110,7 @@ docs/
 
 ## Tests utilisateurs
 
-Le protocole (consignes, questions par étape, grille d'observation) est dans [`docs/TEST-UTILISATEUR.md`](docs/TEST-UTILISATEUR.md). Les retours sont reportés dans les sections « Tests utilisateurs » de chaque notion de `CHOIX-MODELISATION.md`. Les résultats sont dans [`docs/TEST-UTILISATEUR-RESULTATS.md`](docs/TEST-UTILISATEUR-RESULTATS.md). Session 1 (#17) : 2 testeurs extérieurs ; les notions 1 à 3 passent, les étapes 4 à 7 et le lien « sceau recopié » posent problème ; les corrections sont notées dans CHOIX. Session 2 (#18) : à faire avec 2 testeurs qui n'ont jamais vu le projet.
+Le protocole (consignes, questions par étape, grille d'observation) est dans [`docs/TEST-UTILISATEUR.md`](docs/TEST-UTILISATEUR.md). Les retours sont reportés dans les sections « Tests utilisateurs » de chaque notion de `CHOIX-MODELISATION.md`. Les résultats sont dans [`docs/TEST-UTILISATEUR-RESULTATS.md`](docs/TEST-UTILISATEUR-RESULTATS.md). Session 1 (#17) : 2 testeurs extérieurs ; les notions 1 à 3 passent, les étapes 4 à 7 et le lien « sceau recopié » posent problème ; les corrections sont notées dans CHOIX et suivies dans #45 (rythme), #46 (vocabulaire, lexique par étape) et #47 (copie du sceau animée). Session 2 (#18) : à faire avec 2 testeurs qui n'ont jamais vu le projet.
 
 ## Notions couvertes
 
@@ -121,3 +140,4 @@ L'IA générative (Claude) est utilisée comme assistant. Tout code ou texte gé
 | 24/10/2026 | Bilan du projet (fait, manquant, rapide) ; fiche de suivi semaine 3 complétée depuis `git log`, les issues et le board (#16 #20) | Chiffres vérifiés dans le dépôt et sur le board ; fiche relue par le groupe |
 | 27/10/2026 | Audit d'accessibilité de la charte (#16) : contrastes mesurés et corrigés, `aria-current`, clavier, boutons « Éteindre une île », `aria-live` ; protocole de test utilisateur, script du formulaire, sections « Tests utilisateurs » de CHOIX, storyboard écrit, README et fiches 3 et 4 | Contrastes recalculés, build OK, parcours testé dans le navigateur (ordinateur et téléphone simulé à 375 px) ; pas de test avec un vrai lecteur d'écran ; protocole et formulaire à essayer à blanc par le groupe |
 | 07/11 – 09/11/2026 | Une seule scène (chaîne sur l'île de Dylan), traversée des nuages en volume, transitions sans saccade, mer agrandie, décors plantés, trois bateaux (#15 #16) ; bloc falsifié refusé par les autres îles, textes des notions 6 et 7 réécrits après la session 1 (#9 #10 #12 #13) ; course de la notion 7 au hasard ; CHOIX §5 à 7, grille pré-remplie, protocole de la session 2, plan de soutenance (#18 #20 #22 #23) | Rendus validés à l'écran par Dylan ; plus de 60 images/s mesurées, processeur ralenti compris (#19) ; course simulée 300 fois ; documents à relire par le groupe |
+| 10/11 – 11/11/2026 | Textes de toutes les notions relus pour des non-initiés, avions en double expliqués, lexique « Les mots de cette étape », sceaux colorés par paire, copie du sceau animée à la notion 2 (#45 #46 #47) ; storyboard écrit réaligné sur le parcours (#14) ; retours de la session 1 reportés, fiches de suivi, README et CHOIX v0.12 (#17 #20 #21) | Build OK, 0 erreur console, étapes vérifiées dans le navigateur ; documents à relire par le groupe |
