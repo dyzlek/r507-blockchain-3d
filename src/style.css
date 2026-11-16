@@ -48,7 +48,7 @@ body {
   background: var(--vignette), var(--lamp), var(--grain), var(--bg);
   color: var(--text);
   font-family: var(--font-text);
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.5;
   /* Alegreya Sans a des chiffres elzéviriens par défaut : on les aligne sur les capitales. */
   font-variant-numeric: lining-nums;
@@ -77,7 +77,7 @@ body {
   box-shadow: 1px 2px 0 rgb(58 47 38 / 15%);
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   white-space: nowrap;
   rotate: -2deg;
 }
@@ -211,7 +211,7 @@ body {
   background: var(--slip);
   box-shadow: 2px 3px 6px rgb(80 60 40 / 22%);
   color: var(--text);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   opacity: 0;
   translate: 0 4px;
   rotate: -1deg;
@@ -296,7 +296,7 @@ body {
   top: 28px;
   left: 28px;
   bottom: 28px;
-  width: 380px;
+  width: 420px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -328,7 +328,7 @@ body {
 
 #panel::after {
   top: 5px;
-  left: 270px;
+  left: 310px;
   rotate: 4deg;
 }
 
@@ -377,6 +377,21 @@ body {
 
 strong {
   font-weight: 700;
+}
+
+#text .key {
+  display: block;
+  padding: 8px 12px;
+  border-left: 4px solid var(--accent);
+  background: var(--note);
+}
+
+/* Récapitulatif de la dernière étape. */
+.recap {
+  display: grid;
+  gap: 4px;
+  margin: -4px 0 0;
+  padding-left: 1.2em;
 }
 
 button {
@@ -453,8 +468,9 @@ summary:focus-visible {
 
 /* « Les mots de cette étape » : un lexique replié, sur la fiche. */
 #mots {
-  padding: 10px 0;
-  border-top: 1px dashed var(--muted);
+  padding: 10px 16px;
+  border: 1.5px dashed var(--accent);
+  background: var(--slip);
 }
 
 #mots summary {
@@ -485,7 +501,7 @@ summary:focus-visible {
 
 #mots dd {
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 /* « En vrai… » : un post-it collé sur la fiche. */
@@ -503,6 +519,17 @@ summary:focus-visible {
   list-style: none;
 }
 
+#en-vrai .summary-hint {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+#en-vrai[open] .summary-hint {
+  display: none;
+}
+
 #en-vrai summary::before {
   content: '+ ';
   color: var(--accent);
@@ -515,24 +542,43 @@ summary:focus-visible {
 #en-vrai p {
   margin-top: 8px;
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
-/* Les points d'étape ont leur propre ligne : avec 8 étapes, ils ne tiennent plus entre les deux boutons. */
+/* Les points d'étape ont leur propre ligne : avec 9 étapes, ils ne tiennent plus entre les deux boutons. */
 #nav {
-  margin-top: auto;
+  /* Collée en bas de la fiche : « Suivant » reste visible même quand le texte défile (étape 1, session 2). */
+  position: sticky;
+  z-index: 1;
+  bottom: -24px;
+  margin: auto -28px -24px;
+  padding: 10px 28px 16px;
+  border-top: 1px dashed rgb(58 47 38 / 25%);
+  background: var(--card);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 14px 8px;
-  padding-top: 8px;
 }
 
 #nav > button {
   padding: 8px 14px;
   font-size: 0.95rem;
   white-space: nowrap;
+}
+
+#next:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+}
+
+#nav > #next:hover:not(:disabled) {
+  background: #93391f;
+}
+
+#next.is-nudge {
+  animation: nudge 1.6s var(--ease) infinite;
 }
 
 #nav > button:disabled {
@@ -567,7 +613,16 @@ summary:focus-visible {
 #dots::before {
   right: 18px;
   border-top: 2px dashed var(--muted);
-  opacity: 0.45;
+  opacity: 0.6;
+}
+
+.progress-label {
+  order: -1;
+  width: 100%;
+  margin-top: -6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 #dots::after {
@@ -587,8 +642,8 @@ summary:focus-visible {
 #dots button {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 1.5px solid var(--text);
   border-radius: 50%;
@@ -634,6 +689,12 @@ summary:focus-visible {
     rotate: 0deg;
   }
 
+  #nav {
+    bottom: -18px;
+    margin: auto -20px -18px;
+    padding: 8px 20px 12px;
+  }
+
   #panel::before,
   #panel::after {
     display: none;
@@ -656,6 +717,7 @@ summary:focus-visible {
   }
 
   .hint,
+  #next.is-nudge,
   .anchor::after {
     animation: none;
   }
