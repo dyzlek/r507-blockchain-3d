@@ -110,7 +110,35 @@ docs/
 
 ## Tests utilisateurs
 
-Le protocole (consignes, questions par étape, grille d'observation) est dans [`docs/TEST-UTILISATEUR.md`](docs/TEST-UTILISATEUR.md). Les retours sont reportés dans les sections « Tests utilisateurs » de chaque notion de `CHOIX-MODELISATION.md`. Les résultats sont dans [`docs/TEST-UTILISATEUR-RESULTATS.md`](docs/TEST-UTILISATEUR-RESULTATS.md). Session 1 (#17) : 2 testeurs extérieurs ; les notions 1 à 3 passent, les étapes 4 à 7 et le lien « sceau recopié » posent problème ; les corrections sont notées dans CHOIX et suivies dans #45 (rythme), #46 (vocabulaire, lexique par étape) et #47 (copie du sceau animée). Session 2 (#18) : à faire avec 2 testeurs qui n'ont jamais vu le projet.
+Le protocole (consignes, questions par étape, grille d'observation) est dans [`docs/TEST-UTILISATEUR.md`](docs/TEST-UTILISATEUR.md). Les retours sont reportés dans les sections « Tests utilisateurs » de chaque notion de `CHOIX-MODELISATION.md`. Les résultats sont dans [`docs/TEST-UTILISATEUR-RESULTATS.md`](docs/TEST-UTILISATEUR-RESULTATS.md). Session 1 (#17) : 2 testeurs extérieurs ; les notions 1 à 3 passent, les étapes 4 à 7 et le lien « sceau recopié » posent problème ; les corrections sont notées dans CHOIX et suivies dans #45 (rythme), #46 (vocabulaire, lexique par étape) et #47 (copie du sceau animée). Session 2 (#18, 11/11) : 2 testeurs qui n'avaient jamais vu le projet ; T4 atteint le critère du protocole (7 réponses sur 8 justes), T3 non (0 sur 8), plus aucune étape jugée incompréhensible. Retours traités dans #55 (PR #54) ; report dans les fiches de CHOIX suivi dans #56, nouvelle mesure des FPS dans #57.
+
+## Organisation et suivi
+
+Le board ([projet 3](https://github.com/users/dyzlek/projects/3)) a les 5 colonnes communes : Backlog, À faire, En cours, À vérifier, Terminé. Chaque issue a un type, une priorité et, pour les notions, un label « notion : N » ; elle est rattachée à un jalon (M1 Cadrage 09/10, M2 Livraison 15/11, M3 Soutenance 19/11). Une issue fermée l'est avec sa preuve : PR, commit ou fichier de résultats.
+
+### Répartition du travail
+
+| | Dylan (@dyzlek) | Maxens (@MaxX-J) |
+|:---|:---|:---|
+| Issues assignées | #1, #3, #6 à #9, #11, #15, #19, #21, #24, #45 à #47, #55 à #58 (et #2, #5, #25 à deux) | #4, #10, #12 à #14, #16 à #18, #20, #22, #23 (et #2, #5, #25 à deux) |
+| Domaine | Scène 3D et intégration Three.js, notions 1, 2, 3 et 5, caméra et transitions, performances, déploiement, board | Direction « maquette en papier », charte et accessibilité, notions 4, 6 et 7, storyboard, CHOIX-MODELISATION, protocole et sessions de tests utilisateurs |
+| Commits sur `main` (hors fusions, au 16/11) | 71 | 15 |
+
+L'écart de commits ne mesure pas l'écart de travail : une partie du travail de Maxens se fait hors du dépôt (formulaires Google des tests, relectures). Dylan, chargé de l'intégration, fusionne aussi dans le code des éléments conçus à deux, et fait beaucoup de petits commits de correction. Un commit (651209c, 13/10, notion 5) porte l'auteur « Claude » : il a été créé avec l'identité de l'assistant IA au lieu de celle de Dylan ; son contenu est déclaré dans l'usage de l'IA ci-dessous (ligne du 13/10).
+
+### Commits sans numéro d'issue
+
+11 commits sur `main` n'ont pas de numéro d'issue dans leur message. Ils sont rattachés ci-dessous ; depuis le 10/11, tous les commits citent leur issue.
+
+| Commit | Date | Rattaché à |
+|:---|:---|:---|
+| 20549df initialisation du projet | 01/10 | #1 |
+| 52d1608 notions 4 et 5 relues, transitions | 13/10 | #10, #11, #15 |
+| 593a861 étiquettes réduites, archipel replié | 13/10 | #15 |
+| 50421f3, 1af535a fiche de suivi semaine 3 | 19/10 | fiches de suivi (pas d'issue dédiée après la semaine 1, #6) |
+| 2db15bf, 8667670, dcf58e7, 3b94ceb bateaux | 09/11 | #16 (décors), via la PR #39 |
+| 76796c8 consigne du minage, bloc 4 sans sceau | 09/11 | #11, via la PR #39 |
+| d7a0eed sceaux colorés par paire | 10/11 | #47, via la PR #43 |
 
 ## Notions couvertes
 
@@ -141,3 +169,4 @@ L'IA générative (Claude) est utilisée comme assistant. Tout code ou texte gé
 | 27/10/2026 | Audit d'accessibilité de la charte (#16) : contrastes mesurés et corrigés, `aria-current`, clavier, boutons « Éteindre une île », `aria-live` ; protocole de test utilisateur, script du formulaire, sections « Tests utilisateurs » de CHOIX, storyboard écrit, README et fiches 3 et 4 | Contrastes recalculés, build OK, parcours testé dans le navigateur (ordinateur et téléphone simulé à 375 px) ; pas de test avec un vrai lecteur d'écran ; protocole et formulaire à essayer à blanc par le groupe |
 | 07/11 – 09/11/2026 | Une seule scène (chaîne sur l'île de Dylan), traversée des nuages en volume, transitions sans saccade, mer agrandie, décors plantés, trois bateaux (#15 #16) ; bloc falsifié refusé par les autres îles, textes des notions 6 et 7 réécrits après la session 1 (#9 #10 #12 #13) ; course de la notion 7 au hasard ; CHOIX §5 à 7, grille pré-remplie, protocole de la session 2, plan de soutenance (#18 #20 #22 #23) | Rendus validés à l'écran par Dylan ; plus de 60 images/s mesurées, processeur ralenti compris (#19) ; course simulée 300 fois ; documents à relire par le groupe |
 | 10/11 – 11/11/2026 | Textes de toutes les notions relus pour des non-initiés, avions en double expliqués, lexique « Les mots de cette étape », sceaux colorés par paire, copie du sceau animée à la notion 2 (#45 #46 #47) ; storyboard écrit réaligné sur le parcours (#14) ; retours de la session 1 reportés, fiches de suivi, README et CHOIX v0.12 (#17 #20 #21) | Build OK, 0 erreur console, étapes vérifiées dans le navigateur ; documents à relire par le groupe |
+| 16/11/2026 | Synthèse de la session 2 (#18) ; corrections tirées des retours : numérotation « Étape X sur 9 », définition du minage, navigation collée en bas, lexique ouvert, texte 18 px, rendu allégé (#55, PR #54) ; board remis à jour, issues #55 à #58, captures refaites, répartition et commits sans issue documentés (#22, #58) | Build OK, parcours vérifié dans le navigateur (ordinateur et téléphone) ; notation des tests et grille à valider par le groupe ; gain de fluidité non mesuré (#57) |

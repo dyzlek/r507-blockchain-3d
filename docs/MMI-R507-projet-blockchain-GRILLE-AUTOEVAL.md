@@ -6,6 +6,8 @@
 
 À remplir en groupe puis individuellement avant la soutenance, dans le dépôt. Elle sert à repérer les lacunes et préparer la soutenance ; elle n'est pas notée en elle-même. Toute note cochée doit être justifiée par une phrase ou une preuve.
 
+> **Partie 3 mise à jour le 16/11/2026 (board, issues #55 à #58, README) ; le reste date du 09/11, à revoir après la session 2.**
+>
 > **Pré-remplie le 09/11/2026 (avant la session 2 et la soutenance), à relire et corriger ensemble.** Chaque note est justifiée par une preuve dans le dépôt. La partie 5 se note après la répétition. Les notes sont volontairement prudentes là où les tests ne prouvent rien encore.
 
 ## Échelle
@@ -49,13 +51,13 @@
 | 3.1 | Le board existe depuis la semaine 1 et utilise les 5 colonnes communes. | 4 | Board créé en semaine 1 (09/10, voir README) avec les colonnes Backlog / À faire / En cours / À vérifier / Terminé |
 | 3.2 | Issues granulaires et assignées. | 3 | Une issue par notion et par livrable (#7 à #25), assignées. Certaines sont larges (#15, #16) et regroupent plusieurs semaines de travail |
 | 3.3 | Labels cohérents. | 4 | Labels « notion : 1 à 7 », « type : dev / doc / design / gestion / test / bug », « priorité : haute / moyenne / basse », « ia » |
-| 3.4 | Milestones obligatoires correspondant au calendrier. | 4 | M1 Cadrage (09/10, fermé), M2 Livraison (15/11), M3 Soutenance (19/11) |
-| 3.5 | Commits réguliers et liés aux issues. | 3 | Commits réguliers depuis le 01/10, la plupart avec un numéro d'issue (#7 à #19). Quelques commits de correction sans issue |
-| 3.6 | Le board reflète l'état réel. | 2 | Au 09/11, les issues des notions (#7 à #13) sont encore ouvertes alors que les notions marchent : à fermer avec un lien vers la PR comme preuve avant le 15/11 |
-| 3.7 | Répartition visible et expliquée. | 2 | Rôles écrits (README, CHOIX §1). Mais la répartition des commits est déséquilibrée (environ 40 pour Dylan, 13 pour Maxens) : à expliquer (Maxens : design, contenu, tests, documents) |
-| 3.8 | Retours transformés en issues puis traités. | 3 | Retours de la session 1 traduits en corrections dans #9, #10, #12, #13 et notés dans CHOIX ; pas d'issue créée pour la notion 2 (copie du sceau) |
+| 3.4 | Milestones obligatoires correspondant au calendrier. | 4 | M1 Cadrage (09/10, 6 issues, fermé), M2 Livraison (15/11, 19 issues, fermé le 16/11), M3 Soutenance (19/11, 7 issues en cours) |
+| 3.5 | Commits réguliers et liés aux issues. | 3 | Commits réguliers du 01/10 au 16/11 (8 fiches de suivi). 46 commits sur 57 (hors fusions) citent leur issue ; les 11 autres sont rattachés après coup dans le README (section « Commits sans numéro d'issue »), et tous les commits citent leur issue depuis le 10/11. Pas 4 : le lien manquait au moment du commit |
+| 3.6 | Le board reflète l'état réel. | 4 | Mis à jour le 16/11 : les issues fermées sont en « Terminé » (#1 à #21, #45 à #47, #55), le travail restant en « À faire » ou « En cours » (#22 à #25, #56 à #58). #18 fermée avec sa preuve (résultats, PR #54) |
+| 3.7 | Répartition visible et expliquée. | 3 | Rôles dans le README et CHOIX §1 ; tableau « Répartition du travail » du README : issues assignées et domaine de chacun. Écart de commits (71 pour Dylan, 15 pour Maxens) expliqué dans le README, ainsi que le commit 651209c au nom de « Claude ». Reste visible et sera à défendre à l'oral |
+| 3.8 | Retours transformés en issues puis traités. | 4 | Session 1 : #45 (rythme), #46 (vocabulaire), #47 (copie du sceau), toutes fermées avec leurs PR (#48, #49, #51). Session 2 : #55 (6 corrections, PR #54, fermée), puis #56 (report dans CHOIX) et #57 (nouvelle mesure des FPS) pour ce qui reste |
 | 3.9 | Usage de l'IA déclaré. | 4 | Tableau daté dans le README, CHOIX §6 (ce que l'IA a fait, erreurs détectées, décisions du groupe), label « ia » |
-| 3.10 | README complet. | 3 | Lancement, liens démo et board, `?etape=N`, accessibilité, structure, usage de l'IA. À relire pour #21 (état final, tests) |
+| 3.10 | README complet. | 4 | Lancement, démo, board, `?etape=1` à 9, parcours, captures refaites le 16/11 avec l'interface actuelle (#58), accessibilité, structure, tests (sessions 1 et 2), organisation et répartition, commits sans issue, usage de l'IA daté jusqu'au 16/11 |
 
 ## Partie 4 — Interaction, UX et finition (15 %)
 
@@ -85,9 +87,9 @@ Additionnez les scores obtenus dans chaque partie : `P1 / 28`, `P2 / 28`, `P3 / 
 
 `Note / 20 = (P1/28 × 5) + (P2/28 × 5) + (P3/40 × 4) + (P4/24 × 3) + (P5/24 × 3)`.
 
-Estimation provisoire (partie 5 non notée, comptée à 12 / 24) : P1 = 22 / 28, P2 = 23 / 28, P3 = 32 / 40, P4 = 21 / 24, P5 = 12 / 24.
+Estimation provisoire (partie 5 non notée, comptée à 12 / 24) : P1 = 22 / 28, P2 = 23 / 28, P3 = 37 / 40 (mise à jour du 16/11), P4 = 21 / 24, P5 = 12 / 24.
 
-`Note ≈ 3,93 + 4,11 + 3,20 + 2,63 + 1,50 = 15,4 / 20` (à recalculer après la session 2 et la répétition).
+`Note ≈ 3,93 + 4,11 + 3,70 + 2,63 + 1,50 = 15,9 / 20` (à recalculer après la session 2 et la répétition).
 
 ## Bilan individuel et actions
 
