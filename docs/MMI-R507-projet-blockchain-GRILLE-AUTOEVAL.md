@@ -6,7 +6,7 @@
 
 À remplir en groupe puis individuellement avant la soutenance, dans le dépôt. Elle sert à repérer les lacunes et préparer la soutenance ; elle n'est pas notée en elle-même. Toute note cochée doit être justifiée par une phrase ou une preuve.
 
-> **Mise à jour le 16/11/2026 : partie 3 (board, issues #55 à #58, README), 2.1, 2.6, 2.7 (session 2 dans CHOIX, #56) et 4.4 (FPS remesurés après optimisation, #57). Le reste date du 09/11 et est à revoir avec la session 2.**
+> **Mise à jour le 16/11/2026 : partie 3 (board, issues #55 à #58, README), 1.3 et 4.3 (session 2), 2.1, 2.6, 2.7 (session 2 dans CHOIX, #56) et 4.4 (FPS remesurés après optimisation, #57). Le reste date du 09/11 et est à revoir avec la session 2.**
 >
 > **Pré-remplie le 09/11/2026 (avant la session 2 et la soutenance), à relire et corriger ensemble.** Chaque note est justifiée par une preuve dans le dépôt. La partie 5 se note après la répétition. Les notes sont volontairement prudentes là où les tests ne prouvent rien encore.
 
@@ -26,7 +26,7 @@
 |:---|:---|:---:|:---|
 | 1.1 | Les 7 notions obligatoires sont toutes représentées conformément à la liste commune. | 4 | Les 7 notions sont dans le parcours, dans l'ordre de la liste commune (étapes 1 à 7, `src/sequences.js`). Chacune a sa fiche §4.1 à §4.7 dans CHOIX |
 | 1.2 | Chaque notion possède une animation ou interaction observable. | 4 | Chaque notion se joue : lampe du coffre (1), comparer les sceaux (2), falsifier (3), éteindre une île et envoyer un bloc falsifié (4), miner en `00` ou `000` (5), course ou tirage (6), course d'attaque à 30 % ou 60 % (7). Les SHA-256 sont calculés pour de vrai |
-| 1.3 | Un utilisateur non initié comprend sans explication orale préalable. | 2 | Session 1 : T1 comprend les notions 1 à 3, T2 juge les étapes 4 à 7 incompréhensibles ; le critère « 6 réponses sur 8 notées 2 » n'est atteint par personne (T1 : 2/8, T2 : 0/8). Textes 6 et 7 réécrits depuis : à confirmer en session 2 (#18) |
+| 1.3 | Un utilisateur non initié comprend sans explication orale préalable. | 3 | **Progrès mesuré entre les deux sessions** (`TEST-UTILISATEUR-RESULTATS.md`), testeurs seuls face à la démo, sans aide : en session 1, personne n'atteint le critère du protocole « 6 réponses sur 8 notées 2 » (T1 : 2/8, T2 : 0/8, 4 étapes jugées incompréhensibles) ; en session 2, **T4, sans aucune connaissance de la blockchain, obtient 7/8**, y compris minage, consensus et double dépense (à 0 pour tous en session 1), et **plus aucune étape n'est jugée incompréhensible**. T3 reste à 0/8 mais explique sur le moment la cassure et les deux consensus. Ses points de blocage ont chacun reçu une correction (#55, PR #54) : première action mise en avant, définition du minage mise en évidence, lexique ouvert par défaut, récapitulatif d'une ligne par notion à l'étape 9. Pas 4 : un testeur sur deux seulement atteint le critère, et ces corrections n'ont pas été retestées |
 | 1.4 | L'ordre est pédagogique et progressif. | 3 | Progression du bloc seul à l'attaque, chaque notion réutilise la précédente (CHOIX §5). Mais la difficulté monte trop vite à partir de l'étape 4 d'après la session 1 |
 | 1.5 | Le fil rouge est cohérent. | 4 | Un seul fil rouge : la transaction de Dylan à Maxens, de la notion 1 à la 7 ; le bloc 4 miné à la notion 5 est celui de la course de la notion 7 |
 | 1.6 | Les métaphores ne créent pas de fausse compréhension. | 3 | Limites signalées dans chaque fiche g) et dans les encarts « En vrai… ». Risque restant : la corde fait penser à un lien, pas à une copie du sceau (notion 2) ; la course de la notion 6 est une simulation, signalée dans le texte |
@@ -65,7 +65,7 @@
 |:---|:---|:---:|:---|
 | 4.1 | Navigation intuitive et éléments identifiables. | 3 | Session 1 : « où cliquer » noté 5 et 4, barre de progression 5 et 4 ; bulles « Clique… » sur l'objet à manipuler |
 | 4.2 | Textes lisibles et contrastés. | 4 | Contrastes mesurés ≥ 4,5, texte 17 px ; « textes faciles à lire » noté 4 et 5 en session 1 |
-| 4.3 | Rythme des animations compréhensible. | 2 | Rythme noté 5 par T1 mais 1 par T2 ; transitions accélérées et textes raccourcis depuis, à revérifier en session 2 |
+| 4.3 | Rythme des animations compréhensible. | 3 | **Problème relevé, corrigé, puis vérifié** : en session 1, T2 note le rythme 1/5 (« trop lourd, trop compact ») → issue #45, étapes 4 à 7 allégées (PR #42, #48) et copie du sceau animée pas à pas (PR #51) → en session 2, **rythme noté 4 et 4** par les deux nouveaux testeurs, et plus aucune étape jugée incompréhensible (`TEST-UTILISATEUR-RESULTATS.md`). Mouvements réduits respectés (`prefers-reduced-motion` : caméra et animations sautent directement à leur état final). La « petite latence » signalée par T4 a été traitée par deux passages d'optimisation mesurés (#57, PR #61 et #62). Pas 4 : les animations aident peu T4 (1/5) et ces derniers changements n'ont pas été retestés |
 | 4.4 | Au moins 30 FPS sur ordinateur standard type poste de TP. | 4 | Mesuré le 16/11 (#57, `scripts/mesure-fps.mjs`, CHOIX §3) sur les 9 étapes avec leur action, carte graphique intégrée : jamais sous 53 images/s ; processeur ralenti 4 fois (plus lent qu'un poste de TP) : moyenne d'au moins 38 à chaque étape, creux ponctuels à 26-31. Obtenu par des optimisations mesurées : appels de dessin de l'archipel divisés par 2 (607 → 318), minage allégé, qualité adaptative. Reste à confirmer sur un vrai poste de TP |
 | 4.5 | Aucun bug bloquant le parcours principal. | 4 | Parcours des étapes 0 à 8 sans erreur dans la console ; bugs trouvés corrigés (bulle de la notion 5, bloc 4 scellé trop tôt, bateaux) |
 | 4.6 | Déploiement en ligne réalisé. | 4 | GitHub Pages, déployé à chaque fusion sur main : https://dyzlek.github.io/r507-blockchain-3d/ |
@@ -87,9 +87,9 @@ Additionnez les scores obtenus dans chaque partie : `P1 / 28`, `P2 / 28`, `P3 / 
 
 `Note / 20 = (P1/28 × 5) + (P2/28 × 5) + (P3/40 × 4) + (P4/24 × 3) + (P5/24 × 3)`.
 
-Estimation provisoire (partie 5 non notée, comptée à 12 / 24) : P1 = 22 / 28, P2 = 27 / 28, P3 = 37 / 40, P4 = 21 / 24 (parties 2 à 4 mises à jour le 16/11), P5 = 12 / 24.
+Estimation provisoire (partie 5 non notée, comptée à 12 / 24) : P1 = 23 / 28, P2 = 27 / 28, P3 = 37 / 40, P4 = 22 / 24 (1.3, 4.3 et parties 2 à 4 mises à jour le 16/11), P5 = 12 / 24.
 
-`Note ≈ 3,93 + 4,82 + 3,70 + 2,63 + 1,50 = 16,6 / 20` (à recalculer après la session 2 et la répétition).
+`Note ≈ 4,11 + 4,82 + 3,70 + 2,75 + 1,50 = 16,9 / 20` (à recalculer après la session 2 et la répétition).
 
 ## Bilan individuel et actions
 
