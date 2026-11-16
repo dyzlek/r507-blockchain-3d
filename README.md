@@ -69,6 +69,19 @@ Puis ouvrir l'URL affichée (par défaut http://localhost:5173/r507-blockchain-3
 
 `npm run build` produit la version statique dans `dist/`, `npm run preview` la sert en local.
 
+### Mesurer la fluidité
+
+`scripts/mesure-fps.mjs` ouvre Chrome, parcourt les 9 étapes en déclenchant leur action et affiche, pour chaque étape, les images par seconde (moyenne et pire seconde). Il dure environ une minute.
+
+```bash
+node scripts/mesure-fps.mjs                 # démo en ligne
+node scripts/mesure-fps.mjs --cpu 4         # processeur ralenti 4 fois (PC faible)
+node scripts/mesure-fps.mjs --gpu high      # carte graphique dédiée (portable à deux cartes)
+node scripts/mesure-fps.mjs http://localhost:4173/r507-blockchain-3d/   # version locale (npm run preview)
+```
+
+Le critère est d'au moins 30 images/s. Résultats et méthode : CHOIX-MODELISATION §3 (#57).
+
 ## Technologies
 
 [Three.js](https://threejs.org/) (rendu 3D, étiquettes CSS2D, lignes `Line2`), [Vite](https://vite.dev/), JavaScript sans framework. Polices : Alegreya Sans et Courier Prime (Google Fonts). Aucune autre dépendance.
@@ -96,6 +109,8 @@ src/
   race.js            course entre deux branches (notion 7)
   apercu-papier.js   page d'aperçu de la direction papier
   style.css          charte visuelle
+scripts/
+  mesure-fps.mjs     mesure des images par seconde sur les 9 étapes (#57)
 docs/
   CADRAGE.md         document de cadrage
   MMI-R507-projet-blockchain-CHOIX-MODELISATION.md   livrable officiel des choix
@@ -170,3 +185,4 @@ L'IA générative (Claude) est utilisée comme assistant. Tout code ou texte gé
 | 07/11 – 09/11/2026 | Une seule scène (chaîne sur l'île de Dylan), traversée des nuages en volume, transitions sans saccade, mer agrandie, décors plantés, trois bateaux (#15 #16) ; bloc falsifié refusé par les autres îles, textes des notions 6 et 7 réécrits après la session 1 (#9 #10 #12 #13) ; course de la notion 7 au hasard ; CHOIX §5 à 7, grille pré-remplie, protocole de la session 2, plan de soutenance (#18 #20 #22 #23) | Rendus validés à l'écran par Dylan ; plus de 60 images/s mesurées, processeur ralenti compris (#19) ; course simulée 300 fois ; documents à relire par le groupe |
 | 10/11 – 11/11/2026 | Textes de toutes les notions relus pour des non-initiés, avions en double expliqués, lexique « Les mots de cette étape », sceaux colorés par paire, copie du sceau animée à la notion 2 (#45 #46 #47) ; storyboard écrit réaligné sur le parcours (#14) ; retours de la session 1 reportés, fiches de suivi, README et CHOIX v0.12 (#17 #20 #21) | Build OK, 0 erreur console, étapes vérifiées dans le navigateur ; documents à relire par le groupe |
 | 16/11/2026 | Synthèse de la session 2 (#18) ; corrections tirées des retours : numérotation « Étape X sur 9 », définition du minage, navigation collée en bas, lexique ouvert, texte 18 px, rendu allégé (#55, PR #54) ; board remis à jour, issues #55 à #58, captures refaites, répartition et commits sans issue documentés (#22, #58) | Build OK, parcours vérifié dans le navigateur (ordinateur et téléphone) ; notation des tests et grille à valider par le groupe ; gain de fluidité non mesuré (#57) |
+| 16/11/2026 | Mesure des FPS (#57) : script `scripts/mesure-fps.mjs` (Chrome piloté, 9 étapes, processeur ralenti au choix, carte intégrée ou dédiée) ; optimisations : décors et copies de la chaîne de l'archipel regroupés en objets instanciés (607 → 318 appels de dessin), minage qui ne redessine plus ses textures à chaque essai, ombres recalculées moins souvent sur machine lente ; session 2 reportée dans les fiches de CHOIX (#56) | Mesuré avant et après sur la carte intégrée et la RTX ; rendu comparé en captures (archipel, îles éteintes, vue rapprochée), 0 erreur console ; pas de mesure sur un vrai poste de TP |

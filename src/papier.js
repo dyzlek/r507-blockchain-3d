@@ -487,24 +487,54 @@ const DRAWINGS = {
   },
 };
 
-// Une découpe qui se relève, articulée sur son bord bas (rotation.x : -π/2 à plat, 0 debout).
+// Motte de terre et d'herbe en papier au pied de chaque découpe : elle a l'air plantée, pas posée.
 const footGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
 const footMaterial = new THREE.MeshStandardMaterial({ color: 0x6a9150, roughness: 0.95 });
-export function createCutout(kind, size) {
-  const hinge = new THREE.Group();
-  const card = new THREE.Mesh(new THREE.PlaneGeometry(size, size), cutoutMaterial(kind).clone());
-  // Le dessin s'arrête un peu avant le bas de l'image (marge du contour) : on enfonce la carte d'autant, pour que
-  // le pied du palmier, de la cabane ou du phare touche le sol au lieu de flotter.
-  card.position.y = size / 2 - size * 0.06;
-  card.castShadow = true;
-  hinge.add(card);
-  // Une petite motte de terre et d'herbe en papier au pied : la découpe a l'air plantée, pas posée.
-  const foot = new THREE.Mesh(footGeometry, footMaterial);
-  foot.scale.set(size * 0.22, size * 0.05, size * 0.12);
-  foot.castShadow = true;
-  foot.receiveShadow = true;
-  hinge.add(foot);
-  return { hinge, card };
+// Toutes les découpes de l'archipel en quelques objets (#57) : une découpe = une carte + une motte, soit 126 objets
+// dessinés deux fois (image et carte d'ombres) quand chacune était un objet à part, environ 40 % des appels de dessin
+// sur l'archipel. Ici, une seule géométrie par sorte de découpe (InstancedMesh) et une pour toutes les mottes.
+// `items` : [{ kind, size }]. `set(i, matrix, visible, color)` place la découpe i (matrice de sa charnière dans le
+// repère du parent), `commit()` envoie le tout à la carte graphique. La motte ne projette plus d'ombre : elle est
+// presque plate et son ombre ne se voyait pas.
+const unitPlane = new THREE.PlaneGeometry(1, 1);
+const hidden = new THREE.Matrix4().makeScale(0, 0, 0);
+export function createCutoutBatch(items) {
+  const group = new THREE.Group();
+  const byKind = new Map();
+  items.forEach(({ kind }, i) => {
+    if (!byKind.has(kind)) byKind.set(kind, []);
+    byKind.get(kind).push(i);
+  });
+  const slots = []; // pour chaque découpe : [InstancedMesh de sa sorte, rang dans celle-ci]
+  for (const [kind, indices] of byKind) {
+    const mesh = new THREE.InstancedMesh(unitPlane, cutoutMaterial(kind), indices.length);
+    mesh.castShadow = true;
+    mesh.frustumCulled = false; // les découpes sont réparties sur tout l'archipel
+    indices.forEach((i, rank) => (slots[i] = [mesh, rank]));
+    group.add(mesh);
+  }
+  const feet = new THREE.InstancedMesh(footGeometry, footMaterial, items.length);
+  feet.receiveShadow = true;
+  feet.frustumCulled = false;
+  group.add(feet);
+  const cardLocal = items.map(({ size }) => new THREE.Matrix4().makeScale(size, size, 1).setPosition(0, size / 2 - size * 0.06, 0));
+  const footLocal = items.map(({ size }) => new THREE.Matrix4().makeScale(size * 0.22, size * 0.05, size * 0.12));
+  const m = new THREE.Matrix4();
+  return {
+    group,
+    set(i, hinge, visible, color) {
+      const [mesh, rank] = slots[i];
+      mesh.setMatrixAt(rank, visible ? m.multiplyMatrices(hinge, cardLocal[i]) : hidden);
+      mesh.setColorAt(rank, color);
+      feet.setMatrixAt(i, visible ? m.multiplyMatrices(hinge, footLocal[i]) : hidden);
+    },
+    commit() {
+      group.children.forEach((mesh) => {
+        mesh.instanceMatrix.needsUpdate = true;
+        if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+      });
+    },
+  };
 }
 
 // Le tampon encreur (l'objet) : caoutchouc, socle en bois, manche et pommeau. Le caoutchouc est en y = 0.
