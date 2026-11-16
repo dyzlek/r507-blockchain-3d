@@ -15,7 +15,7 @@ Ce document détaillé est le **livrable officiel** consacré aux choix de modé
 | Public cible | Lycéens et étudiants hors informatique (16–25 ans), sans connaissance préalable de la blockchain |
 | Lien vers la démo | https://dyzlek.github.io/r507-blockchain-3d/ |
 | Lien vers GitHub Projects | https://github.com/users/dyzlek/projects/3 |
-| Version et date de mise à jour | v0.12 — 11/11/2026 (textes relus pour des non-initiés, lexique par étape, sceaux colorés, session 1 reportée, §5 à 7) |
+| Version et date de mise à jour | v0.13 — 16/11/2026 (session 2 reportée dans les 7 fiches, FPS remesurés) ; v0.12 — 11/11/2026 (textes relus pour des non-initiés, lexique par étape, sceaux colorés, session 1 reportée, §5 à 7) |
 
 ## 2. Univers visuel et métaphore principale
 
@@ -60,7 +60,7 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 | Typographie et lisibilité | Alegreya Sans (humaniste) pour le titre et le texte, Courier Prime (machine à écrire) pour les empreintes, les valeurs et les étiquettes. Chiffres alignés sur les capitales | L'humaniste garde un ton chaleureux et accessible. La machine à écrire va avec l'univers papier (étiquettes, registre) et distingue toujours les vraies données techniques (hash, nonce) du texte d'explication |
 | Échelle et rapport de taille | Coffres identiques ; le tampon du parent est environ deux fois plus petit que celui du bloc | Même structure pour tous les blocs ; la taille distingue « mon sceau » et « celui de mon parent » |
 | Mouvement | Corde coupée : quand un bloc est falsifié, la corde qui le relie au suivant se coupe et ses deux moitiés retombent avec la gravité (petite simulation physique), puis se balancent. Coup de tampon : un vrai tampon encreur vient s'imprimer sur le calque, le coffre s'écrase légèrement et quelques gouttes d'encre giclent autour puis s'effacent (minage réussi, falsification). À l'arrivée sur l'archipel, les décors des îles se relèvent un à un. Un essai de minage raté laisse un tampon pâle | L'instant où un bloc est scellé devient physique et marquant ; le tampon pâle dit « pas valide » sans texte |
-| Accessibilité et lisibilité | **Contrastes mesurés (WCAG 2.2, cible AA = 4,5 pour le texte)** : encre sur fiche 11,6 ; corail `#a8442c` sur fiche 5,3 et sur feuille 5,7 ; gris `#655848` sur fiche 6,1 et sur le bureau 5,2 ; blanc sur corail 5,9 ; rouge de fraude sur feuille 6,3. Le corail d'origine (`#c2543a`, 4,0 sur la fiche) a été assombri pour le texte ; la version claire ne sert qu'au décor. **Pas d'information portée par la couleur seule** : falsifié = plaque « falsifié » + corde coupée, étape faite = numéro + pastille pleine, étape courante = `aria-current` + pastille agrandie, cycle de vie = ✓ / ✗, île éteinte = « · éteinte » dans l'étiquette. **Légende** : l'étape 1 dit que la couleur et le motif du tampon viennent du code du sceau. **Texte** : 17 px (étiquettes 12 à 13 px), tutoiement, phrases courtes. **Clavier et lecteurs d'écran** : tout se fait aux boutons (flèches ← → pour changer d'étape, sauf avec Alt/Ctrl/Maj), focus visible, boutons « Éteindre une île » en plus du clic sur la maquette, texte de l'étape annoncé (`aria-live`), scène 3D décrite par `aria-label`. **Mouvement** : `prefers-reduced-motion` coupe les animations (étiquettes, tampons, corde, avions) | Un public de 16 à 25 ans lit sur téléphone, parfois en plein jour : un contraste suffisant et des états doublés par du texte évitent qu'un daltonien ou un écran peu lumineux fasse rater l'idée clé (le sceau change, la chaîne casse). Ce qui n'est pas vérifié : lecteur d'écran réel, test sur un vrai téléphone (simulé à 375 px : pas de défilement horizontal, cibles ≥ 24 px) |
+| Accessibilité et lisibilité | **Contrastes mesurés (WCAG 2.2, cible AA = 4,5 pour le texte)** : encre sur fiche 11,6 ; corail `#a8442c` sur fiche 5,3 et sur feuille 5,7 ; gris `#655848` sur fiche 6,1 et sur le bureau 5,2 ; blanc sur corail 5,9 ; rouge de fraude sur feuille 6,3. Le corail d'origine (`#c2543a`, 4,0 sur la fiche) a été assombri pour le texte ; la version claire ne sert qu'au décor. **Pas d'information portée par la couleur seule** : falsifié = plaque « falsifié » + corde coupée, étape faite = numéro + pastille pleine, étape courante = `aria-current` + pastille agrandie, cycle de vie = ✓ / ✗, île éteinte = « · éteinte » dans l'étiquette. **Légende** : l'étape 1 dit que la couleur et le motif du tampon viennent du code du sceau. **Texte** : 18 px depuis la session 2, qui le trouvait petit (étiquettes 13 à 14 px), tutoiement, phrases courtes. **Clavier et lecteurs d'écran** : tout se fait aux boutons (flèches ← → pour changer d'étape, sauf avec Alt/Ctrl/Maj), focus visible, boutons « Éteindre une île » en plus du clic sur la maquette, texte de l'étape annoncé (`aria-live`), scène 3D décrite par `aria-label`. **Mouvement** : `prefers-reduced-motion` coupe les animations (étiquettes, tampons, corde, avions) | Un public de 16 à 25 ans lit sur téléphone, parfois en plein jour : un contraste suffisant et des états doublés par du texte évitent qu'un daltonien ou un écran peu lumineux fasse rater l'idée clé (le sceau change, la chaîne casse). Ce qui n'est pas vérifié : lecteur d'écran réel, test sur un vrai téléphone (simulé à 375 px : pas de défilement horizontal, cibles ≥ 24 px) |
 
 > v0.8 (13/10/2026), branche `styleV2` : direction « maquette en papier découpé » proposée par Maxens, réalisée avec l'aide de l'IA (Claude) (#16).
 >
@@ -81,7 +81,7 @@ Pour ne pas confondre la métaphore et la réalité, chaque étape affiche un en
 | Organisation spatiale et signification des positions | La chaîne est alignée de gauche à droite, dans l'ordre d'ajout des blocs (sens de lecture). L'archipel (notion 4) est placé à l'écart de la chaîne, et la caméra s'y rend : le placer autour de la chaîne aurait fait de celle-ci un centre, l'inverse de l'idée à transmettre. Les îles sont dispersées irrégulièrement, sans île au milieu |
 | Représentation du temps | Gauche = plus ancien, droite = plus récent. Le bloc n°0 (genèse) est le premier à gauche |
 | Passage d'une notion à l'autre | Panneau fixe avec boutons « Précédent / Suivant », points d'étape cliquables et flèches du clavier. Le lien `?etape=N` ouvre directement une séquence (tests utilisateurs, soutenance). Sur téléphone, le panneau passe en bas de l'écran |
-| Fluidité (FPS) | Plus de 60 images par seconde sur tout le parcours, mesuré le 09/11/2026 par Dylan dans les outils de développement de Chrome, y compris avec le processeur ralenti 6 fois pour simuler un PC faible (#19). Ce qui a permis d'y arriver : nuages dessinés en 2 appels (`InstancedMesh`), scène préparée au chargement (`compileAsync`), moins d'objets dessinés pendant les transitions. Pas encore mesuré sur un vrai téléphone |
+| Fluidité (FPS) | **Remesuré le 16/11/2026 (#57)** avec `scripts/mesure-fps.mjs` : Chrome piloté, 1600×900, les 9 étapes avec l'action de chaque étape déclenchée (minage, course…), 5 s par étape, comptées image par image. Machine : portable Ryzen 9 8940HX, rendu sur la carte graphique intégrée (Radeon 610M). **Sans ralentissement : jamais sous 41 images/s** (pire seconde du parcours). Processeur ralenti 4 fois : moyennes de 34 à 77 images/s selon l'étape, mais des creux à 26 (étape 5, archipel) et 21 (étape 6, pendant le minage). Ralenti 6 fois : 13 à 22 images/s au pire sur les étapes 5 à 9. La mesure du 09/11 (« plus de 60 images/s, ralenti 6 fois compris », #19) était trop optimiste, sans doute parce que le compteur des outils de Chrome ne compte pas les images de la même façon. **Cause** : sur l'archipel, environ 600 appels de dessin par image, dont la carte d'ombres de 324 objets. **Ce qui aide** : nuages en 2 appels (`InstancedMesh`), scène préparée au chargement (`compileAsync`), canevas redimensionné seulement quand la fenêtre change, qualité adaptative sous 45 images/s (résolution, puis ombres recalculées une image sur 2 puis sur 3 : environ 20 % gagnés sous charge). **Limites** : pas testé sur un vrai poste de TP ni sur un vrai téléphone ; regrouper les décors de l'archipel en quelques objets réduirait les appels de dessin |
 
 ## 4. Fiches des 7 notions obligatoires
 
@@ -89,7 +89,7 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 
 ### 4.1 — Structure d'un bloc
 
-> v0.5 (13/10/2026), rédigé avec l'aide de l'IA, relu par Maxens. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
+> v0.5 (13/10/2026), rédigé avec l'aide de l'IA, relu par Maxens. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 reportée (16/11/2026, #56).
 
 **Issues liées :** #7 (et #15 pour la navigation)  
 **Séquence(s) concernée(s) :** séquence 2 « Le coffre » (`?etape=2`)
@@ -141,14 +141,14 @@ Dupliquez la fiche suivante pour chacune des 7 notions, en reprenant exactement 
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | Session 1 (T1, T2) : T1 nomme les 4 éléments (transaction, sceau d'avant, sceau, nonce) ; T2 répond « les deux sceaux » sans savoir lequel est lequel. Critère atteint par T1 seulement | Fiche du coffre : « Sceau » renommé « Sceau de ce coffre », à côté de « Sceau du coffre d'avant », pour distinguer les deux sans lire l'explication | #17 |
-| Session 2 (après corrections) : à faire | | #18 |
+| Session 2 (T3, T4, 11/11, deux débutants complets) : T4 nomme les 4 éléments (deux sceaux, transaction, nonce) ; T3 répond « une chaîne et des sceaux ». Les deux allument la lampe seuls ; T3 décrit le coffre comme « le fonctionnement des sceaux ». Critère atteint par T4 seulement, comme en session 1 | Rien de propre à la notion. T3 n'a ouvert ni le lexique ni « En vrai… » : lexique ouvert par défaut ; récapitulatif « En bref » à l'étape 9 qui redonne les 4 éléments du bloc (#55, PR #54) | #18, #55 |
 
 #### g) Limites assumées
 Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage ni de racine de Merkle : ces éléments n'apportent rien à la compréhension du chaînage visé ici et sont signalés dans l'encart « En vrai… ». La difficulté (`00`) est très inférieure à celle de Bitcoin pour que les blocs se calculent instantanément.
 
 ### 4.2 — Chaînage cryptographique
 
-> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 3. Relu par Maxens, à confirmer par Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
+> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 3. Relu par Maxens, à confirmer par Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 reportée (16/11/2026, #56).
 
 **Issues liées :** #8
 **Séquence(s) concernée(s) :** séquence 3 « Chaque coffre garde le sceau du précédent » (`?etape=3`)
@@ -196,15 +196,15 @@ Un seul champ de données au lieu de nombreuses transactions, pas d'horodatage n
 
 | Observation | Modification | Issue |
 |:---|:---|:---|
-| Session 1 (T1, T2) : aucun des deux ne dit que le sceau du coffre d'avant est **recopié** dans le suivant (« les sceaux », « le sceau sert à relier »). Notion la moins bien retenue. Critère non atteint | Sceaux colorés selon leur bloc (deux blocs voisins n'ont jamais la même couleur), copie du sceau de la même couleur que l'original, cercles de comparaison de cette couleur (PR #43) ; mot « Sceau du coffre d'avant » défini dans « Les mots de cette étape » (#47). La copie n'est pas animée. À mesurer de nouveau en session 2 | #17, #47 |
-| Session 2 (après corrections) : à faire | | #18 |
+| Session 1 (T1, T2) : aucun des deux ne dit que le sceau du coffre d'avant est **recopié** dans le suivant (« les sceaux », « le sceau sert à relier »). Notion la moins bien retenue. Critère non atteint | Sceaux colorés selon leur bloc (deux blocs voisins n'ont jamais la même couleur), copie du sceau de la même couleur que l'original, cercles de comparaison de cette couleur (PR #43) ; mot « Sceau du coffre d'avant » défini dans « Les mots de cette étape » (#46) ; la copie du sceau s'envole vers le coffre suivant quand on compare les sceaux (#47, PR #51). Mesuré en session 2 : voir la ligne suivante | #17, #47 |
+| Session 2 (T3, T4) : T4 dit que « celui du bloc précédent sera toujours identique à celui dans le coin du bloc en question » : **critère atteint pour la première fois**. T3 répond seulement « chaîne » en fin de parcours, mais explique pendant l'étape que « la chaîne se casse car le code ne correspond plus » et désigne l'étape 3 comme celle qui l'a le mieux fait comprendre (« les animations sont beaucoup plus pédagogiques »). La copie animée du sceau (#47) semble porter | Pas de nouvelle modification de la scène. Ligne « Ce sceau recopié relie les blocs » dans le récapitulatif de l'étape 9, pour que ce qui est compris sur le moment soit retenu (#55) | #18, #47, #55 |
 
 #### g) Limites assumées
 Le hash du précédent est montré seul : le vrai en-tête contient aussi la date, la racine de Merkle et la difficulté. Le sceau n'affiche que les 4 premiers caractères de l'empreinte, mais sa couleur et ses rayons viennent des autres octets, et l'empreinte complète est donnée dans le panneau. Le tube corail est un repère qui n'existe pas en vrai ; l'encart « En vrai… » le précise.
 
 ### 4.3 — Immutabilité et détection de falsification
 
-> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 4. Relu par Maxens, à confirmer par Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
+> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 4. Relu par Maxens, à confirmer par Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 reportée (16/11/2026, #56).
 
 **Issues liées :** #9
 **Séquence(s) concernée(s) :** séquence 4 « Trafiquer un coffre, ça se voit » (`?etape=4`)
@@ -254,14 +254,14 @@ Le hash du précédent est montré seul : le vrai en-tête contient aussi la dat
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | Session 1 (T1, T2) : T1 explique la détection par les sceaux ; T2 voit la cassure sans donner la raison. Le sujet demande aussi que la triche soit détectée par les autres nœuds, ce qui n'était pas montré | Le texte annonce que les autres îles refuseront le bloc ; la notion 4 permet d'envoyer le bloc 1 falsifié, que les voisines de Dylan refusent (avion rouge, île cerclée de rouge, « refuse le bloc ✗ ») | #17 |
-| Session 2 (après corrections) : à faire | | #18 |
+| Session 2 (T3, T4) : T4 explique la détection (le sceau ne correspond plus, les autres participants refusent) et cite l'étape 4 comme la mieux comprise : refaire un vieux bloc oblige à refaire tous les suivants. T3 répond « on le remarque » sans raison, mais dit pendant l'étape qu'on pourrait tricher « mais il faut refaire tous les modules donc long ». Critère atteint par T4, partiel pour T3 | Ligne du récapitulatif de l'étape 9 (« changer un vieux bloc casse la chaîne ») ; renvois « étape 4 » au lieu de « notion 3 » dans les textes, avec une seule numérotation visible (#55) | #18, #55 |
 
 #### g) Limites assumées
 La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la course contre le reste du réseau : c'est le sujet de la notion 7 (double dépense, attaque des 51 %). La falsification ne touche qu'une seule copie de la chaîne. L'archipel n'arrivant qu'à la notion 4, le refus par les autres îles est montré là (envoi du bloc 1 falsifié), et la notion 3 l'annonce. Le tricheur n'est pas représenté : c'est l'utilisateur qui joue son rôle.
 
 ### 4.4 — Réseau et décentralisation
 
-> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du cadrage, relu par Maxens. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
+> v0.5 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du cadrage, relu par Maxens. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 reportée (16/11/2026, #56).
 
 **Issues liées :** #10
 **Séquence(s) concernée(s) :** séquence 5 « L'archipel » (`?etape=5`)
@@ -314,14 +314,14 @@ La séquence ne montre pas le tricheur qui recalcule les blocs suivants ni la co
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | Session 1 (T1, T2) : T1 dit « pour la sécurité » sans plus, T2 ne sait pas pourquoi la chaîne est copiée | Choix « Sa transaction / Bloc 1 falsifié » : on voit à quoi sert la copie (chaque île compare et refuse la triche) ; encadré « À retenir ». Une île ne sait pas ce que ses voisines ont reçu : elle envoie quand même et le doublon est ignoré, ce qui est maintenant expliqué dans le panneau (#10) | #17 |
-| Session 2 (après corrections) : à faire | | #18 |
+| Session 2 (T3, T4) : les deux envoient le bloc falsifié ; T3 éteint aussi une île, T4 non. T4 : « si les données n'étaient que chez un participant, les changer serait simple car personne ne pourrait les vérifier » (critère atteint) et explique que les îles refusent le faux bloc. T3 répond « pour s'assurer que tout est en règle » (partiel) et voit dans les îles « la banque de Dylan et des autres » | Pas de changement de la scène. Ligne du récapitulatif de l'étape 9 (« chaque île garde sa copie et refuse ce qui ne correspond pas ») ; le mot « nœud » reste défini dans le lexique, désormais ouvert par défaut (#55). Risque « île = banque » noté : une île n'est pas un intermédiaire, à dire dans « En vrai… » si une session 3 le confirme | #18, #55 |
 
 #### g) Limites assumées
 Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend environ une seconde au lieu de quelques millisecondes : il faut pouvoir suivre le message des yeux. La vérification est réduite à une courte pause, sans montrer les signatures. Les îles sont toutes honnêtes et complètes : les nœuds malveillants sont traités à la notion 7 (double dépense), et les nœuds « légers » ne sont pas représentés. Ces simplifications sont signalées dans l'encart « En vrai… ».
 
 ### 4.5 — Validation et minage
 
-> Brouillon v0.6 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 6. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
+> Brouillon v0.6 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 6. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 reportée (16/11/2026, #56).
 
 **Issues liées :** #11
 **Séquence(s) concernée(s) :** séquence 6 « La course au sceau » (`?etape=6`)
@@ -373,14 +373,14 @@ Le réseau compte 7 îles au lieu de dizaines de milliers, et un saut prend envi
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | Session 1 (T1, T2) : T1 répond « générer un sceau » (partiel, sans les essais) ; T2 juge l'étape incompréhensible et ne sait pas définir « miner ». Critère non atteint | Consigne corrigée (« Clique pour lancer le minage » au lieu de la lampe), le bloc 4 n'est plus affiché scellé avant le minage, transitions plus fluides entre les étapes 3, 4 et 5 | #17 |
-| Session 2 (après corrections) : à faire | | #18 |
+| Session 2 (T3, T4) : T4 définit miner comme « passer plusieurs essais à essayer de trouver un hash correspondant à la règle (débuter avec X 0) » : critère atteint. T3 répond « idk » au but de la course et à « qu'est-ce que miner » : notion la moins retenue par T3 | Définition en une phrase surlignée en tête de l'étape 6 (« Miner, c'est essayer des nombres, un par un, jusqu'à trouver un sceau qui commence par 00 ») ; « À retenir » une fois le sceau trouvé ; ligne « Miner » dans le récapitulatif de l'étape 9 (#55, PR #54) | #18, #55 |
 
 #### g) Limites assumées
 Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un seul mineur est montré : la course entre mineurs et la récompense ne sont que dans l'encart « En vrai… », la compétition étant le sujet de la notion 6. Le bloc ne contient qu'une transaction. Le fil rouge est cohérent : le bloc n°2 contient une autre transaction (Thomas → Julien), et celle de Dylan n'entre dans la chaîne qu'ici, dans le bloc n°4. Les blocs déjà présents sont scellés en `00` ; la difficulté `000` est présentée comme un durcissement pour les blocs à venir (comme le réajustement de Bitcoin), sans remettre en cause les anciens.
 
 ### 4.6 — Comparaison d'au moins deux mécanismes de consensus
 
-> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 7. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
+> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 7. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 reportée (16/11/2026, #56).
 
 **Issues liées :** #12
 **Séquence(s) concernée(s) :** séquence 7 « Qui scelle le bloc ? » (`?etape=7`)
@@ -432,14 +432,14 @@ Le minage est ralenti des milliards de fois et la difficulté est minuscule. Un 
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | Session 1 (T1, T2) : aucun des deux ne cite les deux méthodes en fin de parcours ; T2 juge l'étape incompréhensible | Textes raccourcis, mots simples d'abord (« course », « tirage au sort ») puis le terme technique entre parenthèses ; un « À retenir » d'une phrase par méthode | #17 |
-| Session 2 (après corrections) : à faire | | #18 |
+| Session 2 (T3, T4) : T4 cite les deux méthodes en fin de parcours (vitesse de calcul, tirage selon la mise) et juge la mise « la plus économe » : critère atteint. T3 les décrit pendant l'étape (« travail, le premier », « jeux, tiré au sort ») et trouve le tirage plus juste, mais répond « les mêmes sceaux » en fin de parcours | Le but de la course est redit à l'étape 7 (« toutes les îles minent en même temps… le but : trouver le bon sceau la première ») ; ligne « course ou tirage » dans le récapitulatif de l'étape 9 (#55) | #18, #55 |
 
 #### g) Limites assumées
 La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montrée, ni la vérification du bloc par les autres îles après la victoire (vue à la notion 5). Les poids sont fixes et les îles toutes honnêtes. La preuve d'enjeu est réduite à un tirage pondéré, sans comités ni attestations. La course de la preuve de travail est une simulation : l'île gagnante est tirée au sort selon sa puissance avant l'animation, et les compteurs d'essais sont très ralentis ; c'est dit dans l'encart « En vrai… ». La perte de mise (slashing) est expliquée dans le texte, pas jouée. Ces simplifications sont signalées dans l'encart « En vrai… ».
 
 ### 4.7 — Cycle de vie d'une transaction et scénario d'attaque illustré
 
-> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 8. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 à faire (#18).
+> Brouillon v0.7 (13/10/2026), rédigé avec l'aide de l'IA (Claude) à partir du code de la séquence 8. À relire par Maxens et Dylan. Session 1 reportée dans la fiche f) (09/11/2026) ; session 2 reportée (16/11/2026, #56).
 
 **Issues liées :** #13
 **Séquence(s) concernée(s) :** séquence 8 « La double dépense » (`?etape=8`)
@@ -491,7 +491,7 @@ La récompense du gagnant (bitcoins neufs, frais de transaction) n'est pas montr
 | Observation | Modification | Issue |
 |:---|:---|:---|
 | Session 1 (T1, T2) : aucun des deux ne définit la double dépense ; T2 juge l'étape incompréhensible | Double dépense définie en mots simples (« payer deux fois avec les mêmes jetons ») ; textes raccourcis ; « À retenir » après la course (échec et réussite de l'attaque) ; le 09/11, exemple du vélo : Dylan paie Maxens pour un vélo puis tente de récupérer ses jetons, sinon l'arnaque ne se voit pas | #17 |
-| Session 2 (après corrections) : à faire | | #18 |
+| Session 2 (T3, T4) : les deux rejouent la course à 60 %. T4 définit la double dépense (falsifier la fin de la chaîne pour récupérer et réutiliser ses jetons) et explique pourquoi la chaîne la plus longue gagne : critère atteint. T3 : « allez plus vite que lui dans la création » (partiel) ; étape qui l'a le plus perdu, à cause des mots (« je ne suis pas du milieu ») | Lexique ouvert par défaut (« Double dépense », « Confirmation », « Attaque des 51 % » visibles sans clic) ; ligne « double dépense » dans le récapitulatif de l'étape 9 (#55) | #18, #55 |
 
 #### g) Limites assumées
 La signature de la transaction n'est pas montrée (pas de clés publiques ni privées). La course est au hasard comme le vrai minage, mais accélérée et arrêtée à 3 blocs au lieu de 6 confirmations : sur une course aussi courte, la chance compte plus qu'en vrai. L'adoption de la branche gagnante par les îles est dite dans le texte, mais n'est pas animée sur l'archipel. Ces simplifications sont signalées dans l'encart « En vrai… ».
@@ -502,9 +502,9 @@ La signature de la transaction n'est pas montrée (pas de clés publiques ni pri
 |:---|:---|
 | Les codes visuels sont-ils constants ? | Oui. Un bloc est toujours un coffre en carton avec une fenêtre en calque. Un sceau est toujours un coup de tampon, dont la couleur et le motif viennent du code. Un lien est toujours une corde corail. Le rouge est réservé à la fraude partout : corde coupée (notion 3), avion rouge et îles qui refusent (notion 4), branche secrète de Dylan (notion 7). Un essai raté laisse un tampon pâle (notions 5 et 6) |
 | Un même élément est-il représenté de la même façon partout ? | Oui pour le bloc, le sceau, la chaîne et les îles. Une exception est assumée : à partir de la notion 4, un bloc qui voyage entre les îles devient un avion en papier. Un coffre qui vole aurait brouillé l'idée de copie, puisque chaque île garde sa propre chaîne de coffres. La chaîne de Dylan reste la même de la notion 1 à la notion 7 : le bloc 4 miné à la notion 5 est celui qu'on retrouve dans la course de la notion 7 |
-| L'ordre des séquences est-il progressif ? | Oui. On voit d'abord un bloc (1), puis deux blocs reliés (2), puis ce qui casse si on triche (3). Vient ensuite la chaîne copiée sur plusieurs îles (4), puis la façon d'ajouter un bloc (5) et celle de décider qui a le droit de l'ajouter (6). La notion 7 suit tout le trajet d'une transaction et montre une attaque qui réunit ces notions. Chaque notion réutilise la précédente. Les tests de la session 1 montrent que la difficulté monte trop vite à partir de l'étape 4 : les textes des notions 6 et 7 ont été réécrits en mots simples |
-| Quelle notion est la moins bien représentée ? | D'après les tests, c'est le chaînage (notion 2). La corde se voit, mais aucun testeur ne dit que le sceau est recopié : la corde porte l'idée de lien, pas celle de copie. Viennent ensuite le consensus et la double dépense, sans aucune bonne réponse en session 1 (avant la réécriture des textes). Pour le vocabulaire et le rythme relevés en session 1, un lexique « Les mots de cette étape » (#46) et des textes plus courts aux étapes 4 et 6 (#45) ont été ajoutés ; effet à mesurer en session 2 |
-| Quelle décision reverriez-vous avec une semaine de plus ? | Tester plus tôt. La session 1 a eu lieu après le développement des 7 notions, et ses retours sont arrivés trop tard pour tout corriger. Côté contenu, on animerait la copie du sceau à la notion 2 et on brancherait le vrai calcul de minage dans la course de la notion 6, au lieu d'une simulation. Le passage par le neumorphisme (v0.4 à v0.7) a aussi coûté du temps avant la direction papier |
+| L'ordre des séquences est-il progressif ? | Oui. On voit d'abord un bloc (1), puis deux blocs reliés (2), puis ce qui casse si on triche (3). Vient ensuite la chaîne copiée sur plusieurs îles (4), puis la façon d'ajouter un bloc (5) et celle de décider qui a le droit de l'ajouter (6). La notion 7 suit tout le trajet d'une transaction et montre une attaque qui réunit ces notions. Chaque notion réutilise la précédente. Les tests de la session 1 montrent que la difficulté monte trop vite à partir de l'étape 4 : les textes des notions 6 et 7 ont été réécrits en mots simples. En session 2, plus aucune étape n'est jugée « incompréhensible » et le rythme est noté 4/5 par les deux testeurs |
+| Quelle notion est la moins bien représentée ? | D'après les tests, c'est le chaînage (notion 2). La corde se voit, mais aucun testeur ne dit que le sceau est recopié : la corde porte l'idée de lien, pas celle de copie. Viennent ensuite le consensus et la double dépense, sans aucune bonne réponse en session 1 (avant la réécriture des textes). Pour le vocabulaire et le rythme relevés en session 1, un lexique « Les mots de cette étape » (#46) et des textes plus courts aux étapes 4 et 6 (#45) ont été ajoutés. **Session 2** : le chaînage est atteint par T4 et cité par T3 comme l'étape la plus claire, après l'animation de la copie du sceau (#47). La notion la moins retenue devient le minage (notion 5), que T3 ne sait pas définir ; une définition en une phrase a été ajoutée à l'étape 6 (#55). Avec 2 testeurs aux résultats très différents (7/8 et 0/8), c'est une tendance, pas une preuve |
+| Quelle décision reverriez-vous avec une semaine de plus ? | Tester plus tôt. La session 1 a eu lieu après le développement des 7 notions, et ses retours sont arrivés trop tard pour tout corriger. Côté contenu, la copie du sceau a finalement été animée (#47) ; on brancherait le vrai calcul de minage dans la course de la notion 6, au lieu d'une simulation. Le passage par le neumorphisme (v0.4 à v0.7) a aussi coûté du temps avant la direction papier |
 
 ## 6. Rôle de l'IA générative
 
