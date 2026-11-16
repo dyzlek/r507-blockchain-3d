@@ -6,7 +6,7 @@
 
 À remplir en groupe puis individuellement avant la soutenance, dans le dépôt. Elle sert à repérer les lacunes et préparer la soutenance ; elle n'est pas notée en elle-même. Toute note cochée doit être justifiée par une phrase ou une preuve.
 
-> **Partie 3 mise à jour le 16/11/2026 (board, issues #55 à #58, README) ; le reste date du 09/11, à revoir après la session 2.**
+> **Mise à jour le 16/11/2026 : partie 3 (board, issues #55 à #58, README), 2.1, 2.6, 2.7 (session 2 dans CHOIX, #56) et 4.4 (FPS remesurés, #57). Le reste date du 09/11 et est à revoir avec la session 2.**
 >
 > **Pré-remplie le 09/11/2026 (avant la session 2 et la soutenance), à relire et corriger ensemble.** Chaque note est justifiée par une preuve dans le dépôt. La partie 5 se note après la répétition. Les notes sont volontairement prudentes là où les tests ne prouvent rien encore.
 
@@ -36,13 +36,13 @@
 
 | # | Critère | Score 0-4 | Justification / preuve |
 |:---|:---|:---:|:---|
-| 2.1 | `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` est complet et couvre les 7 notions. | 3 | Les 7 fiches sont remplies (a à g), ainsi que §5 cohérence, §6 IA et §7 sources (v0.11 du 09/11). Les lignes « Session 2 » restent à remplir |
+| 2.1 | `MMI-R507-projet-blockchain-CHOIX-MODELISATION.md` est complet et couvre les 7 notions. | 4 | v0.13 du 16/11 : les 7 fiches sont remplies de a) à g), avec les sessions 1 et 2 dans chaque tableau f) (#56) ; §3 avec la mesure des FPS du 16/11, §5 cohérence (mise à jour avec la session 2), §6 IA et §7 sources |
 | 2.2 | Formes et échelles sont justifiées. | 4 | CHOIX §2.5 et tableaux c) : coffres identiques, tampon du parent deux fois plus petit, îles dispersées sans centre, chaîne de gauche à droite = ordre du temps |
 | 2.3 | Couleurs et codes sont cohérents et accessibles. | 4 | Un seul accent (corail = lien), rouge réservé à la fraude ; contrastes mesurés ≥ 4,5 (WCAG 2.2) ; aucune information portée par la couleur seule (CHOIX §2.5) |
 | 2.4 | Animations et interactions servent la compréhension. | 3 | Corde qui se coupe, tampon qui s'imprime, avions entre les îles, compteur d'essais en direct. Mais T2 note « les animations m'ont aidé » 2/5 |
 | 2.5 | Une alternative écartée est documentée par notion. | 4 | Chaque fiche a un tableau e) Alternative écartée, avec la raison du rejet (ex. course à vitesse fixe remplacée par une course au hasard) |
-| 2.6 | Les risques de mauvaise interprétation sont traités. | 3 | Chaque fiche a son b) Risque de mauvaise compréhension et une parade ; les tests montrent que le risque de la notion 2 n'est pas encore traité |
-| 2.7 | Les décisions s'appuient sur les tests utilisateurs. | 2 | Session 1 reportée dans les 7 fiches f) avec la modification faite. Une seule session à ce jour ; la notion 2 n'a pas encore été corrigée |
+| 2.6 | Les risques de mauvaise interprétation sont traités. | 4 | Chaque fiche a son b) Risque de mauvaise compréhension et une parade. Le risque principal relevé en session 1 (la corde vue comme un lien, pas comme une copie du sceau) a été traité par l'animation de la copie (#47) et vérifié en session 2 : T4 l'explique, T3 cite cette étape comme la plus claire. Nouveau risque noté à la notion 4 (« île = banque ») |
+| 2.7 | Les décisions s'appuient sur les tests utilisateurs. | 4 | Deux sessions (#17, #18) reportées dans les 7 fiches f) sous la forme observation → modification → issue. Les corrections de la session 1 (#45 à #47) ont été mesurées en session 2 (chaînage atteint par T4, plus d'étape incompréhensible) ; celles de la session 2 sont dans #55 (PR #54). Limite : ces dernières n'ont pas été retestées avec des testeurs |
 
 ## Partie 3 — GitHub Projects (20 %)
 
@@ -66,7 +66,7 @@
 | 4.1 | Navigation intuitive et éléments identifiables. | 3 | Session 1 : « où cliquer » noté 5 et 4, barre de progression 5 et 4 ; bulles « Clique… » sur l'objet à manipuler |
 | 4.2 | Textes lisibles et contrastés. | 4 | Contrastes mesurés ≥ 4,5, texte 17 px ; « textes faciles à lire » noté 4 et 5 en session 1 |
 | 4.3 | Rythme des animations compréhensible. | 2 | Rythme noté 5 par T1 mais 1 par T2 ; transitions accélérées et textes raccourcis depuis, à revérifier en session 2 |
-| 4.4 | Au moins 30 FPS sur ordinateur standard type poste de TP. | 4 | Plus de 60 images/s sur tout le parcours, y compris processeur ralenti 6 fois dans Chrome, mesuré le 09/11 (#19 fermée, CHOIX §3) |
+| 4.4 | Au moins 30 FPS sur ordinateur standard type poste de TP. | 3 | Remesuré le 16/11 (#57, `scripts/mesure-fps.mjs`, CHOIX §3) sur les 9 étapes avec leur action : jamais sous 41 images/s sur un portable à carte graphique intégrée. Processeur ralenti 4 fois : moyennes de 34 à 77 mais creux à 21-26 aux étapes 5 et 6 ; ralenti 6 fois : 13 à 22 au pire. La mesure du 09/11 était trop optimiste. Qualité adaptative ajoutée (ombres moins souvent recalculées). Pour 4 : mesurer sur un vrai poste de TP |
 | 4.5 | Aucun bug bloquant le parcours principal. | 4 | Parcours des étapes 0 à 8 sans erreur dans la console ; bugs trouvés corrigés (bulle de la notion 5, bloc 4 scellé trop tôt, bateaux) |
 | 4.6 | Déploiement en ligne réalisé. | 4 | GitHub Pages, déployé à chaque fusion sur main : https://dyzlek.github.io/r507-blockchain-3d/ |
 
@@ -87,9 +87,9 @@ Additionnez les scores obtenus dans chaque partie : `P1 / 28`, `P2 / 28`, `P3 / 
 
 `Note / 20 = (P1/28 × 5) + (P2/28 × 5) + (P3/40 × 4) + (P4/24 × 3) + (P5/24 × 3)`.
 
-Estimation provisoire (partie 5 non notée, comptée à 12 / 24) : P1 = 22 / 28, P2 = 23 / 28, P3 = 37 / 40 (mise à jour du 16/11), P4 = 21 / 24, P5 = 12 / 24.
+Estimation provisoire (partie 5 non notée, comptée à 12 / 24) : P1 = 22 / 28, P2 = 27 / 28, P3 = 37 / 40, P4 = 20 / 24 (parties 2 à 4 mises à jour le 16/11), P5 = 12 / 24.
 
-`Note ≈ 3,93 + 4,11 + 3,70 + 2,63 + 1,50 = 15,9 / 20` (à recalculer après la session 2 et la répétition).
+`Note ≈ 3,93 + 4,82 + 3,70 + 2,50 + 1,50 = 16,5 / 20` (à recalculer après la session 2 et la répétition).
 
 ## Bilan individuel et actions
 
