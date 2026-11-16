@@ -117,12 +117,16 @@ function makeLabel(className, html) {
 
 // Copie de la chaîne posée sur une île : mêmes coffres (à la même taille que la vraie chaîne une fois
 // l'archipel agrandi), mêmes sceaux, au même endroit de l'île que la vraie chaîne sur l'île de Dylan.
+let miniBoxMaterial = null;
 function createMiniChain(sealMaterials) {
   const group = new THREE.Group();
   group.position.set(CHAIN_SPOT[0], 0, CHAIN_SPOT[1]);
   const spacing = CHAIN_SPACING / ARCHIPEL_SCALE;
   // Coffres et cordes en un objet chacun (InstancedMesh) : 2 appels de dessin au lieu de 7 par île (#57).
-  const boxes = new THREE.InstancedMesh(miniGeometry, cardboard(), sealMaterials.length);
+  // Matériau propre aux copies (même texture) : partagé avec des objets non instanciés, il obligeait three.js à
+  // changer de programme de rendu à chaque passage de l'un à l'autre, donc plusieurs fois par image.
+  miniBoxMaterial ??= cardboard().clone();
+  const boxes = new THREE.InstancedMesh(miniGeometry, miniBoxMaterial, sealMaterials.length);
   boxes.castShadow = true;
   boxes.receiveShadow = true;
   const links = new THREE.InstancedMesh(miniLinkGeometry, miniLink, sealMaterials.length - 1);

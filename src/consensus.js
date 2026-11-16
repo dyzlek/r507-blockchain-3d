@@ -22,6 +22,7 @@ const TRIES_PER_MACHINE = 900; // essais par seconde et par machine (au ralenti 
 const RACE_TIME = [1.6, 3]; // durée d'une course, en secondes (tirée au hasard dans cet intervalle)
 const DRAW_TIME = 2.4; // durée de la roue du tirage
 const ACCENT = 0xe0684b;
+const frenchNumber = new Intl.NumberFormat('fr-FR'); // toLocaleString recrée un formateur à chaque appel, ici à chaque image
 
 const machineGeometry = new THREE.BoxGeometry(0.26, 0.34, 0.2);
 const machineMaterial = cardboardDark(); // machines en carton
@@ -104,9 +105,9 @@ export function createConsensus() {
     islands.forEach((island) => {
       const amount = weights()[island.index];
       let text = METHODS[method].unit(amount);
-      if (method === 'pow' && state !== 'idle') text = `${Math.floor(island.tries).toLocaleString('fr-FR')} essais`;
+      if (method === 'pow' && state !== 'idle') text = `${frenchNumber.format(Math.floor(island.tries))} essais`;
       if (state === 'done' && island.index === winner) text = method === 'pow' ? 'a trouvé le sceau !' : 'tirée au sort !';
-      island.stat.element.textContent = text;
+      if (island.stat.element.textContent !== text) island.stat.element.textContent = text;
       island.stat.element.classList.toggle('is-winner', state === 'done' && island.index === winner);
       island.machines.visible = method === 'pow';
       island.coins.visible = method === 'pos';

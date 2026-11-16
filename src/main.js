@@ -335,9 +335,16 @@ let tampered = null; // { index, data, hash } quand le bloc est falsifié
 const focused = () => (SEQUENCES[current].focus === null ? null : coffres[SEQUENCES[current].focus]);
 
 // Le coffre affiche le dernier essai ; le panneau suit. Appelé à chaque lot d'essais pendant le minage.
+// Pendant la recherche, un lot d'essais arrive à chaque image : tout réafficher à chaque fois (tampon et pièce
+// redessinés et envoyés à la carte graphique, tableau du panneau reconstruit) faisait chuter la fluidité sur un
+// PC lent (#57). 12 fois par seconde suffit pour voir défiler les essais ; le résultat final s'affiche toujours.
 let miningState = 'idle';
+let miningShownAt = 0;
 function showMining() {
   const { state, tries, last } = miner.summary();
+  const now = performance.now();
+  if (state === 'running' && state === miningState && now - miningShownAt < 1000 / 12) return;
+  miningShownAt = now;
   const valid = state === 'found';
   const label = valid ? `Bloc n°${newCoffre.block.index} · scellé` : last ? `Bloc n°${newCoffre.block.index} · essai n°${tries}` : `Bloc n°${newCoffre.block.index} · sans sceau`;
   newCoffre.setTrial(last, { valid, label });
