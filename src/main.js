@@ -862,11 +862,31 @@ function updateSealCopies(dt) {
   }
 }
 
-// Qualité adaptative (latence signalée en session 2) : toutes les 2 s, si on tourne sous 45 images/s,
-// on baisse d'un cran (résolution, puis taille des ombres). Les pauses (onglet caché) ne comptent pas.
-const quality = { frames: 0, time: 0, level: 0 };
+// Qualité adaptative (latence signalée en session 2, mesure #57) : toutes les 2 s, si on tourne sous 45 images/s,
+// on baisse d'un cran. Sur l'archipel, c'est le nombre d'objets dessinés qui coûte (environ 600 appels par image,
+// 324 objets qui projettent une ombre, dessinés une 2e fois pour la carte d'ombres) : les crans suivants
+// recalculent donc les ombres moins souvent. À ce débit, un retard d'une ou deux images de l'ombre ne se voit pas.
+// Les pauses (onglet caché, image très longue) ne comptent pas.
+renderer.shadowMap.autoUpdate = false;
+const quality = { frames: 0, time: 0, level: 0, shadowEvery: 1, tick: 0 };
+const QUALITY_STEPS = [
+  () => {
+    if (renderer.getPixelRatio() <= 1) return false; // déjà à 1 : on passe au cran suivant
+    renderer.setPixelRatio(1);
+    lastSize.w = 0; // force le redimensionnement du canevas à la nouvelle résolution
+    fitView();
+    return true;
+  },
+  () => (quality.shadowEvery = 2),
+  () => {
+    quality.shadowEvery = 3;
+    light.shadow.mapSize.set(1024, 1024);
+    light.shadow.map?.dispose();
+    light.shadow.map = null;
+  },
+];
 function adaptQuality(rawDt) {
-  if (quality.level >= 2 || rawDt > 0.25 || document.hidden) return;
+  if (quality.level >= QUALITY_STEPS.length || rawDt > 0.4 || document.hidden) return;
   quality.frames += 1;
   quality.time += rawDt;
   if (quality.time < 2) return;
@@ -874,17 +894,11 @@ function adaptQuality(rawDt) {
   quality.frames = 0;
   quality.time = 0;
   if (fps >= 45) return;
-  quality.level += 1;
-  if (quality.level === 1 && renderer.getPixelRatio() > 1) {
-    renderer.setPixelRatio(1);
-    lastSize.w = 0; // force le redimensionnement du canevas à la nouvelle résolution
-    fitView();
-  } else {
-    quality.level = 2;
-    light.shadow.mapSize.set(1024, 1024);
-    light.shadow.map?.dispose();
-    light.shadow.map = null;
-  }
+  while (quality.level < QUALITY_STEPS.length && QUALITY_STEPS[quality.level++]() === false);
+}
+function updateShadows() {
+  quality.tick = (quality.tick + 1) % quality.shadowEvery;
+  if (quality.tick === 0) renderer.shadowMap.needsUpdate = true;
 }
 
 function frame(time) {
@@ -904,10 +918,11 @@ function frame(time) {
   race.update(dt, timer.getElapsed(), reducedMotion);
   controls.update();
   fitShadows();
+  updateShadows();
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 }
 renderer.setAnimationLoop(frame);
 
 // Accès pour le débogage dans la console.
-window.app = { scene, camera, controls, coffres, archipel, miner, consensus, race, goTo };
+window.app = { renderer, scene, camera, controls, coffres, archipel, miner, consensus, race, goTo };
