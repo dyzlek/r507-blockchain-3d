@@ -264,11 +264,15 @@ body {
   inset: -9px;
   border: 2px solid var(--accent-soft);
   border-radius: 50%;
-  animation: ping 1.8s var(--ease) infinite;
 }
 
 .anchor.is-visible {
   opacity: 1;
+}
+
+/* L'onde ne tourne que sur les punaises visibles : une animation infinie sur des éléments transparents coûte quand même. */
+.anchor.is-visible::after {
+  animation: ping 1.8s var(--ease) infinite;
 }
 
 @keyframes ping {
@@ -718,7 +722,7 @@ summary:focus-visible {
 
   .hint,
   #next.is-nudge,
-  .anchor::after {
+  .anchor.is-visible::after {
     animation: none;
   }
 

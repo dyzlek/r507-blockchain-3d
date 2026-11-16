@@ -220,7 +220,6 @@ export function createCoffre(block) {
   let splats = [];
   let stamping = null; // { t } pendant l'animation
   let stampedHash = null; // le minage peut redemander le même sceau : on ne retamponne pas
-  let lastTrialDrawn = 0; // dernier tampon d'essai redessiné (performance.now)
   function startStamp() {
     if (!tool) {
       tool = createStampTool();
@@ -315,6 +314,7 @@ export function createCoffre(block) {
     group.add(label);
     const dot = makeLabel('anchor', '');
     group.add(dot);
+    label.visible = dot.visible = false; // cachées hors inspection : voir setInspected
     const line = new Line2(new LineGeometry(), leaderMaterial);
     line.renderOrder = 10; // dessiné par-dessus le calque
     group.add(line);
@@ -334,6 +334,7 @@ export function createCoffre(block) {
   updateLeaders();
 
   let inspected = false;
+  let hideTimer = 0;
   let reveal = 0; // 0 = fermé, 1 = champs affichés
 
   return {
@@ -345,12 +346,24 @@ export function createCoffre(block) {
     get inspected() {
       return inspected;
     },
+    // Hors inspection, les étiquettes sont retirées de l'affichage (`visible = false`, donc `display: none`) et
+    // pas seulement transparentes : sinon CSS2DRenderer les replace à chaque image, et la course (étape 8, une
+    // douzaine de coffres en mouvement) faisait ~700 retouches de style par seconde pour rien (#57).
     setInspected(value) {
       inspected = value;
-      leaders.forEach(({ label, dot }) => {
-        label.element.classList.toggle('is-visible', value);
-        dot.element.classList.toggle('is-visible', value);
+      clearTimeout(hideTimer);
+      const toggle = (on) => leaders.forEach(({ label, dot }) => {
+        label.element.classList.toggle('is-visible', on);
+        dot.element.classList.toggle('is-visible', on);
       });
+      if (value) {
+        leaders.forEach(({ label, dot }) => (label.visible = dot.visible = true));
+        // Une image affichée transparente d'abord, pour que le fondu d'apparition ait lieu.
+        requestAnimationFrame(() => requestAnimationFrame(() => inspected && toggle(true)));
+      } else {
+        toggle(false);
+        hideTimer = setTimeout(() => leaders.forEach(({ label, dot }) => (label.visible = dot.visible = false)), 300);
+      }
     },
     // `text` : la consigne de la bulle (par défaut, celle de la notion 1).
     setHint(value, text = 'Clique pour allumer la lampe') {
@@ -400,12 +413,7 @@ export function createCoffre(block) {
         stampedHash = trial.hash;
         startStamp();
       }
-      // Pendant le minage, un essai arrive à chaque image : redessiner le tampon et la pièce (deux images envoyées
-      // à la carte graphique) à chaque fois faisait chuter la fluidité sur un PC lent (#57). On les redessine
-      // 12 fois par seconde au plus ; les chiffres, eux, suivent chaque essai. Le bon sceau est toujours dessiné.
-      const now = performance.now();
-      if (!valid && now - lastTrialDrawn < 1000 / 12) return;
-      lastTrialDrawn = now;
+      // Appelé 12 fois par seconde au plus pendant le minage (main.js, showMining).
       // La texture existe déjà : la remplacer suffit, sans recompiler le matériau (`needsUpdate`).
       seal.material.map.dispose();
       seal.material.map = stampTexture(trial.hash, { color: pairColor(block.index) });

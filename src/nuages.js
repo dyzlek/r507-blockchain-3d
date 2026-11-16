@@ -44,7 +44,9 @@ const FLIGHT_FAR = 45;
 const FLIGHT_SPEED = 28; // unités par seconde
 const LAYER_CLOUDS = 40;
 
-const geometry = new THREE.IcosahedronGeometry(1, 3);
+// Niveau 2 (320 triangles par boule) au lieu de 3 (1 280) : aplaties et en papier mat, la différence ne se voit pas,
+// et la traversée dessine plusieurs centaines de boules (#57).
+const geometry = new THREE.IcosahedronGeometry(1, 2);
 const material = new THREE.MeshStandardMaterial({ color: 0xfffaf0, roughness: 1, metalness: 0, emissive: 0xe8dcc8, emissiveIntensity: 0.35 });
 
 function instanced(clouds) {
