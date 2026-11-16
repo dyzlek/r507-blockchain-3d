@@ -307,6 +307,7 @@ function updateTween(dt) {
 }
 
 // --- Panneau et navigation ---
+const paragraph = (p) => (p.startsWith('<ul') ? p : `<p>${p}</p>`);
 const ui = {
   panel: document.querySelector('#panel'),
   step: document.querySelector('#step'),
@@ -322,10 +323,12 @@ const ui = {
   prev: document.querySelector('#prev'),
   next: document.querySelector('#next'),
   dots: document.querySelector('#dots'),
+  progress: document.querySelector('#progress-label'),
   nav: document.querySelector('#nav'),
 };
 
 let current = 0;
+let wordsOpen = true; // « Les mots de cette étape », ouvert tant que l'utilisateur ne le ferme pas
 let linked = false; // séquences à `chain` : sceaux comparés (ou bloc falsifié)
 let forgedChoice = false; // notion 4 : Dylan envoie le bloc 1 falsifié plutôt que sa transaction
 let tampered = null; // { index, data, hash } quand le bloc est falsifié
@@ -391,7 +394,7 @@ function renderText() {
   const open = sequence.chain || sequence.network ? linked : coffre?.inspected;
   const forgedSent = sequence.network && linked && archipel.summary().forged;
   const paragraphs = forgedSent ? sequence.textForged : open && sequence.textInspected ? sequence.textInspected : sequence.text;
-  ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
+  ui.text.innerHTML = paragraphs.map(paragraph).join('');
 
   ui.inspect.hidden = !coffre && !sequence.chain && !sequence.network;
   const [labelOff, labelOn] = sequence.button ?? ['Allumer la lampe du coffre', 'Éteindre la lampe'];
@@ -452,7 +455,7 @@ function renderText() {
     const { block } = coffre;
     ui.fields.innerHTML = [
       ['Transaction', block.data, 'ce que le coffre garde en mémoire.'],
-      ['Nonce', block.nonce, 'un nombre qu’on change pour obtenir un sceau valide (notion 5).'],
+      ['Nonce', block.nonce, 'un nombre qu’on change pour obtenir un sceau valide (étape 6).'],
       ['Sceau de ce coffre', shortHash(block.hash), 'code unique calculé à partir de tout le contenu du coffre.'],
       ['Sceau du coffre d’avant', shortHash(block.parentHash), 'recopié en petit dans le coin gauche.'],
     ]
@@ -504,15 +507,20 @@ function goTo(index) {
   // `race.reset` remet la plaque « Bloc n°4 · scellé » de la notion 7 : à la notion 5, le bloc n'est pas encore miné.
   if (sequence.mining) showMining();
 
-  ui.stepNumber.textContent = sequence.overview ? '✓' : String(sequence.notion ?? 0);
+  const total = SEQUENCES.length;
+  ui.stepNumber.textContent = String(current + 1);
   ui.nav.style.setProperty('--progress', String(current / (SEQUENCES.length - 1)));
-  ui.step.textContent = sequence.step;
+  ui.step.textContent = `Étape ${current + 1} sur ${total} · ${sequence.step}`;
+  ui.progress.textContent = current === total - 1 ? 'Dernière étape' : `Étape suivante : ${SEQUENCES[current + 1].title}`;
+  // Étape 1 : rien à manipuler, la seule action est « Suivant » ; on la fait remarquer.
+  ui.next.classList.toggle('is-nudge', current === 0);
   ui.title.textContent = sequence.title;
   ui.enVraiText.innerHTML = sequence.enVrai;
   ui.enVrai.open = false;
   ui.words.hidden = !sequence.words;
-  ui.words.open = false;
+  ui.words.open = wordsOpen;
   ui.wordsList.innerHTML = (sequence.words ?? []).map(([term, text]) => `<div><dt>${term}</dt><dd>${text}</dd></div>`).join('');
+  ui.panel.scrollTop = 0; // chaque étape commence en haut de la fiche
   ui.prev.disabled = current === 0;
   ui.next.disabled = current === SEQUENCES.length - 1;
   [...ui.dots.children].forEach((dot, i) => {
@@ -530,7 +538,7 @@ function renderMining(sequence) {
   const { state } = miner.summary();
   const open = state !== 'idle';
   const paragraphs = state === 'found' ? sequence.textInspected : state === 'running' ? sequence.textRunning : sequence.text;
-  ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
+  ui.text.innerHTML = paragraphs.map(paragraph).join('');
   ui.inspect.hidden = false;
   ui.inspect.disabled = state === 'running';
   ui.inspect.textContent = state === 'running' ? 'Minage en cours…' : sequence.button[open ? 1 : 0];
@@ -549,7 +557,7 @@ function renderMining(sequence) {
 function renderConsensus(sequence) {
   const { method, state, winner, totalTries, wins, rounds, tried } = consensus.summary();
   const paragraphs = state === 'done' ? sequence.textDone[method] : sequence.text;
-  ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
+  ui.text.innerHTML = paragraphs.map(paragraph).join('');
   const [labelIdle, labelRunning, labelDone] = sequence.buttons[method];
   ui.inspect.hidden = false;
   ui.inspect.disabled = state === 'running';
@@ -590,7 +598,7 @@ function renderRace(sequence) {
   // Le hasard peut contredire la règle : on le dit au lieu de laisser croire à une erreur.
   if (state === 'done' && winner === 'attack' && power < 0.5) paragraphs = [paragraphs[0], sequence.textLucky, ...paragraphs.slice(1)];
   if (state === 'done' && winner === 'honest' && power > 0.5) paragraphs = [paragraphs[0], sequence.textUnlucky, ...paragraphs.slice(2)];
-  ui.text.innerHTML = paragraphs.map((p) => `<p>${p}</p>`).join('');
+  ui.text.innerHTML = paragraphs.map(paragraph).join('');
   ui.inspect.hidden = false;
   ui.inspect.disabled = state === 'running';
   ui.inspect.textContent = state === 'running' ? 'Course en cours…' : sequence.button[state === 'done' ? 1 : 0];
@@ -605,10 +613,10 @@ function renderRace(sequence) {
     : state === 'running' ? [`Confirmations : ${confirmations} sur ${goal}…`, 'is-pending']
     : [`Confirmée 1 fois (le bloc 4 lui-même), en attente des suivantes`, 'is-pending'];
   const steps = [
-    ['Signée par Dylan (notion 4)', 'is-done'],
-    ['Envoyée à toutes les îles (notion 4)', 'is-done'],
+    ['Signée par Dylan (étape 5)', 'is-done'],
+    ['Envoyée à toutes les îles (étape 5)', 'is-done'],
     ['En salle d’attente (la mempool)', 'is-done'],
-    ['Rangée dans le bloc 4 (notion 5)', lost ? 'is-lost' : 'is-done'],
+    ['Rangée dans le bloc 4 (étape 6)', lost ? 'is-lost' : 'is-done'],
     confirm,
   ];
   const lifecycle = `<ol class="lifecycle">${steps.map(([label, cls]) => `<li class="${cls}">${label}</li>`).join('')}</ol>`;
@@ -683,10 +691,11 @@ async function toggleInspect() {
   renderText();
 }
 
-// Barre de progression : un point par séquence, numéroté comme la notion (0 = introduction).
+// Barre de progression : un point par étape, numérotée de 1 à 9 comme dans le formulaire de test.
 ui.dots.innerHTML = SEQUENCES.map(
-  (s, i) => `<li><button type="button" title="${s.step}" aria-label="${s.step} : ${s.title}">${s.overview ? '✓' : s.notion ?? 0}</button></li>`,
+  (s, i) => `<li><button type="button" title="Étape ${i + 1} : ${s.title}" aria-label="Étape ${i + 1} : ${s.title}">${i + 1}</button></li>`,
 ).join('');
+ui.words.addEventListener('toggle', () => (wordsOpen = ui.words.open));
 [...ui.dots.querySelectorAll('button')].forEach((button, i) => button.addEventListener('click', () => goTo(i)));
 ui.prev.addEventListener('click', () => goTo(current - 1));
 ui.next.addEventListener('click', () => goTo(current + 1));
@@ -763,6 +772,7 @@ canvas.addEventListener('pointermove', (event) => {
 
 // Décale le centre de la vue pour que la scène ne soit pas cachée par le panneau
 // (à droite du panneau sur ordinateur, au-dessus sur téléphone).
+const lastSize = { w: 0, h: 0 };
 function fitView() {
   const { innerWidth: w, innerHeight: h } = window;
   if (!w || !h) return; // fenêtre cachée : on attendra le prochain redimensionnement
@@ -776,6 +786,11 @@ function fitView() {
     visibleAspect = w / panel.top;
   }
   camera.updateProjectionMatrix();
+  // fitView est appelé à chaque mise à jour du panneau (envoi, course…) : redimensionner le canevas à la même
+  // taille le vide et le réalloue, d'où des saccades. On ne le fait que si la fenêtre a changé.
+  if (w === lastSize.w && h === lastSize.h) return;
+  lastSize.w = w;
+  lastSize.h = h;
   renderer.setSize(w, h);
   labelRenderer.setSize(w, h);
   setLeaderResolution(w, h);
@@ -847,9 +862,36 @@ function updateSealCopies(dt) {
   }
 }
 
+// Qualité adaptative (latence signalée en session 2) : toutes les 2 s, si on tourne sous 45 images/s,
+// on baisse d'un cran (résolution, puis taille des ombres). Les pauses (onglet caché) ne comptent pas.
+const quality = { frames: 0, time: 0, level: 0 };
+function adaptQuality(rawDt) {
+  if (quality.level >= 2 || rawDt > 0.25 || document.hidden) return;
+  quality.frames += 1;
+  quality.time += rawDt;
+  if (quality.time < 2) return;
+  const fps = quality.frames / quality.time;
+  quality.frames = 0;
+  quality.time = 0;
+  if (fps >= 45) return;
+  quality.level += 1;
+  if (quality.level === 1 && renderer.getPixelRatio() > 1) {
+    renderer.setPixelRatio(1);
+    lastSize.w = 0; // force le redimensionnement du canevas à la nouvelle résolution
+    fitView();
+  } else {
+    quality.level = 2;
+    light.shadow.mapSize.set(1024, 1024);
+    light.shadow.map?.dispose();
+    light.shadow.map = null;
+  }
+}
+
 function frame(time) {
   timer.update(time);
-  const dt = THREE.MathUtils.clamp(timer.getDelta(), 0, 0.1);
+  const rawDt = timer.getDelta();
+  adaptQuality(rawDt);
+  const dt = THREE.MathUtils.clamp(rawDt, 0, 0.1);
   updateTween(dt);
   updatePops(dt);
   updateSealCopies(dt);

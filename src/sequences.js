@@ -17,7 +17,8 @@ export const SEQUENCES = [
     text: [
       'Une blockchain, c’est un cahier de comptes. Tout le monde peut le lire, personne ne peut le modifier en douce.',
       'Chaque <strong>coffre</strong> est un bloc, fermé par un tampon : son <strong>sceau</strong>. Une <strong>corde</strong> les relie dans l’ordre.',
-      'Les <strong>jetons</strong> sont une monnaie. Une <strong>transaction</strong>, c’est un paiement. On va en suivre un : <strong>Dylan paie 5 jetons à Maxens pour son vélo</strong>. Il arrivera dans un coffre à l’étape 5.',
+      'Les <strong>jetons</strong> sont une monnaie. Une <strong>transaction</strong>, c’est un paiement. On va en suivre un : <strong>Dylan paie 5 jetons à Maxens pour son vélo</strong>. Il arrivera dans un coffre à l’étape 6.',
+      '<span class="key">Tu peux tourner autour de la scène avec la souris. Pour commencer, clique sur <strong>Suivant →</strong> en bas de cette fiche.</span>',
     ],
     words: [
       ['Bloc', 'une page du cahier : un coffre qui contient une transaction.'],
@@ -32,14 +33,14 @@ export const SEQUENCES = [
   {
     id: 'coffre',
     notion: 1,
-    step: 'Notion 1 · Structure d’un bloc',
+    step: 'Structure d’un bloc',
     title: 'Le coffre',
     text: [
       'Le coffre marqué d’une flèche est un <strong>bloc</strong>. Il contient une transaction : <strong>Thomas envoie 3 jetons à Julien</strong>.',
       'Sa fenêtre est en <strong>papier calque</strong> : on devine l’intérieur sans l’ouvrir (l’ouvrir casserait le sceau). Allume la <strong>lampe</strong> cachée dans le coffre pour mieux voir.',
     ],
     textInspected: [
-      'Un bloc, c’est 4 choses : la <strong>transaction</strong>, un <strong>nombre</strong> (le nonce, la pièce numérotée, qui servira à l’étape 5), son <strong>sceau</strong>, et le <strong>sceau du coffre d’avant</strong>.',
+      'Un bloc, c’est 4 choses : la <strong>transaction</strong>, un <strong>nombre</strong> (le nonce, la pièce numérotée, qui servira à l’étape 6), son <strong>sceau</strong>, et le <strong>sceau du coffre d’avant</strong>.',
       'Le sceau est un code unique calculé à partir de tout le contenu, un peu comme une empreinte digitale. Change une seule lettre dedans et le sceau devient complètement différent. Sa couleur et son motif viennent de ce code : autre code, autre tampon.',
     ],
     words: [
@@ -55,7 +56,7 @@ export const SEQUENCES = [
   {
     id: 'chainage',
     notion: 2,
-    step: 'Notion 2 · Chaînage',
+    step: 'Chaînage',
     title: 'Chaque coffre garde le sceau du précédent',
     text: [
       'Regarde le petit sceau dans le coin de chaque coffre : c’est une <strong>copie du sceau du coffre d’avant</strong>. Chaque coffre a <strong>recopié</strong> le sceau du précédent, comme on recopie le numéro de la page d’avant en haut d’une page.',
@@ -63,7 +64,7 @@ export const SEQUENCES = [
     ],
     textInspected: [
       'Regarde : la copie du sceau part du coffre d’avant et <strong>se pose dans le coin du coffre suivant</strong>. Les sceaux allumés sont jumeaux : le sceau du bloc 1 est recopié dans le bloc 2, celui du bloc 2 dans le bloc 3.',
-      'Si on change un vieux bloc, son sceau change, et la copie dans le suivant ne correspond plus. C’est l’idée de la notion 3.',
+      'Si on change un vieux bloc, son sceau change, et la copie dans le suivant ne correspond plus. C’est l’idée de l’étape 4.',
     ],
     button: ['Comparer les sceaux', 'C’est bon, j’ai vu'],
     words: [
@@ -80,7 +81,7 @@ export const SEQUENCES = [
   {
     id: 'immutabilite',
     notion: 3,
-    step: 'Notion 3 · Immutabilité',
+    step: 'Immutabilité',
     title: 'Trafiquer un coffre, ça se voit',
     text: [
       'Quelqu’un veut tricher : il change la transaction du <strong>bloc 1</strong>, pour que Nicolas envoie 200 jetons au lieu de 2.',
@@ -88,8 +89,8 @@ export const SEQUENCES = [
     ],
     textInspected: [
       'Le sceau du bloc 1 a complètement changé. Le bloc 2 en gardait une copie : <strong>elles ne correspondent plus</strong>. La chaîne est cassée, et tout le monde le voit.',
-      'Pour cacher la triche, il faudrait refaire le bloc 1, puis le 2, puis le 3, jusqu’au bout. Pas impossible, mais beaucoup trop long : tu verras à l’étape 5 que sceller un seul bloc demande des centaines d’essais.',
-      'Et les autres ordinateurs ont leur propre copie : à la notion 4, tu verras qu’ils <strong>refusent</strong> le bloc trafiqué.',
+      'Pour cacher la triche, il faudrait refaire le bloc 1, puis le 2, puis le 3, jusqu’au bout. Pas impossible, mais beaucoup trop long : tu verras à l’étape 6 que sceller un seul bloc demande des centaines d’essais.',
+      'Et les autres ordinateurs ont leur propre copie : à l’étape 5, tu verras qu’ils <strong>refusent</strong> le bloc trafiqué.',
     ],
     button: ['Falsifier le bloc 1', 'Remettre comme avant'],
     words: [
@@ -97,7 +98,7 @@ export const SEQUENCES = [
       ['Immuable', 'qu’on ne peut pas modifier sans que ça se voie.'],
     ],
     enVrai:
-      'Sur Bitcoin, refaire un vieux bloc oblige à refaire tout le travail des suivants, pendant que le réseau en ajoute de nouveaux. Seul un attaquant avec plus de la moitié de la puissance de calcul pourrait y arriver : l’attaque des 51 % (notion 7).',
+      'Sur Bitcoin, refaire un vieux bloc oblige à refaire tout le travail des suivants, pendant que le réseau en ajoute de nouveaux. Seul un attaquant avec plus de la moitié de la puissance de calcul pourrait y arriver : l’attaque des 51 % (étape 8).',
     camera: { position: [0, 1.5, 6.4], target: [0, 0, 0] },
     focus: null,
     cameraOn: 2,
@@ -107,7 +108,7 @@ export const SEQUENCES = [
   {
     id: 'reseau',
     notion: 4,
-    step: 'Notion 4 · Réseau',
+    step: 'Réseau',
     title: 'L’archipel',
     text: [
       'Recule : la chaîne était posée sur <strong>l’île de Dylan</strong>. Et ce n’est qu’une île parmi d’autres.',
@@ -117,7 +118,7 @@ export const SEQUENCES = [
     textInspected: [
       'Pas de chef. Chaque île vérifie la transaction, puis la transmet à ses voisines. Une île ne sait pas ce qu’elles ont déjà reçu : si l’avion arrive chez une île qui l’a déjà, elle <strong>ignore le doublon</strong>. C’est ce qui arrête la propagation.',
       '<strong>Clique sur une île pour l’éteindre</strong>, puis renvoie la transaction : elle passe par un autre chemin. Aucune île n’est obligatoire.',
-      'Et si Dylan envoyait le <strong>bloc trafiqué</strong> de la notion 3 ? Choisis « Bloc 1 falsifié » plus bas, puis envoie-le.',
+      'Et si Dylan envoyait le <strong>bloc trafiqué</strong> de l’étape 4 ? Choisis « Bloc 1 falsifié » plus bas, puis envoie-le.',
     ],
     textForged: [
       'Les voisines de Dylan comparent ce bloc avec leur copie : <strong>le sceau ne correspond pas</strong>. Elles le refusent et ne le font pas suivre.',
@@ -140,12 +141,12 @@ export const SEQUENCES = [
   {
     id: 'minage',
     notion: 5,
-    step: 'Notion 5 · Minage',
+    step: 'Minage',
     title: 'La course au sceau',
     text: [
-      'La transaction de Dylan va dans un <strong>nouveau coffre</strong>, au bout de la chaîne. Il manque son sceau.',
-      'La règle : le sceau doit commencer par <strong>00</strong>. On ne peut pas le choisir. On change seulement le <strong>nonce</strong> (le nombre sur la pièce), et on recalcule.',
-      'Pourquoi rendre ça difficile exprès ? Pour qu’un tricheur ne puisse pas refaire les blocs en vitesse (étape 3) : chaque bloc coûte du travail. Lance le minage !',
+      '<span class="key"><strong>Miner</strong>, c’est essayer des nombres, un par un, jusqu’à trouver un sceau qui commence par <strong>00</strong>. Le premier qui trouve a le droit de fermer le coffre.</span>',
+      'La transaction de Dylan va dans un <strong>nouveau coffre</strong>, au bout de la chaîne. Il manque son sceau. On ne peut pas le choisir : on change seulement le <strong>nonce</strong> (le nombre sur la pièce), et on recalcule.',
+      'Pourquoi rendre ça difficile exprès ? Pour qu’un tricheur ne puisse pas refaire les blocs en vitesse (étape 4) : chaque bloc coûte du travail. <strong>Lance le minage.</strong>',
     ],
     textRunning: [
       'Chaque essai change le nonce, donc le sceau. On ne peut pas deviner : on essaie, encore et encore.',
@@ -154,6 +155,7 @@ export const SEQUENCES = [
     textInspected: [
       'Trouvé ! Il a fallu beaucoup d’essais pour <strong>trouver</strong> le bon nonce. Mais un seul calcul suffit pour <strong>vérifier</strong> qu’il est bon.',
       'Essaie <strong>000</strong> : un zéro de plus, environ 16 fois plus d’essais. « Environ », car c’est du hasard.',
+      '<strong>À retenir :</strong> miner, c’est faire des essais jusqu’à trouver un sceau qui respecte la règle. Trouver est long, vérifier est immédiat. À l’étape suivante, toutes les îles font cette course en même temps.',
     ],
     button: ['Lancer le minage', 'Miner à nouveau'],
     words: [
@@ -170,11 +172,11 @@ export const SEQUENCES = [
   {
     id: 'consensus',
     notion: 6,
-    step: 'Notion 6 · Consensus',
+    step: 'Consensus',
     title: 'Qui scelle le bloc ?',
     text: [
       'Toutes les îles peuvent proposer le prochain bloc. Il en faut <strong>un seul</strong>. Sans chef, comment se mettre d’accord ? C’est le <strong>consensus</strong>.',
-      'Méthode 1, la <strong>course</strong> (preuve de travail) : la première île qui trouve un bon sceau gagne. Une île peut avoir plusieurs ordinateurs : plus elle en a, plus elle fait d’essais.',
+      'Méthode 1, la <strong>course</strong> (preuve de travail) : toutes les îles minent en même temps, comme à l’étape 6. <strong>Le but : trouver le bon sceau la première</strong>, pour sceller le bloc. Une île peut avoir plusieurs ordinateurs : plus elle en a, plus elle fait d’essais.',
       'Méthode 2, le <strong>tirage au sort</strong> (preuve d’enjeu) : chaque île mise des jetons. Plus elle mise, plus elle a de chances. <strong>Essaie les deux.</strong>',
     ],
     textDone: {
@@ -207,7 +209,7 @@ export const SEQUENCES = [
   {
     id: 'attaque',
     notion: 7,
-    step: 'Notion 7 · Transaction et attaque',
+    step: 'Transaction et attaque',
     title: 'La double dépense',
     text: [
       'Le paiement de Dylan est dans le <strong>bloc 4</strong>. Maxens a reçu ses 5 jetons et a donné <strong>le vélo</strong> à Dylan.',
@@ -251,6 +253,8 @@ export const SEQUENCES = [
     text: [
       'Voilà tout le chemin parcouru. La <strong>chaîne de coffres</strong> qu’on a ouverte est sur l’île de Dylan, et chaque île de l’<strong>archipel</strong> en garde la même copie.',
       'Une blockchain, c’est ça : un cahier de comptes recopié partout, où chaque page est scellée à la précédente.',
+      '<strong>En bref :</strong>',
+      '<ul class="recap"><li>Un <strong>bloc</strong> garde une transaction, un nonce, son sceau et le sceau du bloc d’avant.</li><li>Ce <strong>sceau recopié</strong> relie les blocs : changer un vieux bloc casse la chaîne.</li><li>Chaque île garde sa <strong>copie</strong> et refuse ce qui ne correspond pas.</li><li><strong>Miner</strong>, c’est essayer des nonces jusqu’à un sceau qui commence par 00.</li><li>Pour choisir qui scelle : la <strong>course</strong> (calcul) ou le <strong>tirage</strong> (mise).</li><li>La <strong>double dépense</strong> échoue tant que le tricheur a moins de la moitié de la puissance.</li></ul>',
       'Tu peux tourner autour de la scène pour tout revoir.',
     ],
     enVrai:
