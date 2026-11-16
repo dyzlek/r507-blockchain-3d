@@ -220,6 +220,7 @@ export function createCoffre(block) {
   let splats = [];
   let stamping = null; // { t } pendant l'animation
   let stampedHash = null; // le minage peut redemander le même sceau : on ne retamponne pas
+  let lastTrialDrawn = 0; // dernier tampon d'essai redessiné (performance.now)
   function startStamp() {
     if (!tool) {
       tool = createStampTool();
@@ -393,18 +394,23 @@ export function createCoffre(block) {
       const text = (i, value) => (leaders[i].label.element.querySelector('.field-value').textContent = value);
       text(1, trial.nonce);
       text(2, shortHash(trial.hash));
-      seal.material.map.dispose();
-      seal.material.map = stampTexture(trial.hash, { color: pairColor(block.index) });
       // Un essai raté laisse un tampon pâle (pas assez d'encre) ; le bon nonce, un vrai coup de tampon.
       seal.material.opacity = valid ? 1 : 0.35;
-      seal.material.needsUpdate = true;
       if (valid && trial.hash !== stampedHash) {
         stampedHash = trial.hash;
         startStamp();
       }
+      // Pendant le minage, un essai arrive à chaque image : redessiner le tampon et la pièce (deux images envoyées
+      // à la carte graphique) à chaque fois faisait chuter la fluidité sur un PC lent (#57). On les redessine
+      // 12 fois par seconde au plus ; les chiffres, eux, suivent chaque essai. Le bon sceau est toujours dessiné.
+      const now = performance.now();
+      if (!valid && now - lastTrialDrawn < 1000 / 12) return;
+      lastTrialDrawn = now;
+      // La texture existe déjà : la remplacer suffit, sans recompiler le matériau (`needsUpdate`).
+      seal.material.map.dispose();
+      seal.material.map = stampTexture(trial.hash, { color: pairColor(block.index) });
       coinFace.map.dispose();
       coinFace.map = coinTexture(trial.nonce);
-      coinFace.needsUpdate = true;
     },
     // Double dépense (notion 7) : texte de la plaque, en rouge pour la branche du tricheur ou un bloc abandonné.
     setPlate(label, { broken = false } = {}) {

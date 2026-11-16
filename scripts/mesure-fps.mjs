@@ -1,8 +1,9 @@
 // Mesure des images par seconde sur tout le parcours (#19, #57), sans dépendance : Chrome piloté par CDP.
 // Pour chaque étape : on y va (transition de caméra comprise), on clique sur le bouton d'action (minage, course…),
 // et on compte les images pendant 5 s. Le processeur peut être ralenti (--cpu 6) pour simuler un poste faible.
-//   node scripts/mesure-fps.mjs [url] [--cpu 1] [--gpu hard|soft] [--size 1600x900] [--dpr 1] [--visible]
-// Par défaut : la démo publiée, carte graphique (hard), écran 1600×900.
+//   node scripts/mesure-fps.mjs [url] [--cpu 1] [--gpu hard|high|soft] [--size 1600x900] [--dpr 1] [--visible]
+// Par défaut : la démo publiée, carte graphique choisie par Windows (hard, souvent l'intégrée sur un portable),
+// écran 1600×900. `high` force la carte dédiée (portable à deux cartes), `soft` le rendu logiciel.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -27,8 +28,10 @@ const flags = [
   '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows',
   ...(args.includes('--visible') ? [] : ['--headless=new']),
   ...(gpu === 'soft' ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : ['--enable-gpu', '--ignore-gpu-blocklist']),
+  ...(gpu === 'high' ? ['--force_high_performance_gpu'] : []),
   'about:blank',
 ];
+console.log(`Mesure en cours (environ 1 min, ne pas toucher à la fenêtre) : ${url} · processeur ralenti ×${cpu}`);
 const proc = spawn(chrome, flags, { stdio: 'ignore' });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let target;
@@ -75,13 +78,16 @@ const measure = (step) => `new Promise((resolve) => {
 })`;
 
 const rows = [];
-for (let step = 0; step < 9; step++) rows.push({ step: step + 1, ...(await evaluate(measure(step))) });
+for (let step = 0; step < 9; step++) {
+  console.log(`  étape ${step + 1} / 9…`);
+  rows.push({ step: step + 1, ...(await evaluate(measure(step))) });
+}
 ws.close();
 proc.kill();
 setTimeout(() => fs.rmSync(profile, { recursive: true, force: true }), 500);
 
 const f = (n) => (Number.isFinite(n) ? n.toFixed(0) : "—").padStart(4);
-console.log(`URL : ${url}\nRendu : ${renderer} (${gpu === 'soft' ? 'logiciel' : 'carte graphique'}) · processeur ralenti ×${cpu} · ${W}×${H} ×${dpr}`);
+console.log(`URL : ${url}\nRendu : ${renderer} (${{ soft: 'logiciel', high: 'carte dédiée forcée' }[gpu] ?? 'carte graphique'}) · processeur ralenti ×${cpu} · ${W}×${H} ×${dpr}`);
 console.log('Étape | moyenne | pire seconde | images > 33 ms | pire image');
 for (const r of rows) console.log(`  ${r.step}   |  ${f(r.avg)}   |    ${f(r.worst)}      |      ${(r.slow * 100).toFixed(1).padStart(4)} %   | ${f(r.max)} ms`);
 const all = rows.map((r) => r.worst);
