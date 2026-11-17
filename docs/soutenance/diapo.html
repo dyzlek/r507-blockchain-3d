@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Soutenance Blockchain 3D</title>
+<meta name="description" content="Support de soutenance du projet R507 Blockchain 3D (20 minutes, Dylan et Maxens)." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+<!--
+  Support de soutenance (#23). Même charte que la démo : papier, carton, un seul accent corail, rouge = fraude.
+  Clavier : → / Espace / Page suivante = diapo suivante ; ← / Page précédente = précédente ; Début / Fin ;
+  N = mode présentateur (qui parle, créneau, notes, chronomètre) ; F = plein écran ; un numéro + Entrée = aller à la diapo.
+  Les captures (img/) viennent de la démo en ligne, prises le 17/11/2026.
+-->
+<style>
+  :root {
+    --bg: #e9dfcc;
+    --card: #f7f1e6;
+    --slip: #fffaf1;
+    --note: #fff1b0;
+    --text: #3a2f26;
+    --muted: #655848;
+    --rule: rgb(120 150 190 / 20%);
+    --accent: #a8442c;
+    --accent-soft: #e0684b;
+    --tape: rgb(224 104 75 / 72%);
+    --broken: #b3261e;
+    --sea: #a9d3ec;
+    --grass: #9fcd6c;
+    --font-text: 'Alegreya Sans', 'Segoe UI', sans-serif;
+    --font-mono: 'Courier Prime', ui-monospace, Consolas, monospace;
+    --hard: 4px 4px 0 var(--text);
+    --hard-sm: 3px 3px 0 var(--text);
+    --drop: 0 1px 1px rgb(0 0 0 / 8%), 6px 12px 26px rgb(80 60 40 / 24%);
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.27 0 0 0 0 0.18 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --lamp: radial-gradient(ellipse 90% 80% at 25% 15%, rgb(255 244 222 / 70%), transparent 70%);
+    --vignette: radial-gradient(ellipse 120% 100% at 50% 40%, transparent 55%, rgb(90 65 40 / 22%));
+    color-scheme: light;
+  }
+  /* Pas de thème sombre : comme la démo, le support reste un papier clair sous une lampe de bureau. */
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    overflow: hidden;
+    background: var(--vignette), var(--lamp), var(--grain), var(--bg);
+    color: var(--text);
+    font-family: var(--font-text);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+
+  /* Scène 16:9 de 1600 × 900, mise à l'échelle de la fenêtre. */
+  #viewport { position: fixed; inset: 0; display: grid; place-items: center; }
+  #stage { position: relative; width: 1600px; height: 900px; flex: none; transform-origin: center; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 70px 96px 92px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(14px) rotate(-0.25deg);
+    transition: opacity 320ms ease, transform 420ms cubic-bezier(0.25, 0.7, 0.25, 1), visibility 0s 320ms;
+  }
+  .slide.is-active { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+  @media (prefers-reduced-motion: reduce) { .slide { transition: none; transform: none; } }
+
+  /* Titres */
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .kicker .num {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 3px solid var(--accent);
+    border-radius: 50%;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+  h1, h2 { font-weight: 800; line-height: 1.02; letter-spacing: -0.01em; }
+  h2 { margin-top: 14px; font-size: 64px; max-width: 1250px; }
+  h3 { font-size: 30px; font-weight: 800; line-height: 1.1; }
+  p, li { font-size: 28px; line-height: 1.35; }
+  .muted { color: var(--muted); }
+  .mono { font-family: var(--font-mono); }
+  strong { font-weight: 800; }
+  .accent { color: var(--accent); }
+  .fraud { color: var(--broken); }
+
+  /* Papiers */
+  .card {
+    position: relative;
+    background: var(--card);
+    box-shadow: var(--drop);
+    padding: 30px 34px;
+  }
+  .card.lined { background: repeating-linear-gradient(transparent 0 43px, var(--rule) 43px 44px), var(--card); }
+  .slip { background: var(--slip); box-shadow: 2px 3px 8px rgb(80 60 40 / 22%); padding: 18px 24px; }
+  .postit {
+    background: var(--note);
+    box-shadow: 2px 4px 10px rgb(80 60 40 / 22%);
+    padding: 22px 26px;
+    rotate: 1deg;
+  }
+  .postit .label { font-family: var(--font-mono); font-size: 20px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+  .tape::before, .tape::after {
+    content: '';
+    position: absolute;
+    top: -14px;
+    width: 110px;
+    height: 30px;
+    background: var(--tape);
+  }
+  .tape::before { left: 22px; rotate: -4deg; }
+  .tape::after { right: 22px; rotate: 3deg; }
+  .tape-one::before { content: ''; position: absolute; top: -14px; left: 50%; width: 120px; height: 30px; margin-left: -60px; background: var(--tape); rotate: -3deg; }
+
+  .photo { position: relative; background: var(--slip); padding: 14px 14px 18px; box-shadow: var(--drop); }
+  .photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .photo figcaption { margin-top: 10px; font-family: var(--font-mono); font-size: 20px; color: var(--muted); }
+  .tilt-l { rotate: -1.4deg; }
+  .tilt-r { rotate: 1.2deg; }
+
+  .quote {
+    margin-top: auto;
+    border-left: 8px solid var(--accent-soft);
+    padding: 6px 0 6px 26px;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.25;
+    max-width: 1300px;
+  }
+
+  .btnlike {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    background: var(--slip);
+    border: 3px solid var(--text);
+    box-shadow: var(--hard-sm);
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  a.btnlike:hover { translate: -1px -1px; box-shadow: 4px 4px 0 var(--text); }
+  .tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--slip);
+    font-family: var(--font-mono);
+    font-size: 20px;
+    box-shadow: 1px 2px 4px rgb(80 60 40 / 20%);
+  }
+
+  .grid { display: grid; gap: 32px; }
+  .row { display: flex; gap: 32px; }
+  .grow { flex: 1; min-height: 0; }
+  ul.clean { list-style: none; }
+  ul.clean li { position: relative; padding-left: 34px; margin-top: 12px; }
+  ul.clean li::before { content: ''; position: absolute; left: 4px; top: 0.5em; width: 14px; height: 14px; border-radius: 50%; background: var(--accent-soft); }
+  ol.steps { list-style: none; counter-reset: s; }
+  ol.steps li { counter-increment: s; position: relative; padding-left: 58px; margin-top: 16px; }
+  ol.steps li::before {
+    content: counter(s);
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 800;
+    font-size: 22px;
+  }
+
+  /* Tableaux en papier */
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 12px 16px; font-size: 25px; line-height: 1.25; vertical-align: top; }
+  th { font-family: var(--font-mono); font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); border-bottom: 3px solid var(--text); }
+  td { border-bottom: 1px solid rgb(58 47 38 / 18%); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.hi td { background: rgb(255 241 176 / 70%); }
+
+  /* Diapo 1 */
+  .title-slide { padding: 0; display: grid; grid-template-columns: 820px 1fr; }
+  .title-slide .left { padding: 96px 40px 92px 96px; display: flex; flex-direction: column; }
+  .title-slide h1 { font-size: 96px; margin-top: 28px; }
+  .title-slide h1 .accent { display: block; }
+  .title-slide .lead { margin-top: 26px; font-size: 29px; max-width: 640px; }
+  .title-slide .who { margin-top: auto; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .title-slide .right { position: relative; padding: 80px 70px 92px 0; }
+  .title-slide .right .photo { height: 100%; rotate: 1.8deg; }
+
+  /* Métaphore */
+  .meta-grid { grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 34px; }
+  .meta { background: var(--slip); box-shadow: 2px 3px 8px rgb(80 60 40 / 20%); padding: 20px 22px; }
+  .meta .real { font-family: var(--font-mono); font-size: 19px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .meta .img { margin-top: 6px; font-size: 27px; font-weight: 800; line-height: 1.15; }
+  .meta p { margin-top: 8px; font-size: 21px; line-height: 1.3; color: var(--muted); }
+  .meta.red { outline: 3px solid var(--broken); outline-offset: -3px; }
+
+  /* Notions */
+  .notion { display: grid; grid-template-columns: 1fr 760px; gap: 54px; flex: 1; min-height: 0; margin-top: 26px; }
+  .notion .text { display: flex; flex-direction: column; gap: 22px; min-height: 0; }
+  .notion .photo { height: 100%; min-height: 0; display: flex; flex-direction: column; }
+  .notion .photo img { flex: 1; min-height: 0; }
+  .doit { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .doit .muted { font-size: 22px; }
+  .two-photos { display: grid; grid-template-rows: 1fr 1fr; gap: 26px; min-height: 0; }
+  .two-photos .photo { height: auto; min-height: 0; }
+
+  /* Tests : barres */
+  .bars { display: grid; grid-template-columns: 90px 1fr 70px; gap: 16px 18px; align-items: center; margin-top: 18px; }
+  .bars .who { font-family: var(--font-mono); font-size: 24px; font-weight: 700; }
+  .bars .track { position: relative; height: 40px; background: rgb(58 47 38 / 9%); }
+  .bars .fill { position: absolute; inset: 0 auto 0 0; background: var(--accent-soft); }
+  .bars .fill.s2 { background: var(--accent); }
+  .bars .val { font-family: var(--font-mono); font-size: 24px; font-weight: 700; text-align: right; }
+  .bars .goal { position: absolute; top: -10px; bottom: -10px; left: 75%; border-left: 3px dashed var(--text); }
+  .session { grid-column: 1 / -1; font-family: var(--font-mono); font-size: 20px; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
+
+  /* Chiffres */
+  .stats { grid-template-columns: repeat(5, 1fr); gap: 22px; }
+  .stat { background: var(--slip); box-shadow: 2px 3px 8px rgb(80 60 40 / 20%); padding: 22px 20px; text-align: center; }
+  .stat b { display: block; font-size: 64px; font-weight: 800; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .stat span { display: block; margin-top: 10px; font-size: 22px; line-height: 1.2; }
+  .cols5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .col { background: rgb(58 47 38 / 7%); padding: 12px; min-height: 150px; }
+  .col h4 { font-family: var(--font-mono); font-size: 18px; text-transform: uppercase; color: var(--muted); }
+  .col .issue { margin-top: 10px; background: var(--slip); padding: 8px 10px; font-size: 18px; box-shadow: 1px 2px 4px rgb(80 60 40 / 18%); }
+
+  /* Barre du bas */
+  #chrome { position: fixed; left: 0; right: 0; bottom: 0; height: 6px; background: rgb(58 47 38 / 10%); z-index: 3; }
+  #progress { height: 100%; width: 0; background: var(--accent-soft); transition: width 300ms ease; }
+  #counter {
+    position: fixed;
+    right: 18px;
+    bottom: 16px;
+    z-index: 3;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  /* Mode présentateur (touche N) */
+  #presenter {
+    position: fixed;
+    right: 16px;
+    top: 16px;
+    z-index: 4;
+    width: min(460px, calc(100vw - 32px));
+    max-height: calc(100vh - 80px);
+    overflow: auto;
+    background: var(--note);
+    box-shadow: 3px 6px 18px rgb(80 60 40 / 30%);
+    padding: 16px 18px 18px;
+    font-size: 17px;
+    line-height: 1.4;
+  }
+  #presenter[hidden] { display: none; }
+  #presenter .head { display: flex; justify-content: space-between; gap: 10px; font-family: var(--font-mono); font-size: 15px; color: var(--accent); }
+  #presenter .speaker { margin-top: 8px; font-size: 22px; font-weight: 800; }
+  #presenter ul { margin: 10px 0 0 18px; }
+  #presenter li { font-size: 17px; margin-top: 6px; }
+  #presenter .next { margin-top: 12px; font-size: 15px; color: var(--muted); }
+  #presenter .late { color: var(--broken); font-weight: 700; }
+  #presenter .help { margin-top: 10px; font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+
+  @media print {
+    body { overflow: visible; background: #fff; }
+    #viewport { position: static; display: block; }
+    #stage { transform: none !important; width: 1600px; height: auto; }
+    .slide { position: relative; opacity: 1; visibility: visible; transform: none; height: 900px; page-break-after: always; break-after: page; }
+    #chrome, #counter, #presenter { display: none !important; }
+    @page { size: 1600px 900px; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="viewport">
+<main id="stage" aria-live="polite">
+
+  <!-- 1 -->
+  <section class="slide title-slide" data-who="Maxens" data-time="0:00 – 0:45"
+    data-notes="Se présenter tous les deux.|Une phrase : on fait comprendre une blockchain à quelqu'un qui n'y connaît rien, sans cours, juste en manipulant une maquette en papier.|La démo est en ligne (lien à l'écran) : on la lance juste après.">
+    <div class="left">
+      <span class="kicker">R507 · BUT MMI 3 · soutenance du 19/11/2026</span>
+      <h1>La blockchain <span class="accent">en papier découpé</span></h1>
+      <p class="lead">On a voulu expliquer la blockchain à quelqu'un qui n'y connaît rien. Pas de cours : on clique sur des coffres en carton, des sceaux et des îles, et on regarde ce qui se passe.</p>
+      <div class="who">
+        <span class="tag">Dylan : la 3D, l'intégration, le board</span>
+        <span class="tag">Maxens : le design, les textes, les tests</span>
+        <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/" target="_blank" rel="noopener">Ouvrir la démo →</a>
+      </div>
+    </div>
+    <div class="right">
+      <figure class="photo tape"><img src="img/notion-6.jpg" alt="L'archipel en papier : sept îles reliées par des pointillés, chacune avec ses machines et son compteur d'essais" /></figure>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide" data-who="Maxens" data-time="0:45 – 1:15"
+    data-notes="Public : 16-25 ans, ils connaissent le mot Bitcoin, pas le fonctionnement.|Les 3 idées : ce qu'on veut qu'ils retiennent en sortant (CHOIX §2.1).|Fil rouge : une seule transaction suivie de bout en bout, de l'étape 1 à l'attaque.">
+    <span class="kicker">Le projet</span>
+    <h2>À qui on s'adresse</h2>
+    <div class="row grow" style="margin-top: 40px; align-items: stretch;">
+      <div class="card lined tape" style="flex: 1.25;">
+        <h3>En sortant, ils doivent avoir compris que…</h3>
+        <ol class="steps" style="margin-top: 10px;">
+          <li>un bloc est <strong>fermé par une empreinte</strong>. Si on touche au contenu, le sceau casse, et tout ce qui suit avec ;</li>
+          <li><strong>personne ne commande</strong> : chacun garde sa copie et vérifie de son côté ;</li>
+          <li>ajouter un bloc coûte quelque chose, <strong>du calcul ou une mise</strong>, donc tricher coûte cher.</li>
+        </ol>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 32px;">
+        <div class="card tape-one">
+          <span class="kicker" style="font-size: 18px;">Public</span>
+          <p style="margin-top: 8px;">Des <strong>16-25 ans</strong> qui ne font pas d'informatique. Ils ont déjà entendu parler de Bitcoin, sans savoir comment ça marche.</p>
+        </div>
+        <div class="postit">
+          <span class="label">Fil rouge</span>
+          <p style="margin-top: 8px; font-size: 32px; font-weight: 800;">« Dylan envoie 5 jetons à Maxens »</p>
+          <p style="font-size: 23px; margin-top: 6px;">On suit cette transaction du début à la fin. Et à la fin, quelqu'un essaie de tricher.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide" data-who="Maxens" data-time="1:15 – 1:30"
+    data-notes="Lire la ligne du haut puis celle du bas, sans détailler : la démo va le montrer.|Insister : le sceau est un vrai SHA-256 calculé dans le navigateur, sa couleur et son motif viennent du hash.|Chaque étape a un encart « En vrai… » qui donne le vrai terme et la limite de l'image.|Écartés : livre de comptes (plat, se réécrit), Lego (on retire une brique sans conséquence).">
+    <span class="kicker">La métaphore</span>
+    <h2>Notre image : des coffres scellés, recopiés sur plusieurs îles</h2>
+    <div class="grid meta-grid">
+      <div class="meta"><div class="real">Bloc</div><div class="img">Coffre en carton à fenêtre de calque</div><p>On voit dedans sans l'ouvrir.</p></div>
+      <div class="meta"><div class="real">Hash</div><div class="img">Sceau, coup de tampon</div><p>C'est un vrai SHA-256 : son dessin et sa couleur en sortent.</p></div>
+      <div class="meta"><div class="real">Chaînage</div><div class="img">Sceau du parent recopié + corde</div><p>La corde se coupe si les sceaux ne collent plus.</p></div>
+      <div class="meta"><div class="real">Nœud</div><div class="img">Île avec sa copie</div><p>Aucune île ne commande les autres.</p></div>
+      <div class="meta"><div class="real">Propagation</div><div class="img">Avions en papier</div><p>Elles passent d'île en île, et chacune vérifie.</p></div>
+      <div class="meta"><div class="real">Minage</div><div class="img">Essais de nonce</div><p>Tampon pâle tant que le sceau ne commence pas par 00.</p></div>
+      <div class="meta"><div class="real">Consensus</div><div class="img">Course ou tirage au sort</div><p>Preuve de travail ou preuve d'enjeu.</p></div>
+      <div class="meta red"><div class="real fraud">Fraude</div><div class="img fraud">Toujours en rouge</div><p>Corde coupée, avion rouge, branche du tricheur.</p></div>
+    </div>
+    <p class="muted" style="margin-top: auto; font-size: 23px;">On avait aussi pensé à un livre de comptes (trop plat, et une page se réécrit) et à des briques empilées (on en retire une, il ne se passe rien). <span class="mono">CHOIX §2</span></p>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide" data-who="Maxens" data-time="1:30 – 4:00"
+    data-notes="Démo, étape 2 : cliquer « Allumer la lampe du coffre » → les 4 champs : transaction, nonce, sceau, sceau du coffre d'avant.|Étape 3 : « Comparer les sceaux » → la copie du sceau s'envole vers le coffre suivant (ajouté après la session 1, #47).|Dire : c'est un vrai SHA-256 sur l'index, le sceau d'avant, la transaction et le nonce (src/chain.js).">
+    <span class="kicker"><span class="num">1</span><span class="num">2</span> Démo · Bloc et chaînage</span>
+    <h2>Ce qu'il y a dans un coffre, et comment ils s'accrochent</h2>
+    <div class="notion">
+      <div class="text">
+        <ul class="clean">
+          <li><strong>Notion 1</strong> : on allume la lampe et on lit les 4 choses du bloc. La transaction, le nonce, son sceau, et celui du coffre d'avant.</li>
+          <li><strong>Notion 2</strong> : chaque coffre garde une copie du sceau du précédent. C'est ça, la chaîne.</li>
+        </ul>
+        <div class="doit">
+          <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=2" target="_blank" rel="noopener">Étape 2 ↗</a>
+          <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=3" target="_blank" rel="noopener">Étape 3 ↗</a>
+          <span class="muted">« Allumer la lampe » puis « Comparer les sceaux »</span>
+        </div>
+        <p class="quote">Le sceau vient de tout ce qu'il y a dans le coffre, et le coffre d'après en garde une copie.</p>
+      </div>
+      <div class="two-photos">
+        <figure class="photo tilt-r"><img src="img/notion-1.jpg" alt="Coffres en carton, le coffre du milieu éclairé par sa lampe" /></figure>
+        <figure class="photo tilt-l"><img src="img/notion-2.jpg" alt="Trois coffres reliés par une corde corail, avec leurs sceaux de couleur" /></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide" data-who="Dylan" data-time="4:00 – 5:30"
+    data-notes="Étape 4 : « Falsifier le bloc 1 » : Nicolas envoie 200 jetons au lieu de 2.|Le sceau du bloc 1 change complètement (effet avalanche) ; la copie dans le bloc 2 ne correspond plus, la corde se coupe et devient rouge.|Annoncer la suite : ici on voit la cassure, les autres participants la verront à l'étape 5.">
+    <span class="kicker"><span class="num">3</span> Démo · Immutabilité</span>
+    <h2>Et si quelqu'un modifie un vieux bloc ?</h2>
+    <div class="notion">
+      <div class="text">
+        <ul class="clean">
+          <li>On clique sur « Falsifier le bloc 1 » : les <strong>2 jetons deviennent 200</strong>.</li>
+          <li>Le sceau du bloc 1 change complètement, donc la copie gardée par le bloc 2 ne colle plus. La corde <span class="fraud"><strong>casse et passe au rouge</strong></span>.</li>
+          <li>Pour le cacher, il faudrait refaire <strong>tous</strong> les blocs d'après.</li>
+        </ul>
+        <div class="doit">
+          <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=4" target="_blank" rel="noopener">Étape 4 ↗</a>
+          <span class="muted">« Falsifier le bloc 1 »</span>
+        </div>
+        <p class="quote">Une seule lettre change, et c'est tout le sceau qui change. Ça se voit tout de suite.</p>
+      </div>
+      <figure class="photo tilt-l"><img src="img/notion-3.jpg" alt="Bloc n°1 marqué falsifié, son sceau entouré de rouge" /></figure>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide" data-who="Dylan" data-time="5:30 – 7:30"
+    data-notes="Transition : la caméra traverse les nuages et découvre l'archipel.|Éteindre une île : le réseau continue sans elle.|Envoyer le bloc 1 falsifié : avion rouge, les îles comparent avec leur copie et le refusent.|Pourquoi l'archipel est à part : des îles en cercle autour de la chaîne en faisaient un centre (alternative écartée, CHOIX §4.4 e).">
+    <span class="kicker"><span class="num">4</span> Démo · Réseau</span>
+    <h2>Pourquoi il n'y a pas de chef</h2>
+    <div class="notion">
+      <div class="text">
+        <ul class="clean">
+          <li>Il y a 7 îles, donc 7 participants, et chacun a <strong>sa propre copie</strong> de la chaîne.</li>
+          <li>Les transactions passent d'une île à l'autre en <strong>avion en papier</strong>.</li>
+          <li>Si on éteint une île, le reste continue. Et le bloc trafiqué part en <span class="fraud"><strong>avion rouge</strong></span> : les autres îles <strong>n'en veulent pas</strong>.</li>
+        </ul>
+        <div class="doit">
+          <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=5" target="_blank" rel="noopener">Étape 5 ↗</a>
+          <span class="muted">Éteindre une île, envoyer le bloc falsifié</span>
+        </div>
+        <p class="quote">Chaque île vérifie de son côté. Un bloc truqué ne passe pas, et une île en panne ne gêne personne.</p>
+      </div>
+      <figure class="photo tilt-r"><img src="img/notion-4.jpg" alt="Archipel de sept îles reliées par des pointillés corail" /></figure>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide" data-who="Maxens" data-time="7:30 – 9:00"
+    data-notes="Étape 6 : lancer le minage en 00 : le compteur d'essais défile, tampons pâles, puis le vrai coup de tampon.|Passer en 000 : 16 fois plus d'essais en moyenne (le départ du nonce est tiré au hasard, sinon la démo contredisait ce chiffre).|Point fort : trouver demande beaucoup d'essais, vérifier n'en demande qu'un.">
+    <span class="kicker"><span class="num">5</span> Démo · Minage</span>
+    <h2>Miner, c'est essayer jusqu'à tomber juste</h2>
+    <div class="notion">
+      <div class="text">
+        <ul class="clean">
+          <li>On change le <strong>nonce</strong> (la pièce numérotée dans le coffre) jusqu'à avoir un sceau qui commence par <span class="mono"><strong>00</strong></span>.</li>
+          <li>Le compteur défile en direct, et chaque essai raté laisse un <strong>tampon pâle</strong>.</li>
+          <li>Avec <span class="mono"><strong>000</strong></span>, il faut en moyenne <strong>16 fois plus d'essais</strong>.</li>
+        </ul>
+        <div class="doit">
+          <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=6" target="_blank" rel="noopener">Étape 6 ↗</a>
+          <span class="muted">« Lancer le minage », puis difficulté 000</span>
+        </div>
+        <p class="quote">Trouver, ça prend des centaines d'essais. Pour vérifier, un seul suffit.</p>
+      </div>
+      <figure class="photo tilt-l"><img src="img/notion-5.jpg" alt="Le tampon encreur vient sceller le bloc n°4" /></figure>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide" data-who="Maxens" data-time="9:00 – 10:30"
+    data-notes="Étape 7 : lancer la course (preuve de travail) : chaque île a des machines, la plus puissante gagne plus souvent mais pas toujours.|Puis le tirage (preuve d'enjeu) : la roue, pondérée par la mise.|Honnêteté : la course est simulée (gagnante tirée selon la puissance), c'est écrit dans « En vrai… ». Le vrai minage est à l'étape 6.|Si retard : ne faire qu'une course.">
+    <span class="kicker"><span class="num">6</span> Démo · Consensus</span>
+    <h2>Qui a le droit d'ajouter le bloc suivant ?</h2>
+    <div class="notion">
+      <div class="text">
+        <table>
+          <thead><tr><th></th><th>Course · PoW</th><th>Tirage · PoS</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Gagne</strong></td><td>la plus grosse puissance de calcul (souvent)</td><td>la plus grosse mise (souvent)</td></tr>
+            <tr><td><strong>Avantage</strong></td><td>très sûr, éprouvé</td><td>sobre en énergie</td></tr>
+            <tr><td><strong>Limite</strong></td><td>gourmand en énergie</td><td>favorise les plus riches</td></tr>
+          </tbody>
+        </table>
+        <div class="doit">
+          <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=7" target="_blank" rel="noopener">Étape 7 ↗</a>
+          <span class="muted">Une course, puis un tirage</span>
+        </div>
+        <p class="quote">La course est sûre mais consomme beaucoup. Le tirage consomme peu, mais avantage ceux qui ont déjà le plus.</p>
+      </div>
+      <figure class="photo tilt-r"><img src="img/notion-6.jpg" alt="L'île de Thomas a trouvé le sceau ; chaque île affiche son nombre d'essais" /></figure>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide" data-who="Dylan" data-time="10:30 – 12:30"
+    data-notes="Étape 8 : la transaction suit tout son cycle : création, propagation, minage, inclusion, confirmations.|Dylan triche : il dépense les mêmes jetons deux fois et mine une branche secrète.|Course à 30 % deux ou trois fois : il gagne parfois par chance sur une course courte → c'est pour ça qu'on attend 6 confirmations.|Puis 60 % : au-delà de 50 %, il gagne presque toujours.|Si retard : une seule course à 60 %.">
+    <span class="kicker"><span class="num">7</span> Démo · Transaction et attaque</span>
+    <h2>Payer deux fois avec les mêmes jetons ?</h2>
+    <div class="notion">
+      <div class="text">
+        <ol class="steps" style="margin-top: -6px;">
+          <li>La transaction est créée, envoyée aux îles, minée, puis <strong>confirmée</strong> un peu plus à chaque nouveau bloc.</li>
+          <li>Dylan triche : il dépense ses jetons une deuxième fois, et mine en cachette une <span class="fraud"><strong>autre branche</strong></span>.</li>
+          <li>C'est la chaîne <strong>la plus longue</strong> qui gagne. Avec <strong>30 %</strong> de la puissance, il y arrive rarement. Avec <strong>60 %</strong>, presque à tous les coups.</li>
+        </ol>
+        <div class="doit">
+          <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=8" target="_blank" rel="noopener">Étape 8 ↗</a>
+          <span class="muted">Course à 30 %, puis à 60 %</span>
+        </div>
+        <p class="quote">Au-dessus de 50 % de la puissance, le tricheur gagne presque toujours. C'est la vraie faiblesse du système.</p>
+      </div>
+      <figure class="photo tilt-l"><img src="img/notion-7.jpg" alt="Le bloc n°4 du tricheur rejeté sous la chaîne principale" /></figure>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide" data-who="Maxens" data-time="12:30 – 13:45"
+    data-notes="Chaque notion a sa fiche dans CHOIX : objectif, risque, représentation, réalité technique, alternative écartée, tests, limites.|Prendre 3 exemples d'alternatives écartées et dire pourquoi.|Charte : un seul accent (corail = ce qui relie), rouge réservé à la fraude, contrastes mesurés, jamais la couleur seule.">
+    <span class="kicker">Argumentation des choix · <span class="mono" style="text-transform: none;">CHOIX-MODELISATION.md</span></span>
+    <h2>Pour chaque choix, on a d'abord essayé autre chose</h2>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 36px;">
+      <div class="card tape-one">
+        <span class="kicker" style="font-size: 18px;">Notion 1</span>
+        <h3 style="margin-top: 8px;">Une fenêtre, pas un couvercle</h3>
+        <p style="margin-top: 10px; font-size: 24px;">Ouvrir le coffre, c'est casser le sceau. On aurait fait croire que lire un bloc le modifie.</p>
+      </div>
+      <div class="card tape-one">
+        <span class="kicker" style="font-size: 18px;">Notion 4</span>
+        <h3 style="margin-top: 8px;">L'archipel à part</h3>
+        <p style="margin-top: 10px; font-size: 24px;">Au début, les îles faisaient un cercle autour de la chaîne. Elle avait l'air d'être le centre, l'inverse de ce qu'on voulait montrer.</p>
+      </div>
+      <div class="card tape-one">
+        <span class="kicker" style="font-size: 18px;">Direction visuelle</span>
+        <h3 style="margin-top: 8px;">Le papier, pas le neumorphisme</h3>
+        <p style="margin-top: 10px; font-size: 24px;">On a commencé en neumorphisme. C'était froid, et pas assez contrasté pour repérer un bouton.</p>
+      </div>
+    </div>
+    <div class="row" style="margin-top: auto; gap: 18px; flex-wrap: wrap;">
+      <span class="tag">le corail pour ce qui relie</span>
+      <span class="tag fraud">le rouge, seulement pour la fraude</span>
+      <span class="tag">contrastes mesurés, au moins 4,5</span>
+      <span class="tag">jamais la couleur toute seule</span>
+      <span class="tag">un encart « En vrai… » par étape</span>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide" data-who="Maxens" data-time="13:45 – 15:00"
+    data-notes="Critère du protocole : 6 réponses sur 8 notées 2 (bonne réponse avec la raison).|Session 1 : personne ne l'atteint, le chaînage est raté, T2 juge les étapes 4 à 7 incompréhensibles.|Corrections #45 rythme, #46 lexique, #47 copie du sceau animée.|Session 2 : T4 à 7/8, plus aucune étape incompréhensible, rythme 4/5. T3 reste à 0/8 : on le dit.|Après la session 2 : #55 (6 corrections) — pas retestées, c'est notre limite.">
+    <span class="kicker">Tests utilisateurs · 4 non-initiés, 2 sessions</span>
+    <h2>Ce que les testeurs nous ont appris</h2>
+    <div class="row grow" style="margin-top: 30px; gap: 48px; align-items: flex-start;">
+      <div class="card" style="flex: 1.1;">
+        <h3>Réponses justes avec la raison, sur 8</h3>
+        <div class="bars">
+          <div class="session">Session 1</div>
+          <div class="who">T1</div><div class="track"><div class="fill" style="width: 25%"></div><div class="goal"></div></div><div class="val">2</div>
+          <div class="who">T2</div><div class="track"><div class="fill" style="width: 0%"></div><div class="goal"></div></div><div class="val">0</div>
+          <div class="session">Session 2 · après les corrections</div>
+          <div class="who">T3</div><div class="track"><div class="fill s2" style="width: 0%"></div><div class="goal"></div></div><div class="val">0</div>
+          <div class="who">T4</div><div class="track"><div class="fill s2" style="width: 87.5%"></div><div class="goal"></div></div><div class="val">7</div>
+        </div>
+        <p class="muted" style="margin-top: 18px; font-size: 21px;">Pointillés : critère du protocole, 6 sur 8.</p>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 22px;">
+        <div class="slip">
+          <h3 style="font-size: 26px;">Après la session 1</h3>
+          <p style="font-size: 23px; margin-top: 6px;">On a ouvert 3 issues : le rythme (<span class="mono">#45</span>), le vocabulaire (<span class="mono">#46</span>), et la copie du sceau, qu'on a animée (<span class="mono">#47</span>).</p>
+        </div>
+        <div class="slip">
+          <h3 style="font-size: 26px;">En session 2</h3>
+          <p style="font-size: 23px; margin-top: 6px;">Plus personne ne trouve une étape incompréhensible (il y en avait 4). Le rythme passe de 1 à 4 sur 5, et T4 explique le minage, le consensus et la double dépense avec ses mots.</p>
+        </div>
+        <div class="postit">
+          <span class="label">Limite</span>
+          <p style="font-size: 23px; margin-top: 6px;">T3 reste à 0/8. Et les 6 corrections faites après la session 2 (<span class="mono">#55</span>), on n'a pas pu les retester.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide" data-who="Dylan" data-time="15:00 – 16:00"
+    data-notes="Montrer le board en direct si possible : colonnes, milestones, labels.|Chaque retour de test → une issue → une PR → fermée avec sa preuve.|8 fiches de suivi hebdomadaires dans docs/suivi.|Répartition : 68 commits, dont beaucoup de petits commits d'intégration ; le travail de Maxens se voit aussi hors dépôt (formulaires, tests, relectures). Expliqué dans le README.">
+    <span class="kicker">GitHub Projects · au 17/11</span>
+    <h2>Comment on s'est organisés</h2>
+    <div class="grid stats" style="margin-top: 34px;">
+      <div class="stat"><b>68</b><span>commits</span></div>
+      <div class="stat"><b>33</b><span>PR fusionnées</span></div>
+      <div class="stat"><b>28</b><span>issues fermées, avec leur preuve</span></div>
+      <div class="stat"><b>3</b><span>milestones : cadrage, livraison, soutenance</span></div>
+      <div class="stat"><b>8</b><span>fiches de suivi hebdo</span></div>
+    </div>
+    <div class="card" style="margin-top: 34px;">
+      <div class="cols5">
+        <div class="col"><h4>Backlog</h4></div>
+        <div class="col"><h4>À faire</h4><div class="issue">#23 Support</div><div class="issue">#24 Vidéo de secours</div><div class="issue">#25 Répétition</div></div>
+        <div class="col"><h4>En cours</h4><div class="issue">#22 Grille d'autoévaluation</div></div>
+        <div class="col"><h4>À vérifier</h4></div>
+        <div class="col"><h4>Terminé</h4><div class="issue">#1 à #21, #45 à #47, #55 à #58</div></div>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: auto; font-size: 23px;">Chaque retour de test est devenu une issue, puis une PR. Les quelques commits sans numéro d'issue sont rattachés à la main dans le README.</p>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide" data-who="Dylan" data-time="16:00 – 16:45"
+    data-notes="Critère : 30 images/s sur un poste de TP. Mesuré avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape).|Carte intégrée = la plus proche d'un poste de TP. Processeur ralenti 4 fois = plus lent qu'un poste de TP.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP.">
+    <span class="kicker">Fluidité · critère 30 images/s</span>
+    <h2>Est-ce que ça tourne sur un PC de TP ?</h2>
+    <div class="row grow" style="margin-top: 30px; gap: 48px; align-items: flex-start;">
+      <div class="card" style="flex: 1.15;">
+        <h3>Carte graphique intégrée · pire seconde du parcours</h3>
+        <table style="margin-top: 14px;">
+          <thead><tr><th>Navigateur</th><th class="num">Normal</th><th class="num">Processeur ÷ 4</th></tr></thead>
+          <tbody>
+            <tr><td>Chrome</td><td class="num"><strong>52</strong></td><td class="num">27 <span class="muted">(moyenne ≥ 35)</span></td></tr>
+            <tr><td>Edge</td><td class="num"><strong>56</strong></td><td class="num muted">—</td></tr>
+            <tr><td>Firefox</td><td class="num"><strong>34</strong></td><td class="num muted">impossible</td></tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top: 16px; font-size: 21px;">Processeur ÷ 4 : plus lent qu'un poste de TP. Avec la carte dédiée (RTX) : 142 à 164 images/s.</p>
+        <p class="muted" style="margin-top: 8px; font-size: 21px;">Démo en ligne, 9 étapes avec leur action, 5 s chacune · <span class="mono" style="white-space: nowrap;">scripts/mesure-fps.mjs</span></p>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 22px;">
+        <div class="slip"><h3 style="font-size: 26px;">607 → 318</h3><p style="font-size: 23px; margin-top: 4px;">appels de dessin par image sur l'archipel, en regroupant les décors</p></div>
+        <div class="slip"><h3 style="font-size: 26px;">−34 %</h3><p style="font-size: 23px; margin-top: 4px;">de temps de calcul par image, surtout en cachant les étiquettes qu'on ne voit pas</p></div>
+        <div class="postit"><span class="label">En direct</span><p style="font-size: 23px; margin-top: 6px;">On peut vous le montrer : <strong>R et P</strong> en même temps affichent le compteur.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide" data-who="Dylan" data-time="16:45 – 17:30"
+    data-notes="L'IA (Claude) a écrit une grande partie du code et des premières versions des documents, à partir de nos consignes.|Ce qui reste à nous : public, métaphore, ordre et contenu des notions, notation des tests, limites.|Erreurs repérées par nous à l'écran : exemples à droite.|Tout est daté dans le README et CHOIX §6, avec un label « ia ».">
+    <span class="kicker">Usage de l'IA · déclaré dans le README et CHOIX §6</span>
+    <h2>Comment on a utilisé l'IA</h2>
+    <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 34px; align-items: start;">
+      <div class="card tape-one">
+        <h3>Ce que l'IA a fait</h3>
+        <ul class="clean" style="margin-top: 6px;">
+          <li style="font-size: 24px;">Une grande partie du code Three.js, d'après nos consignes</li>
+          <li style="font-size: 24px;">Les premières versions des fiches, du protocole de test, et une bonne partie des mesures</li>
+        </ul>
+      </div>
+      <div class="card tape-one">
+        <h3>Ce qu'on a gardé pour nous</h3>
+        <ul class="clean" style="margin-top: 6px;">
+          <li style="font-size: 24px;">Le public, l'image, l'ordre des notions</li>
+          <li style="font-size: 24px;">Vérifier chaque rendu à l'écran, noter les tests</li>
+        </ul>
+      </div>
+      <div class="card tape-one">
+        <h3>Des erreurs qu'on a repérées</h3>
+        <ul class="clean" style="margin-top: 6px;">
+          <li style="font-size: 24px;">Le bloc 4 était marqué « scellé » avant même d'être miné</li>
+          <li style="font-size: 24px;">La première course n'avait pas de hasard, donc le parcours disait quelque chose de faux</li>
+          <li style="font-size: 24px;">Le minage partait toujours de 0, ce qui contredisait le « 16 fois plus »</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: auto; font-size: 23px;">On a aussi dit non à certaines de ses idées : le neumorphisme, un thème sombre, une caméra qui suit le bateau, des fondus 2D entre les étapes.</p>
+  </section>
+
+  <!-- 15 -->
+  <section class="slide" data-who="Les deux" data-time="17:30 – 18:30"
+    data-notes="Maxens : ce qui marche et la notion la plus fragile (minage quand on ne lit pas les explications, T3).|Dylan : ce qu'on referait avec une semaine de plus.|Chacun une phrase sur ce qu'il a appris.">
+    <span class="kicker">Bilan</span>
+    <h2>Avec le recul</h2>
+    <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 34px; align-items: stretch;">
+      <div class="card lined tape">
+        <h3>Ce qui marche</h3>
+        <ul class="clean" style="margin-top: 6px;">
+          <li style="font-size: 24px;">Les 7 notions se manipulent, avec de vrais SHA-256</li>
+          <li style="font-size: 24px;">Un testeur qui n'y connaissait rien a eu 7/8</li>
+          <li style="font-size: 24px;">Ça tourne en ligne, au-dessus de 30 images/s</li>
+        </ul>
+      </div>
+      <div class="card lined tape">
+        <h3>Ce qui reste fragile</h3>
+        <ul class="clean" style="margin-top: 6px;">
+          <li style="font-size: 24px;">Le minage, si on ne lit pas les explications</li>
+          <li style="font-size: 24px;">Un testeur a pris les îles pour des banques</li>
+          <li style="font-size: 24px;">La course du consensus est simulée (on le dit dans « En vrai… »)</li>
+        </ul>
+      </div>
+      <div class="card lined tape">
+        <h3>Si c'était à refaire</h3>
+        <ul class="clean" style="margin-top: 6px;">
+          <li style="font-size: 24px;"><strong>On testerait beaucoup plus tôt.</strong> La première session est arrivée quand tout était déjà codé, et on n'a pas pu tout corriger.</li>
+          <li style="font-size: 24px;">Avec une semaine de plus, on brancherait le vrai minage dans la course.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 -->
+  <section class="slide" data-who="Les deux" data-time="18:30 – 20:00"
+    data-notes="Questions probables : hash réels ? (oui, crypto.subtle) · course réelle ? (non, simulée, dit dans En vrai) · qui a fait quoi ? (README) · comment mesurer les FPS ? (script + R + P) · ce qui n'a pas marché aux tests ?|Chacun doit pouvoir répondre sur les 7 notions.">
+    <span class="kicker">Merci</span>
+    <h2>Des questions ?</h2>
+    <div class="row grow" style="margin-top: 40px; gap: 48px; align-items: flex-start;">
+      <div class="card tape" style="flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 18px;">
+        <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/" target="_blank" rel="noopener">La démo ↗</a>
+        <p class="mono" style="font-size: 22px;">dyzlek.github.io/r507-blockchain-3d</p>
+        <a class="btnlike" href="https://github.com/dyzlek/r507-blockchain-3d" target="_blank" rel="noopener">Le dépôt ↗</a>
+        <p class="mono" style="font-size: 22px;">github.com/dyzlek/r507-blockchain-3d</p>
+        <a class="btnlike" href="https://github.com/users/dyzlek/projects/3" target="_blank" rel="noopener">Le board ↗</a>
+      </div>
+      <figure class="photo tilt-r" style="flex: 1.25;"><img src="img/fin.jpg" alt="Vue d'ensemble de fin de parcours" /></figure>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<div id="chrome"><div id="progress"></div></div>
+<div id="counter" aria-hidden="true"></div>
+
+<aside id="presenter" hidden aria-label="Notes du présentateur">
+  <div class="head"><span id="p-time"></span><span id="p-clock">00:00</span></div>
+  <div class="speaker" id="p-who"></div>
+  <ul id="p-notes"></ul>
+  <div class="next" id="p-next"></div>
+  <div class="help">N : notes · F : plein écran · R : remettre le chrono à 0 · numéro + Entrée : aller à la diapo</div>
+</aside>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const stage = document.getElementById('stage');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const presenter = document.getElementById('presenter');
+  let index = 0;
+
+  // Mise à l'échelle de la scène 1600 × 900 dans la fenêtre.
+  function fit() {
+    const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+    stage.style.transform = `scale(${s})`;
+  }
+
+  function show(i) {
+    index = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => {
+      s.classList.toggle('is-active', k === index);
+      s.setAttribute('aria-hidden', k === index ? 'false' : 'true');
+    });
+    counter.textContent = `${index + 1} / ${slides.length}`;
+    progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+    try { history.replaceState(null, '', `#${index + 1}`); } catch {}
+    renderNotes();
+  }
+
+  function renderNotes() {
+    const s = slides[index];
+    document.getElementById('p-who').textContent = `${s.dataset.who ?? ''}`;
+    document.getElementById('p-time').textContent = `${index + 1}/${slides.length} · ${s.dataset.time ?? ''}`;
+    const ul = document.getElementById('p-notes');
+    ul.replaceChildren(...(s.dataset.notes ?? '').split('|').filter(Boolean).map((t) => Object.assign(document.createElement('li'), { textContent: t })));
+    const n = slides[index + 1];
+    document.getElementById('p-next').textContent = n ? `Ensuite : ${n.querySelector('h1, h2')?.textContent.trim()} (${n.dataset.who})` : 'Dernière diapo';
+    updateClock();
+  }
+
+  // Chronomètre : démarre au premier changement de diapo ; en rouge si on dépasse la fin du créneau prévu.
+  let start = null;
+  const toSec = (t) => { const [m, s] = t.split(':').map(Number); return m * 60 + s; };
+  function updateClock() {
+    const el = document.getElementById('p-clock');
+    const elapsed = start ? Math.floor((Date.now() - start) / 1000) : 0;
+    el.textContent = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`;
+    const end = (slides[index].dataset.time ?? '').split('–')[1]?.trim();
+    el.classList.toggle('late', Boolean(start && end && elapsed > toSec(end)));
+  }
+  setInterval(updateClock, 1000);
+
+  let typed = '';
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key;
+    if (/^[0-9]$/.test(k)) { typed += k; return; }
+    if (k === 'Enter' && typed) { show(Number(typed) - 1); typed = ''; return; }
+    typed = '';
+    if (['ArrowRight', 'PageDown', ' ', 'ArrowDown'].includes(k)) { e.preventDefault(); start ??= Date.now(); show(index + 1); }
+    else if (['ArrowLeft', 'PageUp', 'ArrowUp'].includes(k)) { e.preventDefault(); show(index - 1); }
+    else if (k === 'Home') show(0);
+    else if (k === 'End') show(slides.length - 1);
+    else if (k === 'n' || k === 'N') presenter.hidden = !presenter.hidden;
+    else if (k === 'r' || k === 'R') { start = Date.now(); updateClock(); }
+    else if (k === 'f' || k === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen?.();
+      else document.documentElement.requestFullscreen?.().catch(() => {});
+    }
+  });
+
+  // Glisser sur un écran tactile.
+  let touchX = null;
+  document.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+    touchX = null;
+  });
+
+  window.addEventListener('resize', fit);
+  fit();
+  show(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+</script>
+</body>
+</html>
