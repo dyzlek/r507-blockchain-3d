@@ -908,10 +908,52 @@ function updateShadows() {
   if (quality.tick === 0) renderer.shadowMap.needsUpdate = true;
 }
 
+// Compteur d'images par seconde (#57), caché : R et P appuyés ensemble l'affichent ou le cachent.
+// Il montre le débit actuel (sur la dernière demi-seconde), la moyenne et la pire demi-seconde depuis
+// l'ouverture. Le texte n'est réécrit que deux fois par seconde, pour ne pas fausser lui-même la mesure.
+const fpsMeter = { el: null, frames: 0, time: 0, totalFrames: 0, totalTime: 0, worst: Infinity };
+const heldKeys = new Set();
+function toggleFpsMeter() {
+  if (!fpsMeter.el) {
+    fpsMeter.el = document.createElement('div');
+    fpsMeter.el.id = 'fps';
+    fpsMeter.el.setAttribute('aria-hidden', 'true'); // outil de mesure, pas du contenu
+    document.body.append(fpsMeter.el);
+  } else if (!fpsMeter.el.hidden) {
+    fpsMeter.el.hidden = true;
+    return;
+  }
+  Object.assign(fpsMeter, { frames: 0, time: 0, totalFrames: 0, totalTime: 0, worst: Infinity });
+  fpsMeter.el.hidden = false;
+  fpsMeter.el.textContent = 'FPS : mesure…';
+}
+function updateFpsMeter(rawDt) {
+  if (!fpsMeter.el || fpsMeter.el.hidden || rawDt > 0.4) return; // onglet en pause : ne compte pas
+  fpsMeter.frames += 1;
+  fpsMeter.time += rawDt;
+  if (fpsMeter.time < 0.5) return;
+  const fps = fpsMeter.frames / fpsMeter.time;
+  fpsMeter.totalFrames += fpsMeter.frames;
+  fpsMeter.totalTime += fpsMeter.time;
+  fpsMeter.worst = Math.min(fpsMeter.worst, fps);
+  fpsMeter.frames = 0;
+  fpsMeter.time = 0;
+  const average = fpsMeter.totalFrames / fpsMeter.totalTime;
+  fpsMeter.el.textContent = `${Math.round(fps)} FPS · moyenne ${Math.round(average)} · pire ${Math.round(fpsMeter.worst)}`;
+}
+window.addEventListener('keydown', (event) => {
+  if (event.target.closest?.('input, textarea') || event.repeat) return;
+  heldKeys.add(event.key.toLowerCase());
+  if (heldKeys.has('r') && heldKeys.has('p')) toggleFpsMeter();
+});
+window.addEventListener('keyup', (event) => heldKeys.delete(event.key.toLowerCase()));
+window.addEventListener('blur', () => heldKeys.clear()); // touche relâchée hors de la fenêtre
+
 function frame(time) {
   timer.update(time);
   const rawDt = timer.getDelta();
   adaptQuality(rawDt);
+  updateFpsMeter(rawDt);
   const dt = THREE.MathUtils.clamp(rawDt, 0, 0.1);
   updateTween(dt);
   updatePops(dt);

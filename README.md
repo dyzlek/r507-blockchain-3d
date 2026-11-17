@@ -77,8 +77,11 @@ Puis ouvrir l'URL affichée (par défaut http://localhost:5173/r507-blockchain-3
 node scripts/mesure-fps.mjs                 # démo en ligne
 node scripts/mesure-fps.mjs --cpu 4         # processeur ralenti 4 fois (PC faible)
 node scripts/mesure-fps.mjs --gpu high      # carte graphique dédiée (portable à deux cartes)
+node scripts/mesure-fps.mjs --browser edge  # autre navigateur : edge ou firefox (Firefox : ni ralentissement, ni choix de carte)
 node scripts/mesure-fps.mjs http://localhost:4173/r507-blockchain-3d/   # version locale (npm run preview)
 ```
+
+Pour regarder la fluidité à la main, dans n'importe quel navigateur : appuyer sur **R et P en même temps** affiche un compteur en haut à droite (images par seconde, moyenne et pire demi-seconde depuis l'ouverture) ; même raccourci pour le cacher.
 
 Le critère est d'au moins 30 images/s. Résultats et méthode : CHOIX-MODELISATION §3 (#57).
 

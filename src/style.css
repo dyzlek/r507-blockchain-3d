@@ -749,3 +749,22 @@ summary:focus-visible {
 .is-transit .labels {
   opacity: 0;
 }
+
+/* Compteur d'images par seconde (R + P), outil de mesure : discret, en haut à droite, ne bloque aucun clic. */
+#fps {
+  position: fixed;
+  z-index: 5;
+  top: 12px;
+  right: 12px;
+  padding: 6px 10px;
+  background: var(--slip);
+  box-shadow: 2px 3px 6px rgb(80 60 40 / 22%);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+#fps[hidden] {
+  display: none;
+}
