@@ -1,6 +1,8 @@
 # Soutenance — plan minuté (20 min)
 
-Issues #23 (support), #24 (vidéo de secours), #25 (répétition). Durée totale : **20 minutes**. On alterne les parleurs à chaque partie : chacun présente la moitié des notions, mais **chacun doit pouvoir répondre sur les 7** (questions du jury).
+Issues #23 (support), #24 (vidéo de secours), #25 (répétition). Durée totale : **20 minutes**.
+
+**Support : [`soutenance/diapo.html`](soutenance/diapo.html)** (16 diapos, s'ouvre dans le navigateur). Flèches ou Espace pour avancer, **N** pour les notes (qui parle, créneau, phrases à dire, chronomètre), **F** pour le plein écran. Chaque diapo de notion a un lien direct vers l'étape de la démo. On alterne les parleurs à chaque partie : chacun présente la moitié des notions, mais **chacun doit pouvoir répondre sur les 7** (questions du jury).
 
 ## Avant de commencer (la veille et 10 min avant)
 
@@ -22,7 +24,7 @@ Issues #23 (support), #24 (vidéo de secours), #25 (répétition). Durée totale
 | 9:00 – 10:30 | Notion 6 : le consensus | Maxens | Course (preuve de travail) puis tirage (preuve d'enjeu) ; ligne « Bilan » | « Course : sûre mais gourmande. Tirage : sobre mais favorise les plus riches. Ici la course est simulée, c'est dit dans "En vrai". » |
 | 10:30 – 12:30 | Notion 7 : la double dépense | Dylan | Les deux transactions en conflit ; course à 30 % deux ou trois fois, puis à 60 % ; ligne « Résultats » | « À 30 %, Dylan gagne parfois par chance sur une course courte : c'est pour ça qu'on attend 6 confirmations. Au-delà de 50 %, il gagne presque toujours. » |
 | 12:30 – 15:00 | Choix et tests | Maxens | `TEST-UTILISATEUR-RESULTATS.md` : tableau session 1 (et session 2) ; ce qu'on a changé | Les chiffres réels, même mauvais : « critère 6/8 non atteint en session 1, voici ce qu'on a corrigé et ce que la session 2 montre. » |
-| 15:00 – 17:00 | Gestion de projet et technique | Dylan | Board, milestones, labels ; FPS (plus de 60 images/s, processeur ralenti 6 fois) ; usage de l'IA (CHOIX §6) | « L'IA a écrit une grande partie du code ; nous avons choisi, vérifié à l'écran et corrigé ses erreurs, par exemple la course sans hasard. » |
+| 15:00 – 17:00 | Gestion de projet et technique | Dylan | Board, milestones, labels ; FPS (carte intégrée : 52 dans Chrome, 56 dans Edge, 34 dans Firefox au pire ; montrer le compteur R + P) ; usage de l'IA (CHOIX §6) | « L'IA a écrit une grande partie du code ; nous avons choisi, vérifié à l'écran et corrigé ses erreurs, par exemple la course sans hasard. » |
 | 17:00 – 18:30 | Bilan et limites | Les deux | CHOIX §5 : notion la moins bien représentée, ce qu'on referait | « Avec une semaine de plus : tester plus tôt, animer la copie du sceau. » |
 | 18:30 – 20:00 | Marge, questions | Les deux | | |
 
@@ -39,7 +41,7 @@ Si on prend du retard : sauter la 2e course de la notion 6 et ne faire qu'une co
 | Pourquoi seulement 3 blocs dans la course de la notion 7 ? | Pour que la démo dure quelques secondes ; on dit que Bitcoin en attend 6 | CHOIX §4.7 g) |
 | Qu'est-ce qui n'a pas marché aux tests ? | Le chaînage (copie du sceau) et les étapes 4 à 7 pour T2 ; ce qu'on a corrigé | `TEST-UTILISATEUR-RESULTATS.md` |
 | Qui a fait quoi ? | Dylan : 3D, intégration, board, déploiement. Maxens : design, contenu, tests, documents. Les commits ne montrent pas tout le travail de Maxens (tests, formulaire, relectures) | README, CHOIX §1 |
-| Comment avez-vous mesuré les FPS ? | Outils de développement de Chrome, onglet Performance, processeur ralenti 6 fois : plus de 60 images/s | CHOIX §3, #19 |
+| Comment avez-vous mesuré les FPS ? | Avec notre script `scripts/mesure-fps.mjs` : navigateur piloté sur les 9 étapes, action déclenchée, 5 s par étape. Carte intégrée : jamais sous 30 dans Chrome, Edge et Firefox ; processeur ralenti 4 fois : moyenne ≥ 35. Notre première mesure (« plus de 60 ») était fausse : on l'a refaite. En direct : R + P | CHOIX §3, #57 |
 
 ## Répétition (#25)
 
