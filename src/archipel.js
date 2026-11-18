@@ -193,6 +193,16 @@ export function createArchipel(chain) {
   const bateaux = Object.values(BOAT_PATHS).map((path) => createBateau(GROUND_Y - SEA_DROP + 0.14, path));
   bateaux.forEach((b) => group.add(b.group));
 
+  // Les parchemins (un par île, qui apparaît à la réception) sont un seul objet instancié : 1 appel de dessin
+  // (et 1 dans la passe d'ombres) au lieu de 9 + 9. Leur matrice est recalculée à chaque image dans update().
+  const scrolls = new THREE.InstancedMesh(scrollGeometry, paperMaterial(COLORS.scroll, {}, { emissive: new THREE.Color(0.3, 0.2, 0.1) }), ISLANDS.length);
+  scrolls.castShadow = true;
+  scrolls.frustumCulled = false;
+  group.add(scrolls);
+  const scrollMatrix = new THREE.Matrix4();
+  const scrollQuat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 2);
+  const scrollPos = new THREE.Vector3();
+  const scrollScale = new THREE.Vector3();
   // Les découpes (cabanes, phares, arbres…) sont dessinées ensemble (createCutoutBatch) ; chaque île garde une
   // charnière invisible par découpe, qui porte sa position et son dépliage.
   const decorItems = [];
@@ -231,12 +241,6 @@ export function createArchipel(chain) {
     });
 
     // La transaction reçue flotte au-dessus de la copie de la chaîne : elle n'est pas encore dans un bloc.
-    const scroll = new THREE.Mesh(scrollGeometry, paperMaterial(COLORS.scroll, {}, { emissive: new THREE.Color(0.3, 0.2, 0.1) }));
-    scroll.castShadow = true;
-    scroll.rotation.z = Math.PI / 2;
-    scroll.position.y = TOP_Y + 0.62;
-    scroll.scale.setScalar(0.001);
-    island.add(scroll);
 
     const plate = makeLabel('plate', `Île ${of(name)}`);
     plate.position.set(0, GROUND_Y + 0.05, R + 0.25);
@@ -247,7 +251,7 @@ export function createArchipel(chain) {
     hint.visible = false;
     island.add(hint);
 
-    return { name, index, group: island, base, layers, decor, ring, scroll, plate, hint, neighbors: [], received: false, rejected: false, offline: false, glow: 0, lift: 0 };
+    return { name, index, group: island, base, layers, decor, ring, plate, hint, neighbors: [], received: false, rejected: false, offline: false, glow: 0, lift: 0 };
   });
 
   const cutouts = createCutoutBatch(decorItems);
@@ -490,14 +494,18 @@ export function createArchipel(chain) {
         api.onChange();
       }
 
+      scrolls.instanceMatrix.needsUpdate = true;
       islands.forEach((island, i) => {
         const damp = (value, target) => (instant ? target : THREE.MathUtils.damp(value, target, 6, dt));
         island.glow = damp(island.glow, island.received || island.rejected ? 1 : 0);
         island.ring.material.color.set(island.rejected ? REJECT : ACCENT);
         island.lift = damp(island.lift, island.offline ? -0.2 : 0);
         island.ring.material.opacity = island.glow * (0.75 + Math.sin(elapsed * 4) * 0.2);
-        island.scroll.scale.setScalar(Math.max(0.001, island.rejected ? 0 : island.glow));
-        island.scroll.position.y = TOP_Y + 0.62 + Math.sin(elapsed * 2 + i) * 0.03;
+        // Une île masquée (sur la chaîne) cache aussi son parchemin.
+        const k = island.group.visible ? Math.max(0.001, island.rejected ? 0 : island.glow) : 0.0001;
+        scrollPos.set(island.group.position.x, island.lift + TOP_Y + 0.62 + Math.sin(elapsed * 2 + i) * 0.03, island.group.position.z);
+        scrollMatrix.compose(scrollPos, scrollQuat, scrollScale.setScalar(k));
+        scrolls.setMatrixAt(i, scrollMatrix);
         island.group.position.y = island.lift;
         island.group.updateMatrix();
         decorColor.set(island.offline ? ROCK_OFF : ROCK);
