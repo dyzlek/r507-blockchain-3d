@@ -215,7 +215,11 @@
 
   /* Métaphore */
   .meta-grid { grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 34px; }
-  .meta { background: var(--slip); box-shadow: 2px 3px 8px rgb(80 60 40 / 20%); padding: 20px 22px; }
+  .meta-grid { counter-reset: meta; }
+  .meta { position: relative;
+    background: var(--slip); box-shadow: 2px 3px 8px rgb(80 60 40 / 20%); padding: 20px 22px; }
+  .meta .real::before { counter-increment: meta; content: counter(meta) " · "; color: var(--accent); font-weight: 700; }
+  .meta:not(:nth-child(4n)):not(:last-child)::after { content: "→"; position: absolute; right: -21px; top: 50%; translate: 0 -50%; font-size: 22px; font-weight: 800; color: var(--accent); }
   .meta .real { font-family: var(--font-mono); font-size: 19px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
   .meta .img { margin-top: 6px; font-size: 27px; font-weight: 800; line-height: 1.15; }
   .meta p { margin-top: 8px; font-size: 21px; line-height: 1.3; color: var(--muted); }
@@ -304,14 +308,14 @@
 
   <!-- 1 -->
   <section class="slide title-slide" data-who="Maxens" data-time="0:00 – 0:45"
-    data-notes="Se présenter tous les deux.|Une phrase : on fait comprendre une blockchain à quelqu'un qui n'y connaît rien, sans cours, juste en manipulant une maquette en papier.|La démo est en ligne (lien à l'écran) : on la lance juste après.">
+    data-notes="Se présenter tous les deux.|On a voulu expliquer la blockchain à quelqu'un qui n'y connaît rien. Pas de cours : on clique sur des coffres en carton, des sceaux et des îles, et on regarde ce qui se passe.|La démo est en ligne (lien à l'écran) : on la lance juste après.">
     <div class="left">
       <span class="kicker">R507 · BUT MMI 3 · soutenance du 19/11/2026</span>
       <h1>La blockchain <span class="accent">en papier découpé</span></h1>
-      <p class="lead">On a voulu expliquer la blockchain à quelqu'un qui n'y connaît rien. Pas de cours : on clique sur des coffres en carton, des sceaux et des îles, et on regarde ce qui se passe.</p>
+      <p class="lead">Une démo 3D dans le navigateur pour comprendre la blockchain sans cours. On clique sur des coffres en carton, des sceaux et des îles, et on regarde ce qui se passe.</p>
       <div class="who">
-        <span class="tag">Dylan : la 3D, l'intégration, le board</span>
-        <span class="tag">Maxens : le design, les textes, les tests</span>
+        <span class="tag">Dylan · la 3D, l'intégration, le board</span>
+        <span class="tag">Maxens · le design, les textes, les tests</span>
         <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/" target="_blank" rel="noopener">Ouvrir la démo →</a>
       </div>
     </div>
@@ -327,17 +331,17 @@
     <h2>À qui on s'adresse</h2>
     <div class="row grow" style="margin-top: 40px; align-items: stretch;">
       <div class="card lined tape" style="flex: 1.25;">
-        <h3>En sortant, ils doivent avoir compris que…</h3>
+        <h3>En sortant, ils doivent avoir compris trois choses</h3>
         <ol class="steps" style="margin-top: 10px;">
-          <li>un bloc est <strong>fermé par une empreinte</strong>. Si on touche au contenu, le sceau casse, et tout ce qui suit avec ;</li>
-          <li><strong>personne ne commande</strong> : chacun garde sa copie et vérifie de son côté ;</li>
-          <li>ajouter un bloc coûte quelque chose, <strong>du calcul ou une mise</strong>, donc tricher coûte cher.</li>
+          <li>Un bloc est <strong>fermé par une empreinte</strong>. Si on touche au contenu, le sceau casse, et tout ce qui suit avec.</li>
+          <li><strong>Personne ne commande</strong>. Chacun garde sa copie et vérifie de son côté.</li>
+          <li>Ajouter un bloc coûte quelque chose, <strong>du calcul ou une mise</strong>. Du coup, tricher coûte cher.</li>
         </ol>
       </div>
       <div style="flex: 1; display: flex; flex-direction: column; gap: 32px;">
         <div class="card tape-one">
           <span class="kicker" style="font-size: 18px;">Public</span>
-          <p style="margin-top: 8px;">Des <strong>16-25 ans</strong> qui ne font pas d'informatique. Ils ont déjà entendu parler de Bitcoin, sans savoir comment ça marche.</p>
+          <p style="margin-top: 8px;">Des lycéens et étudiants de <strong>16 à 25 ans</strong> qui ne font pas d'informatique. Ils ont déjà entendu parler de Bitcoin, sans savoir comment ça marche.</p>
         </div>
         <div class="postit">
           <span class="label">Fil rouge</span>
@@ -352,16 +356,17 @@
   <section class="slide" data-who="Maxens" data-time="1:15 – 1:30"
     data-notes="Lire la ligne du haut puis celle du bas, sans détailler : la démo va le montrer.|Insister : le sceau est un vrai SHA-256 calculé dans le navigateur, sa couleur et son motif viennent du hash.|Chaque étape a un encart « En vrai… » qui donne le vrai terme et la limite de l'image.|Écartés : livre de comptes (plat, se réécrit), Lego (on retire une brique sans conséquence).">
     <span class="kicker">La métaphore</span>
-    <h2>Notre image : des coffres scellés, recopiés sur plusieurs îles</h2>
+    <h2>Des coffres scellés, recopiés sur plusieurs îles</h2>
+    <p class="muted" style="margin-top: 10px; font-size: 24px;">On suit la transaction de la démo. Chaque étape de la blockchain a son objet en papier.</p>
     <div class="grid meta-grid">
-      <div class="meta"><div class="real">Bloc</div><div class="img">Coffre en carton à fenêtre de calque</div><p>On voit dedans sans l'ouvrir.</p></div>
-      <div class="meta"><div class="real">Hash</div><div class="img">Sceau, coup de tampon</div><p>C'est un vrai SHA-256 : son dessin et sa couleur en sortent.</p></div>
-      <div class="meta"><div class="real">Chaînage</div><div class="img">Sceau du parent recopié + corde</div><p>La corde se coupe si les sceaux ne collent plus.</p></div>
-      <div class="meta"><div class="real">Nœud</div><div class="img">Île avec sa copie</div><p>Aucune île ne commande les autres.</p></div>
-      <div class="meta"><div class="real">Propagation</div><div class="img">Avions en papier</div><p>Elles passent d'île en île, et chacune vérifie.</p></div>
-      <div class="meta"><div class="real">Minage</div><div class="img">Essais de nonce</div><p>Tampon pâle tant que le sceau ne commence pas par 00.</p></div>
-      <div class="meta"><div class="real">Consensus</div><div class="img">Course ou tirage au sort</div><p>Preuve de travail ou preuve d'enjeu.</p></div>
-      <div class="meta red"><div class="real fraud">Fraude</div><div class="img fraud">Toujours en rouge</div><p>Corde coupée, avion rouge, branche du tricheur.</p></div>
+      <div class="meta"><div class="real">Bloc</div><div class="img">Coffre en carton à fenêtre de calque</div><p>La transaction est rangée dedans. On la voit sans ouvrir.</p></div>
+      <div class="meta"><div class="real">Hash</div><div class="img">Sceau, coup de tampon</div><p>Le coffre est fermé par un vrai SHA-256. Le dessin et la couleur du sceau en sortent.</p></div>
+      <div class="meta"><div class="real">Chaînage</div><div class="img">Sceau du parent recopié + corde</div><p>Le coffre suivant garde une copie du sceau. Si elle ne colle plus, la corde casse.</p></div>
+      <div class="meta"><div class="real">Nœud</div><div class="img">Île avec sa copie</div><p>Chaque île garde toute la chaîne, et aucune ne commande les autres.</p></div>
+      <div class="meta"><div class="real">Propagation</div><div class="img">Avions en papier</div><p>Le nouveau bloc part en avion vers les autres îles, et chacune vérifie.</p></div>
+      <div class="meta"><div class="real">Minage</div><div class="img">Essais de nonce</div><p>Pour sceller un coffre, on cherche un nonce. Le tampon reste pâle tant que le sceau ne commence pas par 00.</p></div>
+      <div class="meta"><div class="real">Consensus</div><div class="img">Course ou tirage au sort</div><p>Les îles se mettent d'accord sur qui ajoute le bloc, par preuve de travail ou d'enjeu.</p></div>
+      <div class="meta red"><div class="real fraud">Fraude</div><div class="img fraud">Toujours en rouge</div><p>Si quelqu'un triche, ça se voit. Corde coupée, avion rouge, branche du tricheur.</p></div>
     </div>
     <p class="muted" style="margin-top: auto; font-size: 23px;">On avait aussi pensé à un livre de comptes (trop plat, et une page se réécrit) et à des briques empilées (on en retire une, il ne se passe rien). <span class="mono">CHOIX §2</span></p>
   </section>
@@ -374,8 +379,8 @@
     <div class="notion">
       <div class="text">
         <ul class="clean">
-          <li><strong>Notion 1</strong> : on allume la lampe et on lit les 4 choses du bloc. La transaction, le nonce, son sceau, et celui du coffre d'avant.</li>
-          <li><strong>Notion 2</strong> : chaque coffre garde une copie du sceau du précédent. C'est ça, la chaîne.</li>
+          <li><strong>Notion 1.</strong> On allume la lampe et on lit les 4 choses du bloc. La transaction, le nonce, son sceau, et celui du coffre d'avant.</li>
+          <li><strong>Notion 2.</strong> Chaque coffre garde une copie du sceau du précédent. C'est ça, la chaîne.</li>
         </ul>
         <div class="doit">
           <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=2" target="_blank" rel="noopener">Étape 2 ↗</a>
@@ -399,7 +404,7 @@
     <div class="notion">
       <div class="text">
         <ul class="clean">
-          <li>On clique sur « Falsifier le bloc 1 » : les <strong>2 jetons deviennent 200</strong>.</li>
+          <li>On clique sur « Falsifier le bloc 1 » et les <strong>2 jetons deviennent 200</strong>.</li>
           <li>Le sceau du bloc 1 change complètement, donc la copie gardée par le bloc 2 ne colle plus. La corde <span class="fraud"><strong>casse et passe au rouge</strong></span>.</li>
           <li>Pour le cacher, il faudrait refaire <strong>tous</strong> les blocs d'après.</li>
         </ul>
@@ -423,7 +428,7 @@
         <ul class="clean">
           <li>Il y a 7 îles, donc 7 participants, et chacun a <strong>sa propre copie</strong> de la chaîne.</li>
           <li>Les transactions passent d'une île à l'autre en <strong>avion en papier</strong>.</li>
-          <li>Si on éteint une île, le reste continue. Et le bloc trafiqué part en <span class="fraud"><strong>avion rouge</strong></span> : les autres îles <strong>n'en veulent pas</strong>.</li>
+          <li>Si on éteint une île, le reste continue. Et le bloc trafiqué part en <span class="fraud"><strong>avion rouge</strong></span>, et les autres îles <strong>n'en veulent pas</strong>.</li>
         </ul>
         <div class="doit">
           <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=5" target="_blank" rel="noopener">Étape 5 ↗</a>
@@ -491,7 +496,7 @@
       <div class="text">
         <ol class="steps" style="margin-top: -6px;">
           <li>La transaction est créée, envoyée aux îles, minée, puis <strong>confirmée</strong> un peu plus à chaque nouveau bloc.</li>
-          <li>Dylan triche : il dépense ses jetons une deuxième fois, et mine en cachette une <span class="fraud"><strong>autre branche</strong></span>.</li>
+          <li>Dylan triche. Il dépense ses jetons une deuxième fois, et mine en cachette une <span class="fraud"><strong>autre branche</strong></span>.</li>
           <li>C'est la chaîne <strong>la plus longue</strong> qui gagne. Avec <strong>30 %</strong> de la puissance, il y arrive rarement. Avec <strong>60 %</strong>, presque à tous les coups.</li>
         </ol>
         <div class="doit">
@@ -551,12 +556,12 @@
           <div class="who">T3</div><div class="track"><div class="fill s2" style="width: 0%"></div><div class="goal"></div></div><div class="val">0</div>
           <div class="who">T4</div><div class="track"><div class="fill s2" style="width: 87.5%"></div><div class="goal"></div></div><div class="val">7</div>
         </div>
-        <p class="muted" style="margin-top: 18px; font-size: 21px;">Pointillés : critère du protocole, 6 sur 8.</p>
+        <p class="muted" style="margin-top: 18px; font-size: 21px;">En pointillés, le critère du protocole (6 sur 8).</p>
       </div>
       <div style="flex: 1; display: flex; flex-direction: column; gap: 22px;">
         <div class="slip">
           <h3 style="font-size: 26px;">Après la session 1</h3>
-          <p style="font-size: 23px; margin-top: 6px;">On a ouvert 3 issues : le rythme (<span class="mono">#45</span>), le vocabulaire (<span class="mono">#46</span>), et la copie du sceau, qu'on a animée (<span class="mono">#47</span>).</p>
+          <p style="font-size: 23px; margin-top: 6px;">On a ouvert 3 issues, sur le rythme (<span class="mono">#45</span>), le vocabulaire (<span class="mono">#46</span>), et la copie du sceau, qu'on a animée (<span class="mono">#47</span>).</p>
         </div>
         <div class="slip">
           <h3 style="font-size: 26px;">En session 2</h3>
@@ -579,7 +584,7 @@
       <div class="stat"><b>68</b><span>commits</span></div>
       <div class="stat"><b>33</b><span>PR fusionnées</span></div>
       <div class="stat"><b>28</b><span>issues fermées, avec leur preuve</span></div>
-      <div class="stat"><b>3</b><span>milestones : cadrage, livraison, soutenance</span></div>
+      <div class="stat"><b>3</b><span>milestones (cadrage, livraison, soutenance)</span></div>
       <div class="stat"><b>8</b><span>fiches de suivi hebdo</span></div>
     </div>
     <div class="card" style="margin-top: 34px;">
@@ -599,6 +604,7 @@
     data-notes="Critère : 30 images/s sur un poste de TP. Mesuré avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape).|Carte intégrée = la plus proche d'un poste de TP. Processeur ralenti 4 fois = plus lent qu'un poste de TP.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP.">
     <span class="kicker">Fluidité · critère 30 images/s</span>
     <h2>Est-ce que ça tourne sur un PC de TP ?</h2>
+    <p style="margin-top: 10px; font-size: 26px;">Oui. Sur un PC portable, même avec sa carte graphique intégrée, ça reste au-dessus de <strong>50 images/s</strong> dans Chrome et Edge.</p>
     <div class="row grow" style="margin-top: 30px; gap: 48px; align-items: flex-start;">
       <div class="card" style="flex: 1.15;">
         <h3>Carte graphique intégrée · pire seconde du parcours</h3>
@@ -610,13 +616,13 @@
             <tr><td>Firefox</td><td class="num"><strong>34</strong></td><td class="num muted">impossible</td></tr>
           </tbody>
         </table>
-        <p class="muted" style="margin-top: 16px; font-size: 21px;">Processeur ÷ 4 : plus lent qu'un poste de TP. Avec la carte dédiée (RTX) : 142 à 164 images/s.</p>
+        <p class="muted" style="margin-top: 16px; font-size: 21px;">Processeur ÷ 4, c'est plus lent qu'un poste de TP. Avec la carte dédiée (RTX), 142 à 164 images/s.</p>
         <p class="muted" style="margin-top: 8px; font-size: 21px;">Démo en ligne, 9 étapes avec leur action, 5 s chacune · <span class="mono" style="white-space: nowrap;">scripts/mesure-fps.mjs</span></p>
       </div>
       <div style="flex: 1; display: flex; flex-direction: column; gap: 22px;">
         <div class="slip"><h3 style="font-size: 26px;">607 → 318</h3><p style="font-size: 23px; margin-top: 4px;">appels de dessin par image sur l'archipel, en regroupant les décors</p></div>
         <div class="slip"><h3 style="font-size: 26px;">−34 %</h3><p style="font-size: 23px; margin-top: 4px;">de temps de calcul par image, surtout en cachant les étiquettes qu'on ne voit pas</p></div>
-        <div class="postit"><span class="label">En direct</span><p style="font-size: 23px; margin-top: 6px;">On peut vous le montrer : <strong>R et P</strong> en même temps affichent le compteur.</p></div>
+        <div class="postit"><span class="label">En direct</span><p style="font-size: 23px; margin-top: 6px;">On peut vous le montrer. <strong>R et P</strong> en même temps affichent le compteur.</p></div>
       </div>
     </div>
   </section>
@@ -650,7 +656,7 @@
         </ul>
       </div>
     </div>
-    <p class="muted" style="margin-top: auto; font-size: 23px;">On a aussi dit non à certaines de ses idées : le neumorphisme, un thème sombre, une caméra qui suit le bateau, des fondus 2D entre les étapes.</p>
+    <p class="muted" style="margin-top: auto; font-size: 23px;">On a aussi dit non à certaines de ses idées, comme le neumorphisme, un thème sombre, une caméra qui suit le bateau ou des fondus 2D entre les étapes.</p>
   </section>
 
   <!-- 15 -->
