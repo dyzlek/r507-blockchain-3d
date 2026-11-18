@@ -59,7 +59,7 @@ const LAYERS = [
   { r: R * 0.92, color: COLORS.grassDark },
 ];
 const LAYER_DEPTH = 0.035;
-const SEA_DROP = 0.12; // la mer est baissée : ses plis ne dépassent plus du sable de l'île
+const SEA_DROP = 0.09; // la mer est baissée : ses plis ne dépassent plus du sable de l'île
 
 // Décor de chaque île, en découpes de papier : un repère propre à l'île (cabane, phare ou grand arbre) et la même
 // petite végétation partout, tout autour de la chaîne (derrière, et sur les côtés devant). Il ne sert qu'à rendre
@@ -168,7 +168,7 @@ export function createArchipel(chain) {
   // La mer : une grande feuille bleue froissée sous tout l'archipel. Elle déborde largement : elle va jusqu'à l'horizon, on ne voit pas son
   // bord, même tout au fond.
   const sea = new THREE.Mesh(
-    crumpledSheet(60, 50, 70),
+    crumpledSheet(60, 50, 70, 0.35), // plis réduits : une mer presque plate
     new THREE.MeshStandardMaterial({ map: paperMaterial(COLORS.sea, { fibers: 120, repeat: 18 }).map, roughness: 0.95, flatShading: true }),
   );
   sea.position.set(0, GROUND_Y - SEA_DROP, 0);
