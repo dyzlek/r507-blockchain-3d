@@ -59,7 +59,7 @@ const LAYERS = [
   { r: R * 0.92, color: COLORS.grassDark },
 ];
 const LAYER_DEPTH = 0.035;
-const SEA_DROP = 0.07; // la mer est baissée : ses plis ne dépassent plus du sable de l'île
+const SEA_DROP = 0.12; // la mer est baissée : ses plis ne dépassent plus du sable de l'île
 
 // Décor de chaque île, en découpes de papier : un repère propre à l'île (cabane, phare ou grand arbre) et la même
 // petite végétation partout, tout autour de la chaîne (derrière, et sur les côtés devant). Il ne sert qu'à rendre
