@@ -284,7 +284,7 @@ export function createArchipel(chain) {
     for (const { to, route } of islands[from].neighbors) {
       if (route === via || islands[to].offline) continue;
       const mesh = new THREE.Mesh(messageGeometry, forged ? forgedMaterial : messageMaterial);
-      mesh.castShadow = true;
+      mesh.castShadow = false;
       group.add(mesh);
       messages.push({ route, from, to, t: 0, mesh });
     }
