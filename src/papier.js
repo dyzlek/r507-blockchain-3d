@@ -305,8 +305,8 @@ export function paperPlaneGeometry(scale = 1) {
 // Disque de papier découpé aux ciseaux (bord irrégulier), posé à plat.
 export function noisyDisc(radius, seed, depth = 0.1) {
   const shape = new THREE.Shape();
-  for (let i = 0; i <= 40; i++) {
-    const a = (i / 40) * Math.PI * 2;
+  for (let i = 0; i <= 30; i++) {
+    const a = (i / 30) * Math.PI * 2;
     const r = radius * (1 + 0.07 * Math.sin(a * 3 + seed) + 0.04 * Math.sin(a * 7 + seed * 2));
     if (i === 0) shape.moveTo(Math.cos(a) * r, Math.sin(a) * r);
     else shape.lineTo(Math.cos(a) * r, Math.sin(a) * r);
