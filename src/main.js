@@ -18,7 +18,7 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 const canvas = document.querySelector('#scene');
 // Fond transparent : le bureau en papier est dessiné en CSS derrière la scène (grain, lumière de lampe).
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.NeutralToneMapping;
 renderer.shadowMap.enabled = true;
@@ -52,7 +52,7 @@ scene.add(new THREE.HemisphereLight(0xfff4e2, 0xc9b89f, 1.6));
 const light = new THREE.DirectionalLight(0xffe2b8, 2);
 light.position.set(-5, 9, 6);
 light.castShadow = true;
-light.shadow.mapSize.set(2048, 2048);
+light.shadow.mapSize.set(1024, 1024);
 light.shadow.radius = 8;
 light.shadow.bias = -0.0005;
 scene.add(light, light.target);
