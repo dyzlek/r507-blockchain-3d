@@ -601,7 +601,7 @@
 
   <!-- 13 -->
   <section class="slide" data-who="Dylan" data-time="16:00 – 16:45"
-    data-notes="Critère : 30 images/s sur un poste de TP. Remesuré le 18/11 avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape).|Carte intégrée = la plus proche d'un poste de TP. Processeur ralenti 4 fois = plus lent qu'un poste de TP.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP ; les chiffres varient de plusieurs images/s d'un passage à l'autre (portable chaud, Chrome a touché 26 sur une seconde), à dire franchement.">
+    data-notes="Critère : 30 images/s sur un poste de TP. Remesuré le 18/11 avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape). Ligne « local » : version finale sur notre serveur de développement, Chrome 72 à 98 images/s.|Carte intégrée = la plus proche d'un poste de TP. Processeur ralenti 4 fois = plus lent qu'un poste de TP.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP ; les chiffres varient de plusieurs images/s d'un passage à l'autre (portable chaud, Chrome a touché 26 sur une seconde), à dire franchement.">
     <span class="kicker">Fluidité · critère 30 images/s</span>
     <h2>Est-ce que ça tourne sur un PC de TP ?</h2>
     <p style="margin-top: 10px; font-size: 26px;">Oui. Sur un PC portable, même avec sa carte graphique intégrée, la moyenne reste au-dessus de <strong>40 images/s</strong> à chaque étape, dans Chrome, Edge et Firefox.</p>
@@ -609,11 +609,12 @@
       <div class="card" style="flex: 1.15;">
         <h3>Carte graphique intégrée · moyenne la plus basse des 9 étapes, à froid</h3>
         <table style="margin-top: 14px;">
-          <thead><tr><th>Navigateur</th><th class="num">Normal</th><th class="num">Processeur ÷ 4</th></tr></thead>
+          <thead><tr><th>Navigateur</th><th class="num">Moyenne</th><th class="num">Pire seconde</th><th class="num">Proc. ÷ 4</th></tr></thead>
           <tbody>
-            <tr><td>Chrome</td><td class="num"><strong>46</strong> <span class="muted">(pire seconde 37)</span></td><td class="num">32 <span class="muted">(pire seconde 27)</span></td></tr>
-            <tr><td>Edge</td><td class="num"><strong>67</strong> <span class="muted">(pire seconde 46)</span></td><td class="num muted">—</td></tr>
-            <tr><td>Firefox</td><td class="num"><strong>49</strong> <span class="muted">(pire seconde 40)</span></td><td class="num muted">impossible</td></tr>
+            <tr><td>Chrome</td><td class="num"><strong>46</strong></td><td class="num">37</td><td class="num">32</td></tr>
+            <tr><td>Edge</td><td class="num"><strong>67</strong></td><td class="num">46</td><td class="num muted">—</td></tr>
+            <tr><td>Firefox</td><td class="num"><strong>49</strong></td><td class="num">40</td><td class="num muted">impossible</td></tr>
+            <tr><td>Chrome <span class="muted">(local)</span></td><td class="num"><strong>72</strong></td><td class="num">65</td><td class="num muted">—</td></tr>
           </tbody>
         </table>
         <p class="muted" style="margin-top: 16px; font-size: 21px;">Processeur ÷ 4, c'est plus lent qu'un poste de TP. Avec la carte dédiée (RTX), 163 à 164 images/s.</p>

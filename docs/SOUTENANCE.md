@@ -46,7 +46,7 @@ Si on prend du retard : sauter la 2e course de la notion 6 et ne faire qu'une co
 | Pourquoi seulement 3 blocs dans la course de la notion 7 ? | Pour que la démo dure quelques secondes ; on dit que Bitcoin en attend 6 | CHOIX §4.7 g) |
 | Qu'est-ce qui n'a pas marché aux tests ? | Le chaînage (copie du sceau) et les étapes 4 à 7 pour T2 ; ce qu'on a corrigé | `TEST-UTILISATEUR-RESULTATS.md` |
 | Qui a fait quoi ? | Dylan : 3D, intégration, board, déploiement. Maxens : design, contenu, tests, documents. Les commits ne montrent pas tout le travail de Maxens (tests, formulaire, relectures) | README, CHOIX §1 |
-| Comment avez-vous mesuré les FPS ? | Avec notre script `scripts/mesure-fps.mjs` : navigateur piloté sur les 9 étapes, action déclenchée, 5 s par étape. Carte intégrée (remesuré le 18/11) : à froid, moyenne d'au moins 46 images/s dans Chrome, Edge et Firefox, pire seconde entre 37 et 46 ; processeur ralenti 4 fois : moyennes de 32 à 42. Portable chaud, la pire seconde peut descendre à 26 : à dire franchement. Notre première mesure (« plus de 60 ») était fausse : on l'a refaite. En direct : R + P | CHOIX §3, #57 |
+| Comment avez-vous mesuré les FPS ? | Avec notre script `scripts/mesure-fps.mjs` : navigateur piloté sur les 9 étapes, action déclenchée, 5 s par étape. Carte intégrée (remesuré le 18/11) : à froid, moyenne d'au moins 46 images/s dans Chrome, Edge et Firefox, pire seconde entre 37 et 46 ; processeur ralenti 4 fois : moyennes de 32 à 42. Mesure locale sur la version finale : Chrome 72 à 98 de moyenne, pire seconde 65. Portable chaud, la pire seconde peut descendre à 26 : à dire franchement. Notre première mesure (« plus de 60 ») était fausse : on l'a refaite. En direct : R + P | CHOIX §3, #57 |
 
 ## Répétition (#25)
 
