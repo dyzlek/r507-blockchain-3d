@@ -85,7 +85,9 @@ function decorFor(index) {
     let x = Math.cos(a) * distance * R * mirror;
     let z = Math.sin(a) * distance * R;
     // Le décor reste sur la feuille du dessus (dont le contour est irrégulier), sinon il flotte dans le vide au bord de l'île.
-    const edge = discOutline(LAYERS.at(-1).r, index * 2.3 + (LAYERS.length - 1) * 1.7, Math.atan2(-z, x)) * 0.8;
+    // On retire aussi la demi-largeur du pied (0,22 × la taille de la découpe, voir papier.js) et une marge pour l'inclinaison.
+    const size = height / ARCHIPEL_SCALE;
+    const edge = discOutline(LAYERS.at(-1).r, index * 2.3 + (LAYERS.length - 1) * 1.7, Math.atan2(-z, x)) * 0.9 - size * 0.35;
     const len = Math.hypot(x, z);
     if (len > edge) {
       x *= edge / len;
