@@ -321,7 +321,7 @@ export function noisyDisc(radius, seed, depth = 0.1) {
 }
 
 // Feuille froissée : un plan à facettes, toujours au-dessus du bureau.
-export function crumpledSheet(width, height, segments = 36) {
+export function crumpledSheet(width, height, segments = 36, roughness = 1) {
   const geometry = new THREE.PlaneGeometry(width, height, segments, Math.round((segments * height) / width));
   const pos = geometry.attributes.position;
   for (let i = 0; i < pos.count; i++) {
@@ -329,7 +329,7 @@ export function crumpledSheet(width, height, segments = 36) {
     const y = pos.getY(i);
     const edge = Math.min(1, (width / 2 - Math.abs(x)) * 2, (height / 2 - Math.abs(y)) * 2);
     const bump = Math.sin(x * 3.1 + y * 1.7) * 0.025 + Math.sin(x * 7.3 - y * 5.1) * 0.015 + (Math.random() - 0.5) * 0.02;
-    pos.setZ(i, bump * Math.max(0, edge) + 0.05);
+    pos.setZ(i, bump * roughness * Math.max(0, edge) + 0.05);
   }
   geometry.computeVertexNormals();
   geometry.rotateX(-Math.PI / 2);
