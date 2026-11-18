@@ -85,7 +85,7 @@ function decorFor(index) {
   });
 }
 const easeOutBack = (t) => 1 + 2.4 * (t - 1) ** 3 + 1.4 * (t - 1) ** 2;
-const ringGeometry = new THREE.RingGeometry(R - 0.1, R - 0.02, 48);
+const ringGeometry = new THREE.RingGeometry(R - 0.1, R - 0.02, 32);
 const scrollGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.5, 16);
 // Les copies ont la taille des vrais coffres une fois l'archipel agrandi.
 const MINI = { w: COFFRE_SIZE.w / ARCHIPEL_SCALE, h: COFFRE_SIZE.h / ARCHIPEL_SCALE, d: COFFRE_SIZE.d / ARCHIPEL_SCALE };
@@ -131,18 +131,21 @@ function createMiniChain(sealMaterials) {
   boxes.receiveShadow = true;
   const links = new THREE.InstancedMesh(miniLinkGeometry, miniLink, sealMaterials.length - 1);
   const m = new THREE.Matrix4();
-  sealMaterials.forEach((sealMaterial, i) => {
+  sealMaterials.forEach((_, i) => {
     const x = (i - (sealMaterials.length - 1) / 2) * spacing;
     boxes.setMatrixAt(i, m.makeTranslation(x, TOP_Y + MINI.h / 2, 0));
-    const seal = new THREE.Mesh(miniSealGeometry, sealMaterial);
-    seal.position.set(x + MINI.w * 0.1, TOP_Y + MINI.h * 0.6, MINI.d / 2 + 0.001);
-    group.add(seal);
     if (i > 0) links.setMatrixAt(i - 1, m.makeTranslation(x - spacing / 2, TOP_Y + MINI.h * 0.45, 0));
   });
   boxes.computeBoundingSphere();
   links.computeBoundingSphere();
   group.add(boxes, links);
   return group;
+}
+
+// Position (dans l'île) du sceau du bloc i sur la copie de la chaîne.
+function miniSealPosition(i, count) {
+  const x = (i - (count - 1) / 2) * (CHAIN_SPACING / ARCHIPEL_SCALE);
+  return [CHAIN_SPOT[0] + x + MINI.w * 0.1, TOP_Y + MINI.h * 0.6, CHAIN_SPOT[1] + MINI.d / 2 + 0.001];
 }
 
 export function createArchipel(chain) {
@@ -155,7 +158,7 @@ export function createArchipel(chain) {
   // La mer : une grande feuille bleue froissée sous tout l'archipel. Elle déborde largement : elle va jusqu'à l'horizon, on ne voit pas son
   // bord, même tout au fond.
   const sea = new THREE.Mesh(
-    crumpledSheet(60, 50, 200),
+    crumpledSheet(60, 50, 100),
     new THREE.MeshStandardMaterial({ map: paperMaterial(COLORS.sea, { fibers: 120, repeat: 18 }).map, roughness: 0.95, flatShading: true }),
   );
   sea.position.set(0, GROUND_Y, 0);
@@ -165,6 +168,18 @@ export function createArchipel(chain) {
   // Bateaux en papier mâché : un tourne autour de l'île de Dylan (visible dès le début), deux autres font le tour
   // de l'archipel et n'apparaissent qu'au dézoom, avec les autres îles. La mer froissée monte jusqu'à ~0,1
   // au-dessus de GROUND_Y et la coque descend de 0,16 sous le pont : à + 0,14, la coque (fermée par le pont) est à moitié dans l'eau.
+  // Sceaux des copies : un seul objet par bloc pour toutes les îles (6 appels de dessin au lieu de 6 × 4, #57).
+  const miniSeals = sealMaterials.map((material, i) => {
+    const copies = ISLANDS.map(({ at }, k) => [at, k]).filter(([, k]) => k !== SENDER);
+    const mesh = new THREE.InstancedMesh(miniSealGeometry, material, copies.length);
+    const [px, py, pz] = miniSealPosition(i, sealMaterials.length);
+    const m = new THREE.Matrix4();
+    copies.forEach(([at], n) => mesh.setMatrixAt(n, m.makeTranslation(at[0] + px, py, at[1] + pz)));
+    mesh.frustumCulled = false;
+    mesh.visible = false; // comme les autres îles : visibles seulement au dézoom (setOthersVisible)
+    group.add(mesh);
+    return mesh;
+  });
   const bateaux = Object.values(BOAT_PATHS).map((path) => createBateau(GROUND_Y + 0.14, path));
   bateaux.forEach((b) => group.add(b.group));
 
@@ -428,6 +443,7 @@ export function createArchipel(chain) {
         if (island.index !== SENDER) island.group.visible = visible;
       });
       bateaux.slice(1).forEach((b) => (b.group.visible = visible));
+      miniSeals.forEach((mesh) => (mesh.visible = visible));
     },
     // Les plaques « Île de… » ne s'affichent que sur les étapes de l'archipel : de loin, derrière la chaîne, elles gêneraient.
     setLabels(visible) {
