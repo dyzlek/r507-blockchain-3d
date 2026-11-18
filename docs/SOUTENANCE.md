@@ -16,17 +16,22 @@ Issues #23 (support), #24 (vidéo de secours), #25 (répétition). Durée totale
 
 | Temps | Partie | Qui | Ce qu'on montre | Phrase clé |
 |:---|:---|:---|:---|:---|
-| 0:00 – 1:30 | Le projet, le public, la métaphore | Maxens | Étape 0 ; diapo « public 16-25 ans, maquette en papier » | « Une blockchain, c'est un cahier de comptes recopié partout, où chaque page est scellée à la précédente. » |
+| 0:00 – 0:45 | Titre, présentation | Maxens | Diapo 1 ; se présenter, lancer la démo en ligne | « On a voulu expliquer la blockchain à quelqu'un qui n'y connaît rien. » |
+| 0:45 – 1:15 | Public et idées à retenir | Maxens | Diapo « public 16-25 ans » ; fil rouge d'une transaction | « Ils connaissent le mot Bitcoin, pas le fonctionnement. » |
+| 1:15 – 1:30 | La métaphore | Maxens | Diapo des 8 cartes ; alternatives écartées (livre de comptes, Lego) | « Une blockchain, c'est un cahier de comptes recopié partout, où chaque page est scellée à la précédente. » |
 | 1:30 – 4:00 | Notions 1 et 2 : le coffre, la corde | Maxens | Allumer la lampe ; « Comparer les sceaux » | « Le sceau est calculé à partir de tout le contenu : c'est un vrai SHA-256. Le coffre suivant recopie ce sceau. » |
 | 4:00 – 5:30 | Notion 3 : la falsification | Dylan | « Falsifier » : le sceau change, la corde se coupe | « Changer une lettre change tout le sceau : la copie dans le coffre suivant ne correspond plus. » |
 | 5:30 – 7:30 | Notion 4 : l'archipel | Dylan | Traversée des nuages ; éteindre une île ; envoyer le bloc 1 falsifié (avion rouge, îles qui refusent) | « Chaque île garde sa copie et compare : un bloc truqué est refusé. Une île en panne ne bloque rien. » |
 | 7:30 – 9:00 | Notion 5 : le minage | Maxens | Miner en `00`, puis `000` ; montrer le compteur d'essais | « Trouver demande des centaines d'essais. Vérifier n'en demande qu'un. » |
 | 9:00 – 10:30 | Notion 6 : le consensus | Maxens | Course (preuve de travail) puis tirage (preuve d'enjeu) ; ligne « Bilan » | « Course : sûre mais gourmande. Tirage : sobre mais favorise les plus riches. Ici la course est simulée, c'est dit dans "En vrai". » |
 | 10:30 – 12:30 | Notion 7 : la double dépense | Dylan | Les deux transactions en conflit ; course à 30 % deux ou trois fois, puis à 60 % ; ligne « Résultats » | « À 30 %, Dylan gagne parfois par chance sur une course courte : c'est pour ça qu'on attend 6 confirmations. Au-delà de 50 %, il gagne presque toujours. » |
-| 12:30 – 15:00 | Choix et tests | Maxens | `TEST-UTILISATEUR-RESULTATS.md` : tableau session 1 (et session 2) ; ce qu'on a changé | Les chiffres réels, même mauvais : « critère 6/8 non atteint en session 1, voici ce qu'on a corrigé et ce que la session 2 montre. » |
-| 15:00 – 17:00 | Gestion de projet et technique | Dylan | Board, milestones, labels ; FPS (carte intégrée : 52 dans Chrome, 56 dans Edge, 34 dans Firefox au pire ; montrer le compteur R + P) ; usage de l'IA (CHOIX §6) | « L'IA a écrit une grande partie du code ; nous avons choisi, vérifié à l'écran et corrigé ses erreurs, par exemple la course sans hasard. » |
-| 17:00 – 18:30 | Bilan et limites | Les deux | CHOIX §5 : notion la moins bien représentée, ce qu'on referait | « Avec une semaine de plus : tester plus tôt, animer la copie du sceau. » |
-| 18:30 – 20:00 | Marge, questions | Les deux | | |
+| 12:30 – 13:45 | Choix de modélisation | Maxens | Fiches CHOIX (3 alternatives écartées), charte graphique | « Un seul accent, corail = ce qui relie ; rouge réservé à la fraude. » |
+| 13:45 – 15:00 | Tests utilisateurs | Maxens | `TEST-UTILISATEUR-RESULTATS.md` : session 1 puis session 2 ; corrections #45 #46 #47 ; limite : #55 non retesté | « Critère 6/8 non atteint en session 1 ; en session 2, T4 à 7/8, T3 reste à 0/8 : on le dit. » |
+| 15:00 – 16:00 | Gestion de projet | Dylan | Board, milestones, labels, fiches `docs/suivi` ; répartition des commits (README) | « Chaque retour de test devient une issue, une PR, fermée avec sa preuve. » |
+| 16:00 – 16:45 | Performance (FPS) | Dylan | Script `scripts/mesure-fps.mjs` ; compteur R + P en direct ; carte intégrée : 52 (Chrome), 56 (Edge), 34 (Firefox) au pire | « Notre première mesure était fausse, on l'a refaite. Pas mesuré sur un vrai poste de TP. » |
+| 16:45 – 17:30 | Usage de l'IA | Dylan | CHOIX §6, label « ia » | « L'IA a écrit une grande partie du code ; nous avons choisi, vérifié à l'écran et corrigé, par exemple la course sans hasard. » |
+| 17:30 – 18:30 | Bilan et limites | Les deux | Maxens : ce qui marche, notion la plus fragile ; Dylan : ce qu'on referait ; chacun une phrase sur ce qu'il a appris | « Avec une semaine de plus : tester plus tôt, animer la copie du sceau. » |
+| 18:30 – 20:00 | Marge, questions | Les deux | Chacun répond sur les 7 notions | |
 
 Si on prend du retard : sauter la 2e course de la notion 6 et ne faire qu'une course à 60 % à la notion 7.
 
