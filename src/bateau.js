@@ -70,7 +70,6 @@ export function createBateau(seaY, path) {
   const newsprint = paperMaterial(COLORS.paper, { fibers: 160, stripes: true }, { side: THREE.DoubleSide, flatShading: true });
   const hull = new THREE.Mesh(hullGeometry, newsprint);
   hull.scale.set(0.42, 0.16, 0.16);
-  hull.castShadow = true;
   body.add(hull);
   // Pont en carton : ferme la coque, sinon on voit la mer à l'intérieur quand la vague monte.
   const deck = new THREE.Mesh(new THREE.CircleGeometry(1, 32).rotateX(-Math.PI / 2), paperMaterial(COLORS.kraft, { stripes: true }));
@@ -86,7 +85,6 @@ export function createBateau(seaY, path) {
 
   const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.01, 0.42, 6), new THREE.MeshStandardMaterial({ color: 0x8a5a35, roughness: 0.9 }));
   mast.position.y = 0.21;
-  mast.castShadow = true;
   body.add(mast);
 
   // Voile : un triangle de papier, un peu gonflé par le vent.
@@ -115,7 +113,6 @@ export function createBateau(seaY, path) {
   sailGeometry.computeVertexNormals();
   const sail = new THREE.Mesh(sailGeometry, new THREE.MeshStandardMaterial({ map: stripedSail(path.color), side: THREE.DoubleSide, roughness: 0.9 }));
   sail.rotation.y = Math.PI; // la voile flotte vers l'arrière
-  sail.castShadow = true;
   body.add(sail);
 
   const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.035), new THREE.MeshStandardMaterial({ color: path.color, side: THREE.DoubleSide }));
