@@ -5,7 +5,7 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { COFFRE_SIZE, sealTexture } from './coffre.js';
 import { createBateau, BOAT_PATHS } from './bateau.js';
-import { COLORS, cardboard, createCutoutBatch, crumpledSheet, noisyDisc, paperMaterial, paperPlaneGeometry } from './papier.js';
+import { COLORS, cardboard, createCutoutBatch, crumpledSheet, discOutline, noisyDisc, paperMaterial, paperPlaneGeometry } from './papier.js';
 
 // Le réseau = un archipel en papier découpé, posé sur une mer de papier froissé.
 // Chaque île est un nœud qui garde sa propre copie de la chaîne.
@@ -59,6 +59,7 @@ const LAYERS = [
   { r: R * 0.92, color: COLORS.grassDark },
 ];
 const LAYER_DEPTH = 0.035;
+const SEA_DROP = 0.07; // la mer est baissée : ses plis ne dépassent plus du sable de l'île
 
 // Décor de chaque île, en découpes de papier : un repère propre à l'île (cabane, phare ou grand arbre) et la même
 // petite végétation partout, tout autour de la chaîne (derrière, et sur les côtés devant). Il ne sert qu'à rendre
@@ -81,7 +82,16 @@ function decorFor(index) {
   const jitter = ((index * 37) % 21) - 10;
   return [[...LANDMARKS[index], 236, 0.8], ...PLANTS].map(([kind, height, angle, distance], j) => {
     const a = THREE.MathUtils.degToRad(angle + (j ? jitter : 0));
-    return [kind, height / ARCHIPEL_SCALE, Math.cos(a) * distance * R * mirror, Math.sin(a) * distance * R, (((index + j) * 53) % 40 - 20) / 100];
+    let x = Math.cos(a) * distance * R * mirror;
+    let z = Math.sin(a) * distance * R;
+    // Le décor reste sur la feuille du dessus (dont le contour est irrégulier), sinon il flotte dans le vide au bord de l'île.
+    const edge = discOutline(LAYERS.at(-1).r, index * 2.3 + (LAYERS.length - 1) * 1.7, Math.atan2(-z, x)) * 0.8;
+    const len = Math.hypot(x, z);
+    if (len > edge) {
+      x *= edge / len;
+      z *= edge / len;
+    }
+    return [kind, height / ARCHIPEL_SCALE, x, z, (((index + j) * 53) % 40 - 20) / 100];
   });
 }
 const easeOutBack = (t) => 1 + 2.4 * (t - 1) ** 3 + 1.4 * (t - 1) ** 2;
@@ -158,10 +168,10 @@ export function createArchipel(chain) {
   // La mer : une grande feuille bleue froissée sous tout l'archipel. Elle déborde largement : elle va jusqu'à l'horizon, on ne voit pas son
   // bord, même tout au fond.
   const sea = new THREE.Mesh(
-    crumpledSheet(60, 50, 100),
+    crumpledSheet(60, 50, 70),
     new THREE.MeshStandardMaterial({ map: paperMaterial(COLORS.sea, { fibers: 120, repeat: 18 }).map, roughness: 0.95, flatShading: true }),
   );
-  sea.position.set(0, GROUND_Y, 0);
+  sea.position.set(0, GROUND_Y - SEA_DROP, 0);
   sea.rotation.y = 0.02;
   sea.receiveShadow = true;
   group.add(sea);
@@ -180,7 +190,7 @@ export function createArchipel(chain) {
     group.add(mesh);
     return mesh;
   });
-  const bateaux = Object.values(BOAT_PATHS).map((path) => createBateau(GROUND_Y + 0.14, path));
+  const bateaux = Object.values(BOAT_PATHS).map((path) => createBateau(GROUND_Y - SEA_DROP + 0.14, path));
   bateaux.forEach((b) => group.add(b.group));
 
   // Les découpes (cabanes, phares, arbres…) sont dessinées ensemble (createCutoutBatch) ; chaque île garde une
@@ -195,7 +205,8 @@ export function createArchipel(chain) {
     const layers = LAYERS.map(({ r, color }, i) => {
       const layer = new THREE.Mesh(noisyDisc(r, index * 2.3 + i * 1.7, LAYER_DEPTH), paperMaterial(color).clone());
       layer.position.y = GROUND_Y + i * LAYER_DEPTH; // la feuille du dessus finit à TOP_Y
-      layer.castShadow = true;
+      // Seule l'île de Dylan se voit de près : les feuilles des autres îles ne projettent pas d'ombre les unes sur les autres.
+      layer.castShadow = index === SENDER;
       layer.receiveShadow = true;
       island.add(layer);
       return layer;
