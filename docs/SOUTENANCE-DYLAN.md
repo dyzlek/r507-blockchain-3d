@@ -78,7 +78,7 @@ Pas besoin de tout apprendre par cœur : l'important est de connaître l'idée d
 
 > Côté technique, on voulait que ça tourne sur un PC de TP, donc au moins 30 images par seconde.
 
-> On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. Résultat : sur un portable avec la carte graphique intégrée, la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.
+> On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. On l'a fait sur un PC peu puissant pour la 3D : le portable avec sa carte graphique intégrée seulement, et même avec le processeur ralenti. Résultat : la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.
 
 > Petite honnêteté : notre première mesure disait plus de 60, elle était fausse, on l'a refaite. Et on n'a pas pu tester sur un vrai poste de TP.
 

@@ -620,8 +620,8 @@
 
   <!-- 13 -->
   <section class="slide" data-who="Dylan" data-time="16:00 – 16:45"
-    data-script="Côté technique, on voulait que ça tourne sur un PC de TP, donc au moins 30 images par seconde.¶On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. Résultat : sur un portable avec la carte graphique intégrée, la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.¶Petite honnêteté : notre première mesure disait plus de 60, elle était fausse, on l'a refaite. Et on n'a pas pu tester sur un vrai poste de TP.¶[Appuyer sur R et P en même temps]¶Si vous voulez, voilà le compteur en direct."
-    data-notes="Critère : 30 images/s sur un poste de TP. Remesuré le 18/11 avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape). Ligne « local » : version finale sur notre serveur de développement, Chrome 72 à 98 images/s.|Carte intégrée = la plus proche d'un poste de TP. Processeur ralenti 4 fois = plus lent qu'un poste de TP.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP ; les chiffres varient de plusieurs images/s d'un passage à l'autre (portable chaud, Chrome a touché 26 sur une seconde), à dire franchement.">
+    data-script="Côté technique, on voulait que ça tourne sur un PC de TP, donc au moins 30 images par seconde.¶On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. On l'a fait sur un PC peu puissant pour la 3D : le portable avec sa carte graphique intégrée seulement, et même avec le processeur ralenti. Résultat : la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.¶Petite honnêteté : notre première mesure disait plus de 60, elle était fausse, on l'a refaite. Et on n'a pas pu tester sur un vrai poste de TP.¶[Appuyer sur R et P en même temps]¶Si vous voulez, voilà le compteur en direct."
+    data-notes="Critère : 30 images/s sur un poste de TP. Remesuré le 18/11 avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape). Ligne « local » : version finale sur notre serveur de développement, Chrome 72 à 98 images/s.|À dire : c'est mesuré sur un PC peu puissant pour la 3D, avec la carte graphique intégrée seulement (la plus faible des deux), et un processeur ralenti 4 fois pour simuler un PC encore plus lent.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP ; les chiffres varient de plusieurs images/s d'un passage à l'autre (portable chaud, Chrome a touché 26 sur une seconde), à dire franchement.">
     <span class="kicker">Fluidité · critère 30 images/s</span>
     <h2>Est-ce que ça tourne sur un PC de TP ?</h2>
     <p style="margin-top: 10px; font-size: 26px;">Oui. Sur un PC portable, même avec sa carte graphique intégrée, la moyenne reste au-dessus de <strong>40 images/s</strong> à chaque étape, dans Chrome, Edge et Firefox.</p>
@@ -637,13 +637,12 @@
             <tr><td>Chrome <span class="muted">(local)</span></td><td class="num"><strong>72</strong></td><td class="num">65</td><td class="num muted">—</td></tr>
           </tbody>
         </table>
-        <p class="muted" style="margin-top: 16px; font-size: 21px;">Processeur ÷ 4, c'est plus lent qu'un poste de TP. Avec la carte dédiée (RTX), 163 à 164 images/s.</p>
+        <p class="muted" style="margin-top: 16px; font-size: 21px;">Mesuré sur un PC peu puissant pour la 3D : le portable avec sa carte graphique intégrée seulement (la plus faible des deux), et un processeur ralenti 4 fois pour simuler un PC encore plus lent.</p>
         <p class="muted" style="margin-top: 8px; font-size: 21px;">Démo en ligne, remesurée le 18/11, 9 étapes avec leur action, 5 s chacune · <span class="mono" style="white-space: nowrap;">scripts/mesure-fps.mjs</span></p>
       </div>
       <div style="flex: 1; display: flex; flex-direction: column; gap: 22px;">
         <div class="slip"><h3 style="font-size: 26px;">607 → environ 250</h3><p style="font-size: 23px; margin-top: 4px;">appels de dessin par image sur l'archipel, en regroupant les décors, les sceaux et les parchemins</p></div>
         <div class="slip"><h3 style="font-size: 26px;">−34 %</h3><p style="font-size: 23px; margin-top: 4px;">de temps de calcul par image, surtout en cachant les étiquettes qu'on ne voit pas</p></div>
-        <div class="postit"><span class="label">En direct</span><p style="font-size: 23px; margin-top: 6px;">On peut vous le montrer. <strong>R et P</strong> en même temps affichent le compteur.</p></div>
       </div>
     </div>
   </section>
