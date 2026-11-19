@@ -1,6 +1,6 @@
 # Mon texte pour la soutenance (Dylan)
 
-Texte à dire à l'oral, écrit comme si je parlais. Les actions à faire à l'écran sont entre crochets. Les temps suivent le plan de [`SOUTENANCE.md`](SOUTENANCE.md) et du diaporama. Le même texte est dans le diaporama : touche **N** (sur la diapo) ou bouton **Notes ↗** (fenêtre à part).
+Texte à dire à l'oral, écrit comme si je parlais. Les actions à faire à l'écran sont entre crochets. Les temps suivent le plan de [`SOUTENANCE.md`](SOUTENANCE.md) et du diaporama. Le même texte est dans le diaporama : touche **N** (elle ouvre la fenêtre de notes à part).
 
 Pas besoin de tout apprendre par cœur : l'important est de connaître l'idée de chaque partie et de dire les chiffres justes. Environ 130 mots par minute, donc le texte tient dans les créneaux.
 
