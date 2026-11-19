@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Notes de soutenance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+<!--
+  Notes du présentateur dans une fenêtre à part (ouverte par le bouton « Notes » du diaporama, touche O).
+  Elle reçoit l'état du diaporama par BroadcastChannel (même origine) : diapo en cours, qui parle, créneau, notes.
+  Elle peut faire avancer ou reculer les diapos et remettre le chrono à zéro.
+-->
+<style>
+  :root {
+    --bg: #e9dfcc;
+    --card: #f7f1e6;
+    --text: #3a2f26;
+    --muted: #655848;
+    --accent: #a8442c;
+    --broken: #b3261e;
+    --rule: rgb(58 47 38 / 18%);
+    --font-body: 'Alegreya Sans', system-ui, sans-serif;
+    --font-mono: 'Courier Prime', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --bg: #1f1a16; --card: #2a231d; --text: #f1e8da; --muted: #c2b5a2; --accent: #f0907a; --broken: #ff8a80; --rule: rgb(241 232 218 / 20%);
+    }
+  }
+  :root[data-theme='dark'] {
+    --bg: #1f1a16; --card: #2a231d; --text: #f1e8da; --muted: #c2b5a2; --accent: #f0907a; --broken: #ff8a80; --rule: rgb(241 232 218 / 20%);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font-body); }
+  main { max-width: 820px; margin: 0 auto; padding: 20px 20px 32px; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-family: var(--font-mono); color: var(--accent); }
+  .top .pos { font-size: 18px; }
+  #clock { font-size: 44px; font-weight: 700; letter-spacing: 1px; }
+  #clock.late { color: var(--broken); }
+  #who { margin-top: 6px; font-size: 34px; font-weight: 800; }
+  #title { color: var(--muted); font-size: 20px; margin-top: 2px; }
+  ul { margin: 18px 0 0; padding-left: 26px; }
+  li { font-size: 1.75em; line-height: 1.3; margin-top: 14px; }
+  .next { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 20px; }
+  .controls { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  button {
+    font: 700 18px/1 var(--font-body); padding: 12px 18px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--rule); background: var(--card); color: var(--text);
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  #status { margin-top: 18px; font-size: 16px; color: var(--muted); }
+  .bar { height: 6px; background: var(--rule); border-radius: 3px; margin-top: 14px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0; background: var(--accent); }
+  .help { margin-top: 18px; font-size: 15px; color: var(--muted); }
+  .size { margin-left: auto; }
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><span class="pos" id="pos">–</span><span id="clock">00:00</span></div>
+  <div id="who">En attente du diaporama…</div>
+  <div id="title"></div>
+  <div class="bar" aria-hidden="true"><div id="bar"></div></div>
+  <ul id="notes"></ul>
+  <div class="next" id="next"></div>
+  <div class="controls">
+    <button type="button" id="prev">← Précédente</button>
+    <button type="button" id="nextBtn" class="primary">Suivante →</button>
+    <button type="button" id="reset" title="Remet le chrono à 00:00">Chrono à zéro</button>
+    <span class="size"><button type="button" id="smaller" aria-label="Texte plus petit">A−</button> <button type="button" id="bigger" aria-label="Texte plus grand">A+</button></span>
+  </div>
+  <div id="status">Ouvrez cette fenêtre depuis le diaporama (bouton « Notes » ou touche O). Les deux fenêtres doivent être dans le même navigateur.</div>
+  <div class="help">Flèches ou Espace : changer de diapo · R : chrono à zéro</div>
+</main>
+<script>
+  const channel = 'BroadcastChannel' in window ? new BroadcastChannel('diapo-soutenance') : null;
+  let state = null;
+  let fontScale = 1;
+  const $ = (id) => document.getElementById(id);
+
+  const toSec = (t) => { const [m, s] = t.split(':').map(Number); return m * 60 + s; };
+
+  function render() {
+    if (!state) return;
+    const s = state.slides[state.index];
+    $('pos').textContent = `Diapo ${state.index + 1} / ${state.slides.length} · ${s.time}`;
+    $('who').textContent = s.who;
+    $('title').textContent = s.title;
+    $('bar').style.width = `${((state.index + 1) / state.slides.length) * 100}%`;
+    $('notes').replaceChildren(...s.notes.map((t) => Object.assign(document.createElement('li'), { textContent: t })));
+    const n = state.slides[state.index + 1];
+    $('next').textContent = n ? `Ensuite : ${n.title} (${n.who}, ${n.time})` : 'Dernière diapo';
+    $('status').textContent = 'Connecté au diaporama.';
+    clock();
+  }
+
+  function clock() {
+    const el = $('clock');
+    const elapsed = state?.start ? Math.floor((Date.now() - state.start) / 1000) : 0;
+    el.textContent = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`;
+    const end = state ? (state.slides[state.index].time.split('–')[1] ?? '').trim() : '';
+    el.classList.toggle('late', Boolean(state?.start && end && elapsed > toSec(end)));
+  }
+  setInterval(clock, 1000);
+
+  channel?.addEventListener('message', ({ data }) => {
+    if (data.type === 'state') { state = data; render(); }
+  });
+  // Au cas où le diaporama était déjà ouvert : on lui demande son état, et on réessaie tant qu'il ne répond pas.
+  channel?.postMessage({ type: 'hello' });
+  const retry = setInterval(() => { if (state) clearInterval(retry); else channel?.postMessage({ type: 'hello' }); }, 1500);
+  if (!channel) $('status').textContent = 'Ce navigateur ne permet pas de relier les deux fenêtres (BroadcastChannel absent).';
+
+  const go = (delta) => channel?.postMessage({ type: 'go', delta });
+  $('prev').addEventListener('click', () => go(-1));
+  $('nextBtn').addEventListener('click', () => go(1));
+  $('reset').addEventListener('click', () => channel?.postMessage({ type: 'reset' }));
+  const applySize = () => { document.documentElement.style.fontSize = `${16 * fontScale}px`; };
+  $('bigger').addEventListener('click', () => { fontScale = Math.min(1.6, fontScale + 0.1); applySize(); });
+  $('smaller').addEventListener('click', () => { fontScale = Math.max(0.7, fontScale - 0.1); applySize(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (['ArrowRight', 'PageDown', ' ', 'ArrowDown'].includes(e.key)) { e.preventDefault(); go(1); }
+    else if (['ArrowLeft', 'PageUp', 'ArrowUp'].includes(e.key)) { e.preventDefault(); go(-1); }
+    else if (e.key === 'r' || e.key === 'R') channel?.postMessage({ type: 'reset' });
+  });
+</script>
+</body>
+</html>

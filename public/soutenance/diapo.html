@@ -284,6 +284,15 @@
     line-height: 1.4;
   }
   #presenter[hidden] { display: none; }
+  #open-notes {
+    position: fixed; left: 14px; bottom: 16px; z-index: 5; padding: 6px 12px; border-radius: 6px;
+    border: 1px solid rgb(58 47 38 / 35%); background: var(--slip); color: var(--text); opacity: 0.6;
+    font: 700 14px/1 var(--font-mono); cursor: pointer;
+  }
+  #open-notes:hover, #open-notes:focus-visible { opacity: 1; }
+  :fullscreen #open-notes { opacity: 0; }
+  :fullscreen #open-notes:hover, :fullscreen #open-notes:focus-visible { opacity: 0.9; }
+  @media print { #open-notes { display: none; } }
   #presenter .head { display: flex; justify-content: space-between; gap: 10px; font-family: var(--font-mono); font-size: 15px; color: var(--accent); }
   #presenter .speaker { margin-top: 8px; font-size: 22px; font-weight: 800; }
   #presenter ul { margin: 10px 0 0 18px; }
@@ -401,7 +410,7 @@
 
   <!-- 5 -->
   <section class="slide" data-who="Dylan" data-time="4:00 – 5:30"
-    data-notes="Étape 4 : « Falsifier le bloc 1 » : Nicolas envoie 200 jetons au lieu de 2.|Le sceau du bloc 1 change complètement (effet avalanche) ; la copie dans le bloc 2 ne correspond plus, la corde se coupe et devient rouge.|Annoncer la suite : ici on voit la cassure, les autres participants la verront à l'étape 5.">
+    data-notes="Étape 4 : « Falsifier le bloc 1 » : Nicolas envoie 200 jetons au lieu de 2.|Le sceau du bloc 1 change complètement (effet avalanche) ; la copie dans le bloc 2 ne correspond plus, la corde se coupe et devient rouge.|Chiffre à dire : changer une seule lettre modifie en moyenne 60 caractères du sceau sur 64 (128 bits sur 256), mesuré avec notre vrai SHA-256 sur 954 changements d'une lettre.|Annoncer la suite : ici on voit la cassure, les autres participants la verront à l'étape 5.">
     <span class="kicker"><span class="num">3</span> Démo · Immutabilité</span>
     <h2>Et si quelqu'un modifie un vieux bloc ?</h2>
     <div class="notion">
@@ -415,7 +424,7 @@
           <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=4" target="_blank" rel="noopener">Étape 4 ↗</a>
           <span class="muted">« Falsifier le bloc 1 »</span>
         </div>
-        <p class="quote">Une seule lettre change, et c'est tout le sceau qui change. Ça se voit tout de suite.</p>
+        <p class="quote">Une seule lettre change et environ 60 caractères du sceau sur 64 changent. Ça se voit tout de suite.</p>
       </div>
       <figure class="photo tilt-l"><img src="img/notion-3.jpg" alt="Bloc n°1 marqué falsifié, son sceau entouré de rouge" /></figure>
     </div>
@@ -718,12 +727,14 @@
 <div id="chrome"><div id="progress"></div></div>
 <div id="counter" aria-hidden="true"></div>
 
+<button id="open-notes" type="button" title="Ouvrir les notes dans une autre fenêtre (touche O)">Notes ↗</button>
+
 <aside id="presenter" hidden aria-label="Notes du présentateur">
   <div class="head"><span id="p-time"></span><span id="p-clock">00:00</span></div>
   <div class="speaker" id="p-who"></div>
   <ul id="p-notes"></ul>
   <div class="next" id="p-next"></div>
-  <div class="help">N : notes · F : plein écran · R : remettre le chrono à 0 · numéro + Entrée : aller à la diapo</div>
+  <div class="help">N : notes sur la diapo · O : notes dans une autre fenêtre · F : plein écran · R : remettre le chrono à 0 · numéro + Entrée : aller à la diapo</div>
 </aside>
 
 <script>
@@ -750,7 +761,32 @@
     progress.style.width = `${((index + 1) / slides.length) * 100}%`;
     try { history.replaceState(null, '', `#${index + 1}`); } catch {}
     renderNotes();
+    broadcastState();
   }
+
+  // Notes dans une autre fenêtre (notes.html) : la diapo lui envoie l'état à chaque changement, la fenêtre peut
+  // aussi faire avancer ou reculer les diapos et remettre le chrono à zéro.
+  const channel = 'BroadcastChannel' in window ? new BroadcastChannel('diapo-soutenance') : null;
+  function broadcastState() {
+    channel?.postMessage({
+      type: 'state', index, start,
+      slides: slides.map((sl) => ({
+        who: sl.dataset.who ?? '', time: sl.dataset.time ?? '',
+        title: sl.querySelector('h1, h2')?.textContent.trim() ?? '',
+        notes: (sl.dataset.notes ?? '').split('|').filter(Boolean),
+      })),
+    });
+  }
+  function openNotes() {
+    const w = window.open('notes.html', 'notes-diapo', 'width=760,height=900');
+    if (!w) alert('Le navigateur a bloqué la fenêtre : autorisez les fenêtres surgissantes pour cette page.');
+  }
+  document.getElementById('open-notes').addEventListener('click', openNotes);
+  channel?.addEventListener('message', ({ data }) => {
+    if (data.type === 'hello') broadcastState();
+    else if (data.type === 'go') { start ??= Date.now(); show(index + data.delta); }
+    else if (data.type === 'reset') { start = Date.now(); updateClock(); broadcastState(); }
+  });
 
   function renderNotes() {
     const s = slides[index];
@@ -788,7 +824,8 @@
     else if (k === 'Home') show(0);
     else if (k === 'End') show(slides.length - 1);
     else if (k === 'n' || k === 'N') presenter.hidden = !presenter.hidden;
-    else if (k === 'r' || k === 'R') { start = Date.now(); updateClock(); }
+    else if (k === 'r' || k === 'R') { start = Date.now(); updateClock(); broadcastState(); }
+    else if (k === 'o' || k === 'O') openNotes();
     else if (k === 'f' || k === 'F') {
       if (document.fullscreenElement) document.exitFullscreen?.();
       else document.documentElement.requestFullscreen?.().catch(() => {});
