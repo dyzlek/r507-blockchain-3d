@@ -284,8 +284,20 @@
     line-height: 1.4;
   }
   #presenter[hidden] { display: none; }
+  #open-notes {
+    position: fixed; left: 14px; bottom: 16px; z-index: 5; padding: 6px 12px; border-radius: 6px;
+    border: 1px solid rgb(58 47 38 / 35%); background: var(--slip); color: var(--text); opacity: 0.6;
+    font: 700 14px/1 var(--font-mono); cursor: pointer;
+  }
+  #open-notes:hover, #open-notes:focus-visible { opacity: 1; }
+  :fullscreen #open-notes { opacity: 0; }
+  :fullscreen #open-notes:hover, :fullscreen #open-notes:focus-visible { opacity: 0.9; }
+  @media print { #open-notes { display: none; } }
   #presenter .head { display: flex; justify-content: space-between; gap: 10px; font-family: var(--font-mono); font-size: 15px; color: var(--accent); }
   #presenter .speaker { margin-top: 8px; font-size: 22px; font-weight: 800; }
+  #presenter #p-script { margin-top: 10px; padding: 10px 12px; border-left: 4px solid var(--accent); background: rgb(224 104 75 / 10%); font-size: 17px; line-height: 1.35; }
+  #presenter #p-script:empty { display: none; }
+  #presenter #p-script p { margin: 0 0 8px; }
   #presenter ul { margin: 10px 0 0 18px; }
   #presenter li { font-size: 17px; margin-top: 6px; }
   #presenter .next { margin-top: 12px; font-size: 15px; color: var(--muted); }
@@ -401,7 +413,8 @@
 
   <!-- 5 -->
   <section class="slide" data-who="Dylan" data-time="4:00 – 5:30"
-    data-notes="Étape 4 : « Falsifier le bloc 1 » : Nicolas envoie 200 jetons au lieu de 2.|Le sceau du bloc 1 change complètement (effet avalanche) ; la copie dans le bloc 2 ne correspond plus, la corde se coupe et devient rouge.|Annoncer la suite : ici on voit la cassure, les autres participants la verront à l'étape 5.">
+    data-script="Merci Maxens. Moi, je vais vous montrer ce qui se passe quand quelqu'un essaie de tricher.¶[Cliquer sur « Falsifier le bloc 1 »]¶Là, je prends le bloc 1 et je change la somme. Au lieu de 2 jetons, j'en mets 200. Regardez le sceau : il a complètement changé. Et la corde entre les deux coffres vient de se casser et de passer au rouge.¶Pourquoi ? Parce que le coffre d'après avait gardé une copie de l'ancien sceau, et maintenant elle ne colle plus.¶Ce n'est pas un hasard. On l'a mesuré : quand on change une seule lettre, environ 60 caractères du sceau sur 64 changent. Donc la triche se voit tout de suite. Pour la cacher, il faudrait refaire tous les blocs d'après, un par un. C'est ça qui rend la chaîne très difficile à truquer."
+    data-notes="Étape 4 : « Falsifier le bloc 1 » : Nicolas envoie 200 jetons au lieu de 2.|Le sceau du bloc 1 change complètement (effet avalanche) ; la copie dans le bloc 2 ne correspond plus, la corde se coupe et devient rouge.|Chiffre à dire : changer une seule lettre modifie en moyenne 60 caractères du sceau sur 64 (128 bits sur 256), mesuré avec notre vrai SHA-256 sur 954 changements d'une lettre.|Annoncer la suite : ici on voit la cassure, les autres participants la verront à l'étape 5.">
     <span class="kicker"><span class="num">3</span> Démo · Immutabilité</span>
     <h2>Et si quelqu'un modifie un vieux bloc ?</h2>
     <div class="notion">
@@ -415,7 +428,7 @@
           <a class="btnlike" href="https://dyzlek.github.io/r507-blockchain-3d/?etape=4" target="_blank" rel="noopener">Étape 4 ↗</a>
           <span class="muted">« Falsifier le bloc 1 »</span>
         </div>
-        <p class="quote">Une seule lettre change, et c'est tout le sceau qui change. Ça se voit tout de suite.</p>
+        <p class="quote">Une seule lettre change et environ 60 caractères du sceau sur 64 changent. Ça se voit tout de suite.</p>
       </div>
       <figure class="photo tilt-l"><img src="img/notion-3.jpg" alt="Bloc n°1 marqué falsifié, son sceau entouré de rouge" /></figure>
     </div>
@@ -423,6 +436,7 @@
 
   <!-- 6 -->
   <section class="slide" data-who="Dylan" data-time="5:30 – 7:30"
+    data-script="Mais une question : qui vérifie tout ça ? C'est là qu'arrive le réseau.¶[Aller à l'étape 5, la caméra traverse les nuages]¶On recule, et on découvre que la chaîne était posée sur une île, la mienne. Il y en a d'autres. Chaque île est un participant, avec sa propre copie de toute la chaîne. Personne n'est le chef.¶[Cliquer sur « Envoyer la transaction de Dylan »]¶Quand j'envoie une transaction, elle voyage d'île en île, dans un avion en papier, et chaque île la vérifie de son côté.¶[Éteindre une île]¶Si j'éteins une île, regardez : le réseau continue sans elle. Personne n'est gêné.¶[Choisir « Bloc 1 falsifié » puis l'envoyer]¶Et maintenant, j'envoie mon bloc 1 truqué, dans l'avion rouge. Chaque île compare avec sa propre copie… et elle le refuse.¶Donc pour tricher, il faudrait convaincre la majorité des îles en même temps, pas une seule. Voilà pourquoi il n'y a pas besoin de chef."
     data-notes="Transition : la caméra traverse les nuages et découvre l'archipel.|Éteindre une île : le réseau continue sans elle.|Envoyer le bloc 1 falsifié : avion rouge, les îles comparent avec leur copie et le refusent.|Pourquoi l'archipel est à part : des îles en cercle autour de la chaîne en faisaient un centre (alternative écartée, CHOIX §4.4 e).">
     <span class="kicker"><span class="num">4</span> Démo · Réseau</span>
     <h2>Pourquoi il n'y a pas de chef</h2>
@@ -492,6 +506,7 @@
 
   <!-- 9 -->
   <section class="slide" data-who="Dylan" data-time="10:30 – 12:30"
+    data-script="Dernière notion, et la plus intéressante : la double dépense.¶[Aller à l'étape 8]¶Imaginez que je paie quelqu'un avec mes jetons, puis que je les dépense une deuxième fois ailleurs. Dans la démo, la transaction suit tout son cycle : elle est créée, envoyée aux îles, minée, puis confirmée un peu plus à chaque nouveau bloc.¶Là, je triche. Je dépense mes jetons une deuxième fois et je mine en cachette une autre branche. C'est la chaîne la plus longue qui gagne.¶[Lancer la course à 30 %, deux ou trois fois]¶Avec 30 % de la puissance du réseau, j'y arrive rarement. Parfois je gagne, par chance, sur une course courte. C'est pour ça qu'on attend plusieurs confirmations, six pour Bitcoin.¶[Lancer la course à 60 %]¶Maintenant à 60 %, regardez : je gagne presque à chaque fois.¶Donc au-dessus de 50 % de la puissance, le tricheur gagne presque toujours. C'est la vraie faiblesse du système, et on préfère le dire clairement."
     data-notes="Étape 8 : la transaction suit tout son cycle : création, propagation, minage, inclusion, confirmations.|Dylan triche : il dépense les mêmes jetons deux fois et mine une branche secrète.|Course à 30 % deux ou trois fois : il gagne parfois par chance sur une course courte → c'est pour ça qu'on attend 6 confirmations.|Puis 60 % : au-delà de 50 %, il gagne presque toujours.|Si retard : une seule course à 60 %.">
     <span class="kicker"><span class="num">7</span> Démo · Transaction et attaque</span>
     <h2>Payer deux fois avec les mêmes jetons ?</h2>
@@ -580,6 +595,7 @@
 
   <!-- 12 -->
   <section class="slide" data-who="Dylan" data-time="15:00 – 16:00"
+    data-script="Maintenant, comment on s'est organisés. On a tout géré sur GitHub Projects.¶[Montrer le board]¶Voilà les colonnes : à faire, en cours, à vérifier, terminé. On a trois jalons : le cadrage, la livraison, et la soutenance.¶À chaque fois qu'un testeur nous a fait un retour, on a créé une issue, puis une pull request, et on ne la fermait qu'avec la preuve. Il y a aussi huit fiches de suivi, une par semaine, dans le dépôt.¶Et pour être transparents : les commits ne montrent pas tout le travail de Maxens. Il a fait les tests, les formulaires et les relectures. C'est expliqué dans le README."
     data-notes="Montrer le board en direct si possible : colonnes, milestones, labels.|Chaque retour de test → une issue → une PR → fermée avec sa preuve.|8 fiches de suivi hebdomadaires dans docs/suivi.|Répartition : 68 commits, dont beaucoup de petits commits d'intégration ; le travail de Maxens se voit aussi hors dépôt (formulaires, tests, relectures). Expliqué dans le README.">
     <span class="kicker">GitHub Projects · au 17/11</span>
     <h2>Comment on s'est organisés</h2>
@@ -604,6 +620,7 @@
 
   <!-- 13 -->
   <section class="slide" data-who="Dylan" data-time="16:00 – 16:45"
+    data-script="Côté technique, on voulait que ça tourne sur un PC de TP, donc au moins 30 images par seconde.¶On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. Résultat : sur un portable avec la carte graphique intégrée, la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.¶Petite honnêteté : notre première mesure disait plus de 60, elle était fausse, on l'a refaite. Et on n'a pas pu tester sur un vrai poste de TP.¶[Appuyer sur R et P en même temps]¶Si vous voulez, voilà le compteur en direct."
     data-notes="Critère : 30 images/s sur un poste de TP. Remesuré le 18/11 avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape). Ligne « local » : version finale sur notre serveur de développement, Chrome 72 à 98 images/s.|Carte intégrée = la plus proche d'un poste de TP. Processeur ralenti 4 fois = plus lent qu'un poste de TP.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP ; les chiffres varient de plusieurs images/s d'un passage à l'autre (portable chaud, Chrome a touché 26 sur une seconde), à dire franchement.">
     <span class="kicker">Fluidité · critère 30 images/s</span>
     <h2>Est-ce que ça tourne sur un PC de TP ?</h2>
@@ -633,6 +650,7 @@
 
   <!-- 14 -->
   <section class="slide" data-who="Dylan" data-time="16:45 – 17:30"
+    data-script="Et il faut être clairs sur l'IA : oui, on l'a utilisée, et on le déclare dans le README.¶Claude a écrit une grande partie du code Three.js, à partir de nos consignes, et les premières versions de certains documents.¶Ce qu'on a gardé pour nous : le public visé, la métaphore, l'ordre des notions, et surtout vérifier chaque rendu à l'écran et noter les tests.¶Et on a repéré des erreurs de l'IA. Par exemple, le bloc 4 était marqué « scellé » avant même d'être miné. Ou la première course n'avait aucun hasard, donc la démo disait quelque chose de faux. On les a corrigées. On a aussi refusé certaines de ses idées, comme un thème sombre ou le style neumorphisme."
     data-notes="L'IA (Claude) a écrit une grande partie du code et des premières versions des documents, à partir de nos consignes.|Ce qui reste à nous : public, métaphore, ordre et contenu des notions, notation des tests, limites.|Erreurs repérées par nous à l'écran : exemples à droite.|Tout est daté dans le README et CHOIX §6, avec un label « ia ».">
     <span class="kicker">Usage de l'IA · déclaré dans le README et CHOIX §6</span>
     <h2>Comment on a utilisé l'IA</h2>
@@ -665,6 +683,7 @@
 
   <!-- 15 -->
   <section class="slide" data-who="Les deux" data-time="17:30 – 18:30"
+    data-script="[Maxens parle d'abord de ce qui marche et de ce qui reste fragile. Moi je prends la suite.]¶Si c'était à refaire, on testerait beaucoup plus tôt. La première session de tests est arrivée quand tout était déjà codé, et on n'a pas pu tout corriger. Avec une semaine de plus, on brancherait le vrai minage dans la course du consensus.¶Moi, ce que j'ai appris, c'est à mesurer au lieu de supposer : ma première mesure d'images par seconde était fausse, et je l'ai refaite pour avoir des vrais chiffres."
     data-notes="Maxens : « Pour le bilan, d'abord ce qui marche. Les 7 notions se manipulent vraiment, avec de vrais SHA-256. Un testeur qui n'y connaissait rien a eu 7 sur 8. Et ça tourne en ligne, au-dessus de 30 images par seconde. »|Maxens : « Ce qui reste fragile, c'est surtout le minage : si on ne lit pas les explications, on voit des chiffres défiler sans comprendre. Un testeur a aussi pris les îles pour des banques, alors que c'est justement l'inverse. Et la course du consensus est simulée, on le dit dans « En vrai… ». »|Dylan : ce qu'on referait avec une semaine de plus.|Maxens, ce que j'ai appris : « Moi, j'ai appris qu'un test utilisateur montre des problèmes qu'on ne voit pas soi-même, et qu'il faut tester beaucoup plus tôt. » (à dire avec tes mots)|Dylan : une phrase sur ce qu'il a appris.">
     <span class="kicker">Bilan</span>
     <h2>Avec le recul</h2>
@@ -697,6 +716,7 @@
 
   <!-- 16 -->
   <section class="slide" data-who="Les deux" data-time="18:30 – 20:00"
+    data-script="Merci de votre attention. Le lien de la démo est à l'écran, vous pouvez l'essayer vous-mêmes. On est prêts pour vos questions."
     data-notes="Questions probables : hash réels ? (oui, crypto.subtle) · course réelle ? (non, simulée, dit dans En vrai) · qui a fait quoi ? (README) · comment mesurer les FPS ? (script + R + P) · ce qui n'a pas marché aux tests ?|Chacun doit pouvoir répondre sur les 7 notions.">
     <span class="kicker">Merci</span>
     <h2>Des questions ?</h2>
@@ -718,12 +738,15 @@
 <div id="chrome"><div id="progress"></div></div>
 <div id="counter" aria-hidden="true"></div>
 
+<button id="open-notes" type="button" title="Ouvrir les notes dans une autre fenêtre (touche O)">Notes ↗</button>
+
 <aside id="presenter" hidden aria-label="Notes du présentateur">
   <div class="head"><span id="p-time"></span><span id="p-clock">00:00</span></div>
   <div class="speaker" id="p-who"></div>
+  <div id="p-script"></div>
   <ul id="p-notes"></ul>
   <div class="next" id="p-next"></div>
-  <div class="help">N : notes · F : plein écran · R : remettre le chrono à 0 · numéro + Entrée : aller à la diapo</div>
+  <div class="help">N : notes sur la diapo · O : notes dans une autre fenêtre · F : plein écran · R : remettre le chrono à 0 · numéro + Entrée : aller à la diapo</div>
 </aside>
 
 <script>
@@ -750,13 +773,43 @@
     progress.style.width = `${((index + 1) / slides.length) * 100}%`;
     try { history.replaceState(null, '', `#${index + 1}`); } catch {}
     renderNotes();
+    broadcastState();
   }
+
+  // Notes dans une autre fenêtre (notes.html) : la diapo lui envoie l'état à chaque changement, la fenêtre peut
+  // aussi faire avancer ou reculer les diapos et remettre le chrono à zéro.
+  const channel = 'BroadcastChannel' in window ? new BroadcastChannel('diapo-soutenance') : null;
+  function broadcastState() {
+    channel?.postMessage({
+      type: 'state', index, start,
+      slides: slides.map((sl) => ({
+        who: sl.dataset.who ?? '', time: sl.dataset.time ?? '',
+        title: sl.querySelector('h1, h2')?.textContent.trim() ?? '',
+        notes: (sl.dataset.notes ?? '').split('|').filter(Boolean),
+        script: scriptOf(sl),
+      })),
+    });
+  }
+  function openNotes() {
+    const w = window.open('notes.html', 'notes-diapo', 'width=760,height=900');
+    if (!w) alert('Le navigateur a bloqué la fenêtre : autorisez les fenêtres surgissantes pour cette page.');
+  }
+  document.getElementById('open-notes').addEventListener('click', openNotes);
+  channel?.addEventListener('message', ({ data }) => {
+    if (data.type === 'hello') broadcastState();
+    else if (data.type === 'go') { start ??= Date.now(); show(index + data.delta); }
+    else if (data.type === 'reset') { start = Date.now(); updateClock(); broadcastState(); }
+  });
+
+  const scriptOf = (sl) => (sl.dataset.script ?? '').split('¶').filter(Boolean);
 
   function renderNotes() {
     const s = slides[index];
     document.getElementById('p-who').textContent = `${s.dataset.who ?? ''}`;
     presenter.classList.toggle('is-bottom', s.dataset.who === 'Maxens');
     document.getElementById('p-time').textContent = `${index + 1}/${slides.length} · ${s.dataset.time ?? ''}`;
+    const box = document.getElementById('p-script');
+    box.replaceChildren(...scriptOf(s).map((t) => Object.assign(document.createElement('p'), { textContent: t })));
     const ul = document.getElementById('p-notes');
     ul.replaceChildren(...(s.dataset.notes ?? '').split('|').filter(Boolean).map((t) => Object.assign(document.createElement('li'), { textContent: t })));
     const n = slides[index + 1];
@@ -788,7 +841,8 @@
     else if (k === 'Home') show(0);
     else if (k === 'End') show(slides.length - 1);
     else if (k === 'n' || k === 'N') presenter.hidden = !presenter.hidden;
-    else if (k === 'r' || k === 'R') { start = Date.now(); updateClock(); }
+    else if (k === 'r' || k === 'R') { start = Date.now(); updateClock(); broadcastState(); }
+    else if (k === 'o' || k === 'O') openNotes();
     else if (k === 'f' || k === 'F') {
       if (document.fullscreenElement) document.exitFullscreen?.();
       else document.documentElement.requestFullscreen?.().catch(() => {});
