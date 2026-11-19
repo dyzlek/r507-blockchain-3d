@@ -28,7 +28,7 @@ Issues #23 (support), #24 (vidéo de secours), #25 (répétition). Durée totale
 | 12:30 – 13:45 | Choix de modélisation | Maxens | Fiches CHOIX (3 alternatives écartées), charte graphique | « Un seul accent, corail = ce qui relie ; rouge réservé à la fraude. » |
 | 13:45 – 15:00 | Tests utilisateurs | Maxens | `TEST-UTILISATEUR-RESULTATS.md` : session 1 puis session 2 ; corrections #45 #46 #47 ; limite : #55 non retesté | « Critère 6/8 non atteint en session 1 ; en session 2, T4 à 7/8, T3 reste à 0/8 : on le dit. » |
 | 15:00 – 16:00 | Gestion de projet | Dylan | Board, milestones, labels, fiches `docs/suivi` ; répartition des commits (README) | « Chaque retour de test devient une issue, une PR, fermée avec sa preuve. » |
-| 16:00 – 16:45 | Performance (FPS) | Dylan | Script `scripts/mesure-fps.mjs` ; compteur R + P en direct ; carte intégrée : 52 (Chrome), 56 (Edge), 34 (Firefox) au pire | « Notre première mesure était fausse, on l'a refaite. Pas mesuré sur un vrai poste de TP. » |
+| 16:00 – 16:45 | Performance (FPS) | Dylan | Script `scripts/mesure-fps.mjs` ; compteur R + P en direct ; carte intégrée, à froid, moyenne d'au moins 46 (Chrome), 67 (Edge), 49 (Firefox) ; pire seconde 37, 46 et 40 | « Notre première mesure était fausse, on l'a refaite. Pas mesuré sur un vrai poste de TP. » |
 | 16:45 – 17:30 | Usage de l'IA | Dylan | CHOIX §6, label « ia » | « L'IA a écrit une grande partie du code ; nous avons choisi, vérifié à l'écran et corrigé, par exemple la course sans hasard. » |
 | 17:30 – 18:30 | Bilan et limites | Les deux | Maxens : ce qui marche, notion la plus fragile ; Dylan : ce qu'on referait ; chacun une phrase sur ce qu'il a appris | « Avec une semaine de plus : tester plus tôt, animer la copie du sceau. » |
 | 18:30 – 20:00 | Marge, questions | Les deux | Chacun répond sur les 7 notions | |
@@ -46,7 +46,7 @@ Si on prend du retard : sauter la 2e course de la notion 6 et ne faire qu'une co
 | Pourquoi seulement 3 blocs dans la course de la notion 7 ? | Pour que la démo dure quelques secondes ; on dit que Bitcoin en attend 6 | CHOIX §4.7 g) |
 | Qu'est-ce qui n'a pas marché aux tests ? | Le chaînage (copie du sceau) et les étapes 4 à 7 pour T2 ; ce qu'on a corrigé | `TEST-UTILISATEUR-RESULTATS.md` |
 | Qui a fait quoi ? | Dylan : 3D, intégration, board, déploiement. Maxens : design, contenu, tests, documents. Les commits ne montrent pas tout le travail de Maxens (tests, formulaire, relectures) | README, CHOIX §1 |
-| Comment avez-vous mesuré les FPS ? | Avec notre script `scripts/mesure-fps.mjs` : navigateur piloté sur les 9 étapes, action déclenchée, 5 s par étape. Carte intégrée : jamais sous 30 dans Chrome, Edge et Firefox ; processeur ralenti 4 fois : moyenne ≥ 35. Notre première mesure (« plus de 60 ») était fausse : on l'a refaite. En direct : R + P | CHOIX §3, #57 |
+| Comment avez-vous mesuré les FPS ? | Avec notre script `scripts/mesure-fps.mjs` : navigateur piloté sur les 9 étapes, action déclenchée, 5 s par étape. Carte intégrée (remesuré le 18/11) : à froid, moyenne d'au moins 46 images/s dans Chrome, Edge et Firefox, pire seconde entre 37 et 46 ; processeur ralenti 4 fois : moyennes de 32 à 42. Mesure locale sur la version finale : Chrome 72 à 98 de moyenne, pire seconde 65. Portable chaud, la pire seconde peut descendre à 26 : à dire franchement. Notre première mesure (« plus de 60 ») était fausse : on l'a refaite. En direct : R + P | CHOIX §3, #57 |
 
 ## Répétition (#25)
 
