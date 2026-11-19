@@ -2,7 +2,7 @@
 
 Issues #23 (support), #24 (vidéo de secours), #25 (répétition). Durée totale : **20 minutes**.
 
-**Support : https://dyzlek.github.io/r507-blockchain-3d/soutenance/diapo.html** (16 diapos, en ligne ; source : [`public/soutenance/diapo.html`](../public/soutenance/diapo.html)). Flèches ou Espace pour avancer, **N** pour les notes sur la diapo (qui parle, créneau, phrases à dire, chronomètre), **O** ou le bouton « Notes ↗ » en bas à gauche pour les ouvrir dans une autre fenêtre (à mettre sur l'écran de l'ordinateur, sans la montrer au jury ; elle fait aussi avancer les diapos), **F** pour le plein écran. Chaque diapo de notion a un lien direct vers l'étape de la démo. On alterne les parleurs à chaque partie : chacun présente la moitié des notions, mais **chacun doit pouvoir répondre sur les 7** (questions du jury).
+**Support : https://dyzlek.github.io/r507-blockchain-3d/soutenance/diapo.html** (16 diapos, en ligne ; source : [`public/soutenance/diapo.html`](../public/soutenance/diapo.html)). Flèches ou Espace pour avancer, **N** ouvre les notes dans une autre fenêtre (qui parle, créneau, texte à dire, chronomètre ; à mettre sur l'écran de l'ordinateur, sans la montrer au jury ; elle fait aussi avancer les diapos), **F** pour le plein écran. Chaque diapo de notion a un lien direct vers l'étape de la démo. On alterne les parleurs à chaque partie : chacun présente la moitié des notions, mais **chacun doit pouvoir répondre sur les 7** (questions du jury).
 
 ## Avant de commencer (la veille et 10 min avant)
 

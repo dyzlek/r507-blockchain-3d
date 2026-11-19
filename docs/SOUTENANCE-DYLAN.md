@@ -1,6 +1,6 @@
 # Mon texte pour la soutenance (Dylan)
 
-Texte à dire à l'oral, écrit comme si je parlais. Les actions à faire à l'écran sont entre crochets. Les temps suivent le plan de [`SOUTENANCE.md`](SOUTENANCE.md) et du diaporama. Le même texte est dans le diaporama : touche **N** (sur la diapo) ou bouton **Notes ↗** (fenêtre à part).
+Texte à dire à l'oral, écrit comme si je parlais. Les actions à faire à l'écran sont entre crochets. Les temps suivent le plan de [`SOUTENANCE.md`](SOUTENANCE.md) et du diaporama. Le même texte est dans le diaporama : touche **N** (elle ouvre la fenêtre de notes à part).
 
 Pas besoin de tout apprendre par cœur : l'important est de connaître l'idée de chaque partie et de dire les chiffres justes. Environ 130 mots par minute, donc le texte tient dans les créneaux.
 
@@ -78,7 +78,7 @@ Pas besoin de tout apprendre par cœur : l'important est de connaître l'idée d
 
 > Côté technique, on voulait que ça tourne sur un PC de TP, donc au moins 30 images par seconde.
 
-> On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. Résultat : sur un portable avec la carte graphique intégrée, la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.
+> On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. On l'a fait sur un PC peu puissant pour la 3D : le portable avec sa carte graphique intégrée seulement, et même avec le processeur ralenti. Résultat : la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.
 
 > Petite honnêteté : notre première mesure disait plus de 60, elle était fausse, on l'a refaite. Et on n'a pas pu tester sur un vrai poste de TP.
 

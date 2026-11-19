@@ -11,7 +11,7 @@
 <!--
   Support de soutenance (#23). Même charte que la démo : papier, carton, un seul accent corail, rouge = fraude.
   Clavier : → / Espace / Page suivante = diapo suivante ; ← / Page précédente = précédente ; Début / Fin ;
-  N = mode présentateur (qui parle, créneau, notes, chronomètre) ; F = plein écran ; un numéro + Entrée = aller à la diapo.
+  N = ouvre les notes du présentateur dans une autre fenêtre (qui parle, créneau, texte à dire, chronomètre) ; F = plein écran ; un numéro + Entrée = aller à la diapo.
   Les captures (img/) viennent de la démo en ligne, prises le 17/11/2026.
 -->
 <style>
@@ -284,15 +284,6 @@
     line-height: 1.4;
   }
   #presenter[hidden] { display: none; }
-  #open-notes {
-    position: fixed; left: 14px; bottom: 16px; z-index: 5; padding: 6px 12px; border-radius: 6px;
-    border: 1px solid rgb(58 47 38 / 35%); background: var(--slip); color: var(--text); opacity: 0.6;
-    font: 700 14px/1 var(--font-mono); cursor: pointer;
-  }
-  #open-notes:hover, #open-notes:focus-visible { opacity: 1; }
-  :fullscreen #open-notes { opacity: 0; }
-  :fullscreen #open-notes:hover, :fullscreen #open-notes:focus-visible { opacity: 0.9; }
-  @media print { #open-notes { display: none; } }
   #presenter .head { display: flex; justify-content: space-between; gap: 10px; font-family: var(--font-mono); font-size: 15px; color: var(--accent); }
   #presenter .speaker { margin-top: 8px; font-size: 22px; font-weight: 800; }
   #presenter #p-script { margin-top: 10px; padding: 10px 12px; border-left: 4px solid var(--accent); background: rgb(224 104 75 / 10%); font-size: 17px; line-height: 1.35; }
@@ -620,8 +611,8 @@
 
   <!-- 13 -->
   <section class="slide" data-who="Dylan" data-time="16:00 – 16:45"
-    data-script="Côté technique, on voulait que ça tourne sur un PC de TP, donc au moins 30 images par seconde.¶On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. Résultat : sur un portable avec la carte graphique intégrée, la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.¶Petite honnêteté : notre première mesure disait plus de 60, elle était fausse, on l'a refaite. Et on n'a pas pu tester sur un vrai poste de TP.¶[Appuyer sur R et P en même temps]¶Si vous voulez, voilà le compteur en direct."
-    data-notes="Critère : 30 images/s sur un poste de TP. Remesuré le 18/11 avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape). Ligne « local » : version finale sur notre serveur de développement, Chrome 72 à 98 images/s.|Carte intégrée = la plus proche d'un poste de TP. Processeur ralenti 4 fois = plus lent qu'un poste de TP.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP ; les chiffres varient de plusieurs images/s d'un passage à l'autre (portable chaud, Chrome a touché 26 sur une seconde), à dire franchement.">
+    data-script="Côté technique, on voulait que ça tourne sur un PC de TP, donc au moins 30 images par seconde.¶On l'a mesuré avec notre propre script, qui pilote le navigateur sur les 9 étapes. On l'a fait sur un PC peu puissant pour la 3D : le portable avec sa carte graphique intégrée seulement, et même avec le processeur ralenti. Résultat : la moyenne reste au-dessus de 40 images par seconde, dans Chrome, Edge et Firefox. Quand le portable chauffe, ça peut descendre un peu, et on l'a écrit.¶Petite honnêteté : notre première mesure disait plus de 60, elle était fausse, on l'a refaite. Et on n'a pas pu tester sur un vrai poste de TP.¶[Appuyer sur R et P en même temps]¶Si vous voulez, voilà le compteur en direct."
+    data-notes="Critère : 30 images/s sur un poste de TP. Remesuré le 18/11 avec notre script (navigateur piloté, 9 étapes, action déclenchée, 5 s par étape). Ligne « local » : version finale sur notre serveur de développement, Chrome 72 à 98 images/s.|À dire : c'est mesuré sur un PC peu puissant pour la 3D, avec la carte graphique intégrée seulement (la plus faible des deux), et un processeur ralenti 4 fois pour simuler un PC encore plus lent.|Montrer en direct : R et P ensemble affichent le compteur.|Rigueur : notre première mesure (« plus de 60 images/s ») était fausse, on l'a refaite et corrigée.|Limite : pas mesuré sur un vrai poste de TP ; les chiffres varient de plusieurs images/s d'un passage à l'autre (portable chaud, Chrome a touché 26 sur une seconde), à dire franchement.">
     <span class="kicker">Fluidité · critère 30 images/s</span>
     <h2>Est-ce que ça tourne sur un PC de TP ?</h2>
     <p style="margin-top: 10px; font-size: 26px;">Oui. Sur un PC portable, même avec sa carte graphique intégrée, la moyenne reste au-dessus de <strong>40 images/s</strong> à chaque étape, dans Chrome, Edge et Firefox.</p>
@@ -637,13 +628,12 @@
             <tr><td>Chrome <span class="muted">(local)</span></td><td class="num"><strong>72</strong></td><td class="num">65</td><td class="num muted">—</td></tr>
           </tbody>
         </table>
-        <p class="muted" style="margin-top: 16px; font-size: 21px;">Processeur ÷ 4, c'est plus lent qu'un poste de TP. Avec la carte dédiée (RTX), 163 à 164 images/s.</p>
+        <p class="muted" style="margin-top: 16px; font-size: 21px;">Mesuré sur un PC peu puissant pour la 3D : le portable avec sa carte graphique intégrée seulement (la plus faible des deux), et un processeur ralenti 4 fois pour simuler un PC encore plus lent.</p>
         <p class="muted" style="margin-top: 8px; font-size: 21px;">Démo en ligne, remesurée le 18/11, 9 étapes avec leur action, 5 s chacune · <span class="mono" style="white-space: nowrap;">scripts/mesure-fps.mjs</span></p>
       </div>
       <div style="flex: 1; display: flex; flex-direction: column; gap: 22px;">
         <div class="slip"><h3 style="font-size: 26px;">607 → environ 250</h3><p style="font-size: 23px; margin-top: 4px;">appels de dessin par image sur l'archipel, en regroupant les décors, les sceaux et les parchemins</p></div>
         <div class="slip"><h3 style="font-size: 26px;">−34 %</h3><p style="font-size: 23px; margin-top: 4px;">de temps de calcul par image, surtout en cachant les étiquettes qu'on ne voit pas</p></div>
-        <div class="postit"><span class="label">En direct</span><p style="font-size: 23px; margin-top: 6px;">On peut vous le montrer. <strong>R et P</strong> en même temps affichent le compteur.</p></div>
       </div>
     </div>
   </section>
@@ -738,15 +728,13 @@
 <div id="chrome"><div id="progress"></div></div>
 <div id="counter" aria-hidden="true"></div>
 
-<button id="open-notes" type="button" title="Ouvrir les notes dans une autre fenêtre (touche O)">Notes ↗</button>
-
 <aside id="presenter" hidden aria-label="Notes du présentateur">
   <div class="head"><span id="p-time"></span><span id="p-clock">00:00</span></div>
   <div class="speaker" id="p-who"></div>
   <div id="p-script"></div>
   <ul id="p-notes"></ul>
   <div class="next" id="p-next"></div>
-  <div class="help">N : notes sur la diapo · O : notes dans une autre fenêtre · F : plein écran · R : remettre le chrono à 0 · numéro + Entrée : aller à la diapo</div>
+  <div class="help">N : ouvrir les notes dans une autre fenêtre · F : plein écran · R : remettre le chrono à 0 · numéro + Entrée : aller à la diapo</div>
 </aside>
 
 <script>
@@ -794,7 +782,6 @@
     const w = window.open('notes.html', 'notes-diapo', 'width=760,height=900');
     if (!w) alert('Le navigateur a bloqué la fenêtre : autorisez les fenêtres surgissantes pour cette page.');
   }
-  document.getElementById('open-notes').addEventListener('click', openNotes);
   channel?.addEventListener('message', ({ data }) => {
     if (data.type === 'hello') broadcastState();
     else if (data.type === 'go') { start ??= Date.now(); show(index + data.delta); }
@@ -840,9 +827,8 @@
     else if (['ArrowLeft', 'PageUp', 'ArrowUp'].includes(k)) { e.preventDefault(); show(index - 1); }
     else if (k === 'Home') show(0);
     else if (k === 'End') show(slides.length - 1);
-    else if (k === 'n' || k === 'N') presenter.hidden = !presenter.hidden;
+    else if (k === 'n' || k === 'N') openNotes();
     else if (k === 'r' || k === 'R') { start = Date.now(); updateClock(); broadcastState(); }
-    else if (k === 'o' || k === 'O') openNotes();
     else if (k === 'f' || k === 'F') {
       if (document.fullscreenElement) document.exitFullscreen?.();
       else document.documentElement.requestFullscreen?.().catch(() => {});
